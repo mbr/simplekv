@@ -5,8 +5,18 @@ import os
 
 from . import KeyValueStorage
 
+
 class FilesystemStore(KeyValueStorage):
+    """Store data in files on the filesystem.
+
+    The *FilesystemStore* stores every value as its own file on the filesystem,
+    all under a common directory.
+    """
     def __init__(self, root):
+        """Initialize new FilesystemStore
+
+        :param root: the base directory for the store
+        """
         self.root = root
         self.bufsize = 2 ** 32 - 1
 

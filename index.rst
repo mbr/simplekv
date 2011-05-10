@@ -1,7 +1,3 @@
-.. simplekv documentation master file, created by
-   sphinx-quickstart on Tue May 10 09:07:13 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 simple key-value storage api
 ============================
@@ -11,6 +7,14 @@ Due to its basic interface, it is easy to implemented a large number of
 backends. *simplekv*'s origins are in storing user-uploaded files on websites,
 but its low overhead and design should make it applicable for numerous other
 problems.
+
+Table of contents
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   filesystem
 
 Why it's not a trendy NoSQL database
 ------------------------------------
@@ -48,9 +52,6 @@ The core API
 
 .. autoclass:: simplekv.KeyValueStorage
    :members: get, put, open
-
-.. toctree::
-   :maxdepth: 2
 
 Indices and tables
 ==================
