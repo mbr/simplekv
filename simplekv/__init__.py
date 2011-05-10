@@ -16,7 +16,7 @@ class KeyValueStorage(object):
         Raises a `KeyError` if the key does not exist.
         """
         self._check_valid_key(key)
-        self._get(key)
+        return self._get(key)
 
     def put(self, key, data_or_readable):
         """Store into key
@@ -33,9 +33,9 @@ class KeyValueStorage(object):
         """
         self._check_valid_key(key)
         if hasattr(data_or_readable, 'read'):
-            self._put_readable(key, data_or_readable)
+            return self._put_readable(key, data_or_readable)
         else:
-            self._put_data(key, data)
+            return self._put_data(key, data_or_readable)
 
     def open(self, key):
         """Open key for reading.
@@ -45,7 +45,7 @@ class KeyValueStorage(object):
         Raises an `IOError` if storing failed.
         """
         self._check_valid_key(key)
-        self._open(key)
+        return self._open(key)
 
     def _check_valid_key(self, key):
         try:

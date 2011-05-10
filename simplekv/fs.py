@@ -13,6 +13,19 @@ class FilesystemStore(KeyValueStorage):
     def _build_filename(self, key):
         return os.path.join(self.root, key)
 
+    def _get(self, key):
+        return self._open(key).read()
+
+    def _open(self, key):
+        try:
+            f = file(self._build_filename(key), 'rb')
+            return f
+        except IOError, e:
+            if 2 == e.errno:
+                raise KeyError(key)
+            else:
+                raise
+
     def _put_data(self, key, data):
         with file(self._build_filename(key), 'wb') as f:
             f.write(data)
