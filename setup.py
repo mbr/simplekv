@@ -5,10 +5,10 @@ from setuptools import setup
 import sys
 
 if sys.version_info < (2, 7):
-    tests_require = ['unittest2']
+    tests_require = ['unittest2','mock']
     test_suite = 'unittest2.collector'
 else:
-    tests_require = []
+    tests_require = ['mock']
     test_suite = 'unittest.collector'
 
 setup(name='simplekv',
