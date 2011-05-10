@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 # coding=utf8
 
+import re
+
+VALID_NON_NUM = r"""\`\!"#$%&'()+,-.<=>?@[]^_{}~"""
+VALID_KEY_REGEXP = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM)
+VALID_KEY_RE = re.compile(VALID_KEY_REGEXP)
+
 class KeyValueStorage(object):
     """The smallest API supported by all backends.
 
-    Keys are ascii-strings and guaranteed to be properly handled up to a
-    length of at least 256 characters.
+    Keys are ascii-strings with certain restrictions, guaranteed to be properly
+    handled up to a length of at least 256 characters.
 
     Any function that takes a key as an argument raises a ValueError if the
     key is incorrect.
@@ -48,8 +54,5 @@ class KeyValueStorage(object):
         return self._open(key)
 
     def _check_valid_key(self, key):
-        try:
-            key.decode('ascii')
-            return True
-        except UnicodeDecodeError, e:
-            raise ValueError(str(e))
+        if not VALID_KEY_RE.match(key):
+            raise ValueError('%r contains illegal characters' % key)
