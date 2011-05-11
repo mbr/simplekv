@@ -18,7 +18,7 @@ class FilesystemStore(KeyValueStorage):
         :param root: the base directory for the store
         """
         self.root = root
-        self.bufsize = 2 ** 32 - 1
+        self.bufsize = 1024 * 1024  # 1m
 
     def _build_filename(self, key):
         return os.path.join(self.root, key)
