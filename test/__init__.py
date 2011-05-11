@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # coding=utf8
 
+from StringIO import StringIO
+import tempfile
+
 from mock import Mock
 
-from StringIO import StringIO
 
 class SimpleKVTest(object):
     def test_store(self):
@@ -12,7 +14,7 @@ class SimpleKVTest(object):
     def test_store_and_retrieve(self):
         v = 'data1'
         k = 'key1'
-        self.store.put(k,v)
+        self.store.put(k, v)
         self.assertEqual(v, self.store.get(k))
 
     def test_store_and_retrieve_filelike(self):
@@ -74,3 +76,14 @@ class SimpleKVTest(object):
 
         with self.assertRaises(ValueError):
             self.store.get('')
+
+    def test_put_file(self):
+        with tempfile.NamedTemporaryFile() as tmp:
+            k = 'filekey1'
+            v = 'somedata'
+            tmp.write(v)
+            tmp.flush()
+
+            self.store.put_file(k, tmp.name)
+
+            self.assertEqual(self.store.get(k), v)
