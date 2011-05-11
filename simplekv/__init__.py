@@ -53,9 +53,9 @@ class KeyValueStorage(object):
         """
         self._check_valid_key(key)
         if isinstance(file, str):
-            return self._get_file(key, file)
-        else:
             return self._get_filename(key, file)
+        else:
+            return self._get_file(key, file)
 
     def open(self, key):
         """Open key for reading.
