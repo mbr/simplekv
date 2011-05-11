@@ -41,7 +41,7 @@ class KeyValueStorage(object):
         if hasattr(data_or_readable, 'read'):
             return self._put_readable(key, data_or_readable)
         else:
-            return self._put_data(key, data_or_readable)
+            return self._put_data(key, str(data_or_readable))
 
     def open(self, key):
         """Open key for reading.
