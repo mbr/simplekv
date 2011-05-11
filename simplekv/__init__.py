@@ -120,7 +120,7 @@ class KeyValueStorage(object):
 
         self.get_file(key, buf)
 
-        return buf.val()
+        return buf.getvalue()
 
     def _get_file(self, key, file):
         """Write key to file-like object file."""

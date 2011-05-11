@@ -23,9 +23,6 @@ class FilesystemStore(KeyValueStorage):
     def _build_filename(self, key):
         return os.path.join(self.root, key)
 
-    def _get(self, key):
-        return self._open(key).read()
-
     def _open(self, key):
         try:
             f = open(self._build_filename(key), 'rb')
