@@ -28,7 +28,7 @@ class FilesystemStore(KeyValueStorage):
 
     def _open(self, key):
         try:
-            f = file(self._build_filename(key), 'rb')
+            f = open(self._build_filename(key), 'rb')
             return f
         except IOError, e:
             if 2 == e.errno:
@@ -36,15 +36,15 @@ class FilesystemStore(KeyValueStorage):
             else:
                 raise
 
-    def _put_data(self, key, data):
+    def _put(self, key, data):
         with file(self._build_filename(key), 'wb') as f:
             f.write(data)
 
-    def _put_readable(self, key, source):
+    def _put_file(self, key, file):
         bufsize = self.bufsize
-        with file(self._build_filename(key), 'wb') as f:
+        with open(self._build_filename(key), 'wb') as f:
             while True:
-                buf = source.read(bufsize)
+                buf = file.read(bufsize)
                 f.write(buf)
                 if len(buf) < bufsize:
                     break
