@@ -86,6 +86,29 @@ class KeyValueStorage(object):
         with file(filename, 'rb') as f:
             self.put(key, f)
 
+    def write(self, key, filename):
+        """Write contents of key to file on disk
+
+        Like :func:`putfile`, this method allows backends to implement a
+        specialized function if a file needs to be written to disk.
+
+        :param key: The key to be read
+        :param filename: Output filename
+        backend.
+
+        :raises KeyError: If the key is not valid.
+        :raises IOError: If there was a problem writing to the file.
+        """
+        source = self.open(key)
+        bufsize = 1024*1024
+        with file(filename, 'wb') as f:
+            while True:
+                buf = source.read(bufsize)
+                f.write(buf)
+
+                if len(buf) < bufsize:
+                    break
+
     def _check_valid_key(self, key):
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
