@@ -21,7 +21,7 @@ class SimpleKVTest(object):
         v = 'data1'
         k = 'key1'
 
-        self.store.put(k, StringIO(v))
+        self.store.put_file(k, StringIO(v))
         self.assertEqual(v, self.store.get(k))
 
     def test_store_and_retrieve_overwrite(self):
@@ -30,7 +30,7 @@ class SimpleKVTest(object):
 
         k = 'key1'
 
-        self.store.put(k, StringIO(v))
+        self.store.put_file(k, StringIO(v))
         self.assertEqual(v, self.store.get(k))
 
         self.store.put(k, v2)
@@ -40,14 +40,14 @@ class SimpleKVTest(object):
         v = 'data1'
         k = 'key1'
 
-        self.store.put(k, StringIO(v))
+        self.store.put_file(k, StringIO(v))
         self.assertEqual(v, self.store.open(k).read())
 
     def test_open_incremental_read(self):
         v = 'data_abc'
         k = 'key1'
 
-        self.store.put(k, StringIO(v))
+        self.store.put_file(k, StringIO(v))
         ok = self.store.open(k)
         self.assertEqual(v[:3], ok.read(3))
         self.assertEqual(v[3:5], ok.read(2))
