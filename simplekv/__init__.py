@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # coding=utf8
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 import re
 
 VALID_NON_NUM = r"""\`\!"#$%&'()+,-.<=>?@[]^_{}~"""
@@ -11,22 +16,46 @@ class KeyValueStorage(object):
     """The smallest API supported by all backends.
 
     Keys are ascii-strings with certain restrictions, guaranteed to be properly
-    handled up to a length of at least 256 characters.
+    handled up to a length of at least 256 characters. Any function that takes
+    a key as an argument raises a ValueError if the key is incorrect.
 
-    Any function that takes a key as an argument raises a ValueError if the
-    key is incorrect.
+    The regular expression for what constitutes a valid key is available as
+    `simplekv.VALID_KEY_REGEXP`.
     """
     def get(self, key):
         """Returns the key data as a string.
 
         :param key: Key to get
 
-        :raises KeyError: If the key is not valid.
+        :raises ValueError: If the key is not valid.
         :raises IOError: If the file could not be read.
-        :raises IndexError: If the key was not found.
+        :raises KeyError: If the key was not found.
         """
         self._check_valid_key(key)
         return self._get(key)
+
+    def get_file(self, key, file):
+        """Write contents of key to file
+
+        Like :func:`put_file`, this method allows backends to implement a
+        specialized function if data needs to be written to disk or streamed.
+
+        If *file* is a string, contents of *key* are written to a newly
+        created file with the filename *file*. Otherwise, the data will be
+        written using the *write* method of *file*.
+
+        :param key: The key to be read
+        :param file: Output filename or an object with a *write* method.
+
+        :raises ValueError: If the key is not valid.
+        :raises IOError: If there was a problem reading or writing data.
+        :raises KeyError: If the key was not found.
+        """
+        self._check_valid_key(key)
+        if isinstance(file, str):
+            return self._get_file(key, file)
+        else:
+            return self._get_filename(key, file)
 
     def open(self, key):
         """Open key for reading.
@@ -35,80 +64,94 @@ class KeyValueStorage(object):
 
         :param key: Key to open
 
-        :raises KeyError: If the key is not valid.
+        :raises ValueError: If the key is not valid.
         :raises IOError: If the file could not be read.
-        :raises IndexError: If the key was not found.
+        :raises KeyError: If the key was not found.
         """
         self._check_valid_key(key)
         return self._open(key)
 
-    def put(self, key, data_or_readable):
-        """Store into key
+    def put(self, key, data):
+        """Store into key from file
 
-        Stores data into a key, from a string or "somewhat filelike" object.
-        If the object has a .read() method, data will be read from it as if it
-        was a file, otherwise the result of a str() conversion is stored
-        instead.
-
-        Note that the object only needs to support read() and _may_ support
-        a fileno() method as well.
+        Stores string *data* in *key*.
 
         :param key: The key under which the data is to be stored
-        :param data_or_readable: Any object (will be converted to string using
-        str()) or a "readable" object, i.e. one that has a read() method
+        :param data: Data to be stored into key
 
-        :raises KeyError: If the key is not valid.
-        :raises IOError: If storing failed.
+        :raises ValueError: If the key is not valid.
+        :raises IOError: If storing failed or the file could not be read
         """
         self._check_valid_key(key)
-        if hasattr(data_or_readable, 'read'):
-            return self._put_readable(key, data_or_readable)
-        else:
-            return self._put_data(key, str(data_or_readable))
+        return self._put(key, data)
 
-    def put_file(self, key, filename):
+    def put_file(self, key, file):
         """Store into key from file on disk
 
-        This is a convenience method to allow some backends to implement more
-        efficient ways of adding files to a repository (e.g. by simply renaming
-        a file instead of copying it).
+        Stores data from a source into key. *file* can either be a string,
+        which will be interpretet as a filename, or an object with a *read()*
+        method.
 
-        Note that the file will be removed in the process. If you need to make
-        a copy, pass the opened file to :func:`put`.
+        If the passed object has a *fileno()* method, it may be used to speed
+        up the operation.
+
+        The file specified by *file*, if it is a filename, may be removed in
+        the process, to avoid copying if possible. If you need to make a copy,
+        pass the opened file instead.
 
         :param key: The key under which the data is to be stored
-        :param filename: The path to a file that is to be moved into the
-        backend.
+        :param file: A filename or an object with a read method. If a filename,
+                     may be removed
 
-        :raises KeyError: If the key is not valid.
+        :raises ValueError: If the key is not valid.
         :raises IOError: If there was a problem moving the file in.
         """
-        with file(filename, 'rb') as f:
-            self.put(key, f)
-
-    def write(self, key, filename):
-        """Write contents of key to file on disk
-
-        Like :func:`putfile`, this method allows backends to implement a
-        specialized function if a file needs to be written to disk.
-
-        :param key: The key to be read
-        :param filename: Output filename
-        backend.
-
-        :raises KeyError: If the key is not valid.
-        :raises IOError: If there was a problem writing to the file.
-        """
-        source = self.open(key)
-        bufsize = 1024*1024
-        with file(filename, 'wb') as f:
-            while True:
-                buf = source.read(bufsize)
-                f.write(buf)
-
-                if len(buf) < bufsize:
-                    break
+        if isinstance(file, str):
+            return self._put_filename(key, file)
+        else:
+            return self._put_file(key, file)
 
     def _check_valid_key(self, key):
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
+
+    def _get(self, key):
+        buf = StringIO()
+
+        self.get_file(key, buf)
+
+        return buf.val()
+
+    def _get_file(self, key, file):
+        """Write key to file-like object file."""
+        source = self.open(key)
+        bufsize = 1024*1024
+
+        while True:
+            buf = source.read(bufsize)
+            file.write(buf)
+
+            if len(buf) < bufsize:
+                break
+
+    def _get_filename(self, key, filename):
+        """Write key to file"""
+        with open(filename, 'wb') as dest:
+            return self._get_file(key, dest)
+
+    def _open(self, key):
+        """Open key for reading"""
+        raise NotImplementedError
+
+    def _put(self, key, data):
+        """Store data into key"""
+        return self._put_file(StringIO(data))
+
+    def _put_file(self, key, file):
+        """Store data from file object into key"""
+        raise NotImplementedError
+
+    def _put_filename(self, key, filename):
+        """Store data from file into key"""
+        with open(filename, 'rb') as source:
+            return self._put_file(key, source)
