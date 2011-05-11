@@ -19,10 +19,28 @@ class KeyValueStorage(object):
     def get(self, key):
         """Returns the key data as a string.
 
-        Raises a `KeyError` if the key does not exist.
+        :param key: Key to get
+
+        :raises KeyError: If the key is not valid.
+        :raises IOError: If the file could not be read.
+        :raises IndexError: If the key was not found.
         """
         self._check_valid_key(key)
         return self._get(key)
+
+    def open(self, key):
+        """Open key for reading.
+
+        Returns a read-only file-like object for reading a key.
+
+        :param key: Key to open
+
+        :raises KeyError: If the key is not valid.
+        :raises IOError: If the file could not be read.
+        :raises IndexError: If the key was not found.
+        """
+        self._check_valid_key(key)
+        return self._open(key)
 
     def put(self, key, data_or_readable):
         """Store into key
@@ -35,7 +53,12 @@ class KeyValueStorage(object):
         Note that the object only needs to support read() and _may_ support
         a fileno() method as well.
 
-        Raises an `IOError` if storing failed.
+        :param key: The key under which the data is to be stored
+        :param data_or_readable: Any object (will be converted to string using
+        str()) or a "readable" object, i.e. one that has a read() method
+
+        :raises KeyError: If the key is not valid.
+        :raises IOError: If storing failed.
         """
         self._check_valid_key(key)
         if hasattr(data_or_readable, 'read'):
@@ -43,15 +66,25 @@ class KeyValueStorage(object):
         else:
             return self._put_data(key, str(data_or_readable))
 
-    def open(self, key):
-        """Open key for reading.
+    def put_file(self, key, filename):
+        """Store into key from file on disk
 
-        Returns a read-only file-like object for reading a key.
+        This is a convenience method to allow some backends to implement more
+        efficient ways of adding files to a repository (e.g. by simply renaming
+        a file instead of copying it).
 
-        Raises an `IOError` if storing failed.
+        Note that the file will be removed in the process. If you need to make
+        a copy, pass the opened file to :func:`put`.
+
+        :param key: The key under which the data is to be stored
+        :param filename: The path to a file that is to be moved into the
+        backend.
+
+        :raises KeyError: If the key is not valid.
+        :raises IOError: If there was a problem moving the file in.
         """
-        self._check_valid_key(key)
-        return self._open(key)
+        with file(filename, 'rb') as f:
+            self.put(key, f)
 
     def _check_valid_key(self, key):
         if not VALID_KEY_RE.match(key):

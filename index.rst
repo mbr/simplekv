@@ -51,7 +51,7 @@ The core API
 ============
 
 .. autoclass:: simplekv.KeyValueStorage
-   :members: get, put, open
+   :members: get, open, put, put_file
 
 Indices and tables
 ==================
