@@ -114,3 +114,13 @@ class SimpleKVTest(object):
             self.assertEqual(open(out_filename, 'rb').read(), v)
         finally:
             shutil.rmtree(tmpdir)
+
+    def test_get_into_stream(self):
+        k = 'mykey123'
+        v = 'another_value'
+        self.store.put(k, v)
+
+        output = StringIO()
+
+        self.store.get_file(k, output)
+        self.assertEqual(v, output.getvalue())
