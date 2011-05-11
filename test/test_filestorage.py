@@ -13,6 +13,7 @@ else:
 from . import SimpleKVTest
 from simplekv.fs import FilesystemStore
 
+
 class TestFileStorage(unittest.TestCase, SimpleKVTest):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()

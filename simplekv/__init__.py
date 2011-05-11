@@ -12,6 +12,7 @@ VALID_NON_NUM = r"""\`\!"#$%&'()+,-.<=>?@[]^_{}~"""
 VALID_KEY_REGEXP = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM)
 VALID_KEY_RE = re.compile(VALID_KEY_REGEXP)
 
+
 class KeyValueStorage(object):
     """The smallest API supported by all backends.
 
@@ -125,7 +126,7 @@ class KeyValueStorage(object):
     def _get_file(self, key, file):
         """Write key to file-like object file."""
         source = self.open(key)
-        bufsize = 1024*1024
+        bufsize = 1024 * 1024
 
         while True:
             buf = source.read(bufsize)
