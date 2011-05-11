@@ -2,6 +2,8 @@
 # coding=utf8
 
 from StringIO import StringIO
+import os
+import shutil
 import tempfile
 
 from mock import Mock
@@ -87,3 +89,28 @@ class SimpleKVTest(object):
             self.store.put_file(k, tmp.name)
 
             self.assertEqual(self.store.get(k), v)
+
+    def test_put_opened_file(self):
+        with tempfile.NamedTemporaryFile() as tmp:
+            k = 'filekey2'
+            v = 'somedata2'
+            tmp.write(v)
+            tmp.flush()
+
+            self.store.put_file(k, open(tmp.name, 'rb'))
+
+            self.assertEqual(self.store.get(k), v)
+
+    def test_get_into_file(self):
+        tmpdir = tempfile.mkdtemp()
+        try:
+            k = 'asdf'
+            v = '123'
+            self.store.put(k, v)
+            out_filename = os.path.join(tmpdir, 'output')
+
+            self.store.get_file(k, out_filename)
+
+            self.assertEqual(open(out_filename, 'rb').read(), v)
+        finally:
+            shutil.rmtree(tmpdir)
