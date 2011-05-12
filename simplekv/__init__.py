@@ -146,7 +146,7 @@ class KeyValueStorage(object):
 
     def _put(self, key, data):
         """Store data into key"""
-        return self._put_file(StringIO(data))
+        return self._put_file(key, StringIO(data))
 
     def _put_file(self, key, file):
         """Store data from file object into key"""
