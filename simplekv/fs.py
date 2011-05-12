@@ -12,11 +12,12 @@ class FilesystemStore(KeyValueStorage):
     The *FilesystemStore* stores every value as its own file on the filesystem,
     all under a common directory.
     """
-    def __init__(self, root):
+    def __init__(self, root, **kwargs):
         """Initialize new FilesystemStore
 
         :param root: the base directory for the store
         """
+        super(FilesystemStore, self).__init__(**kwargs)
         self.root = root
         self.bufsize = 1024 * 1024  # 1m
 
