@@ -14,6 +14,7 @@ Table of contents
    :maxdepth: 2
 
    filesystem
+   memory
 
 Why it's not a trendy NoSQL database
 ------------------------------------

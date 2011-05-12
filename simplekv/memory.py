@@ -10,6 +10,11 @@ from . import KeyValueStorage
 
 
 class DictStore(KeyValueStorage):
+    """Store data in a dictionary.
+
+    This store uses a dictionary as the backend for storing, its implementation
+    is straightforward. The dictionary containing all data is available as `d`.
+    """
     def __init__(self, d=None):
         self.d = d or {}
 
