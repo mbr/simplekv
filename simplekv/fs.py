@@ -22,6 +22,12 @@ class FilesystemStore(KeyValueStore):
         self.root = root
         self.bufsize = 1024 * 1024  # 1m
 
+    def keys(self):
+        return os.listdir(self.root)
+
+    def iter_keys(self):
+        return iter(self.keys())
+
     def _build_filename(self, key):
         return os.path.join(self.root, key)
 

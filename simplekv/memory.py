@@ -18,6 +18,9 @@ class DictStore(KeyValueStore):
     def __init__(self, d=None):
         self.d = d or {}
 
+    def iter_keys(self):
+        return iter(self.d)
+
     def _delete(self, key):
         self.d.pop(key, None)
 

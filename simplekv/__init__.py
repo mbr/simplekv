@@ -69,6 +69,15 @@ class KeyValueStore(object):
         else:
             return self._get_file(key, file)
 
+    def iter_keys(self):
+        """Return an Iterator over all keys currently in the store, in any
+        order"""
+        raise NotImplementedError
+
+    def keys(self):
+        """Return a list of keys currently in store, in any order"""
+        return list(self.iter_keys())
+
     def open(self, key):
         """Open key for reading.
 

@@ -218,3 +218,26 @@ class SimpleKVTest(object):
 
     def test_can_delete_key_that_never_exists(self):
         self.store.delete('never_ever_existed')
+
+    def test_key_iterator(self):
+        self.store.put('key1', 'someval')
+        self.store.put('key2', 'someval2')
+        self.store.put('key3', 'someval3')
+
+        l = []
+        for k in self.store.iter_keys():
+            l.append(k)
+
+        l.sort()
+
+        self.assertEqual(l, ['key1', 'key2', 'key3'])
+
+    def test_keys(self):
+        self.store.put('key1', 'someval')
+        self.store.put('key2', 'someval2')
+        self.store.put('key3', 'someval3')
+
+        l = self.store.keys()
+        l.sort()
+
+        self.assertEqual(l, ['key1', 'key2', 'key3'])
