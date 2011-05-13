@@ -79,6 +79,22 @@ class SimpleKVTest(object):
         with self.assertRaises(ValueError):
             self.store.get('')
 
+    def test_exception_on_invalid_key_get_file(self):
+        with self.assertRaises(ValueError):
+            self.store.get_file(u'ä', '/dev/null')
+
+        with self.assertRaises(ValueError):
+            self.store.get_file('/', '/dev/null')
+
+        with self.assertRaises(ValueError):
+            self.store.get_file('\x00', '/dev/null')
+
+        with self.assertRaises(ValueError):
+            self.store.get_file('*', '/dev/null')
+
+        with self.assertRaises(ValueError):
+            self.store.get_file('', '/dev/null')
+
     def test_put_file(self):
         with tempfile.NamedTemporaryFile() as tmp:
             k = 'filekey1'
