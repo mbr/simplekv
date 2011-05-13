@@ -68,6 +68,13 @@ have default implementations that call these.
 After that, you can override any number of underscore-prefixed methods with
 more specialized implementations to gain speed improvements.
 
+Atomicity
+---------
+Every call to a method on a KeyValueStore results in a single operation on the
+underlying backend. No guarantees are made above that, if you check if a key
+exists and then try to retrieve it, it may have already been deleted in between
+(instead, retrieve and catch the exception).
+
 Indices and tables
 ==================
 
