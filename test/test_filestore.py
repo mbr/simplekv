@@ -14,7 +14,7 @@ from . import SimpleKVTest
 from simplekv.fs import FilesystemStore
 
 
-class TestFileStorage(unittest.TestCase, SimpleKVTest):
+class TestFileStore(unittest.TestCase, SimpleKVTest):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
         self.store = FilesystemStore(self.tmpdir)
