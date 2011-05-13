@@ -3,10 +3,10 @@
 
 import os
 
-from . import KeyValueStorage
+from . import KeyValueStore
 
 
-class FilesystemStore(KeyValueStorage):
+class FilesystemStore(KeyValueStore):
     """Store data in files on the filesystem.
 
     The *FilesystemStore* stores every value as its own file on the filesystem,

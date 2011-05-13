@@ -50,7 +50,7 @@ to use it as a backend for *simplekv* instead.
 The core API
 ============
 
-.. autoclass:: simplekv.KeyValueStorage
+.. autoclass:: simplekv.KeyValueStore
    :members: get, get_file, open, put, put_file
 
 Implementing a new backend

@@ -6,10 +6,10 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from . import KeyValueStorage
+from . import KeyValueStore
 
 
-class DictStore(KeyValueStorage):
+class DictStore(KeyValueStore):
     """Store data in a dictionary.
 
     This store uses a dictionary as the backend for storing, its implementation

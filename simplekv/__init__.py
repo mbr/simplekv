@@ -13,7 +13,7 @@ VALID_KEY_REGEXP = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM)
 VALID_KEY_RE = re.compile(VALID_KEY_REGEXP)
 
 
-class KeyValueStorage(object):
+class KeyValueStore(object):
     """The smallest API supported by all backends.
 
     Keys are ascii-strings with certain restrictions, guaranteed to be properly
