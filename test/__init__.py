@@ -124,3 +124,34 @@ class SimpleKVTest(object):
 
         self.store.get_file(k, output)
         self.assertEqual(v, output.getvalue())
+
+    def test_put_return_value(self):
+        k = 'mykey456'
+        v = 'some_val'
+
+        rv = self.store.put(k, v)
+
+        self.assertEqual(k, rv)
+
+    def test_put_file_return_value(self):
+        k = 'rvkey12'
+        v = 'some_val'
+
+        rv = self.store.put_file(k, StringIO(v))
+
+        self.assertEqual(k, rv)
+
+    def test_put_filename_return_value(self):
+        k = 'filenamekey1'
+        v = 'some_val'
+
+        (tmpfd, tmpfile) = tempfile.mkstemp()
+        try:
+            os.write(tmpfd, v)
+            os.close(tmpfd)
+
+            rv = self.store.put_file(k, tmpfile)
+
+            self.assertEqual(rv, k)
+        finally:
+            os.unlink(tmpfile)

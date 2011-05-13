@@ -80,6 +80,8 @@ class KeyValueStorage(object):
         :param key: The key under which the data is to be stored
         :param data: Data to be stored into key
 
+        :returns: The key under which data was stored
+
         :raises ValueError: If the key is not valid.
         :raises IOError: If storing failed or the file could not be read
         """
@@ -103,6 +105,8 @@ class KeyValueStorage(object):
         :param key: The key under which the data is to be stored
         :param file: A filename or an object with a read method. If a filename,
                      may be removed
+
+        :returns: The key under which data was stored
 
         :raises ValueError: If the key is not valid.
         :raises IOError: If there was a problem moving the file in.

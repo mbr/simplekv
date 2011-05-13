@@ -38,6 +38,8 @@ class FilesystemStore(KeyValueStorage):
         with file(self._build_filename(key), 'wb') as f:
             f.write(data)
 
+        return key
+
     def _put_file(self, key, file):
         bufsize = self.bufsize
         with open(self._build_filename(key), 'wb') as f:
@@ -46,3 +48,5 @@ class FilesystemStore(KeyValueStorage):
                 f.write(buf)
                 if len(buf) < bufsize:
                     break
+
+        return key

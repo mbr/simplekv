@@ -23,3 +23,4 @@ class DictStore(KeyValueStorage):
 
     def _put_file(self, key, file):
         self.d[key] = file.read()
+        return key
