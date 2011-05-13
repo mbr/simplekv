@@ -52,7 +52,8 @@ The core API
 ============
 
 .. autoclass:: simplekv.KeyValueStore
-   :members:
+   :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
+             open, put, put_file
 
 Implementing a new backend
 --------------------------
@@ -61,7 +62,7 @@ Subclassing :class:`simplekv.KeyValueStore` is the fastest way to implement a
 new backend. It suffices to override the
 :func:`simplekv.KeyValueStore._delete`,
 :func:`simplekv.KeyValueStore.iter_keys`,
-:func:`simplekv.KeyValueStore._open`,
+:func:`simplekv.KeyValueStore._open` and
 :func:`simplekv.KeyValueStore._put_file` methods, as all the other methods
 have default implementations that call these.
 

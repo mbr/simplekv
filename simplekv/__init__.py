@@ -88,7 +88,8 @@ class KeyValueStore(object):
 
     def iter_keys(self):
         """Return an Iterator over all keys currently in the store, in any
-        order"""
+        order.
+        """
         raise NotImplementedError
 
     def keys(self):
