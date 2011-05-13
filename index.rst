@@ -11,10 +11,11 @@ Table of contents
 -----------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    filesystem
    memory
+   idgen
 
 Why it's not a trendy NoSQL database
 ------------------------------------
