@@ -18,6 +18,9 @@ class DictStore(KeyValueStorage):
     def __init__(self, d=None):
         self.d = d or {}
 
+    def _delete(self, key):
+        self.d.pop(key, None)
+
     def _open(self, key):
         return StringIO(self.d[key])
 

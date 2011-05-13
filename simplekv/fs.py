@@ -24,6 +24,13 @@ class FilesystemStore(KeyValueStorage):
     def _build_filename(self, key):
         return os.path.join(self.root, key)
 
+    def _delete(self, key):
+        try:
+            os.unlink(self._build_filename(key))
+        except OSError, e:
+            if not e.errno == 2:
+                raise
+
     def _open(self, key):
         try:
             f = open(self._build_filename(key), 'rb')

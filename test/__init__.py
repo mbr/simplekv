@@ -95,6 +95,22 @@ class SimpleKVTest(object):
         with self.assertRaises(ValueError):
             self.store.get_file('', '/dev/null')
 
+    def test_exception_on_invalid_key_delete(self):
+        with self.assertRaises(ValueError):
+            self.store.delete(u'ä')
+
+        with self.assertRaises(ValueError):
+            self.store.delete('/')
+
+        with self.assertRaises(ValueError):
+            self.store.delete('\x00')
+
+        with self.assertRaises(ValueError):
+            self.store.delete('*')
+
+        with self.assertRaises(ValueError):
+            self.store.delete('')
+
     def test_put_file(self):
         with tempfile.NamedTemporaryFile() as tmp:
             k = 'filekey1'
@@ -171,3 +187,29 @@ class SimpleKVTest(object):
             self.assertEqual(rv, k)
         finally:
             os.unlink(tmpfile)
+
+    def test_delete(self):
+        k = 'key_not_long_this_world'
+        v = 'worldy_value'
+
+        self.store.put(k, v)
+
+        self.assertEqual(v, self.store.get(k))
+
+        self.store.delete(k)
+
+        with self.assertRaises(KeyError):
+            self.store.get(k)
+
+    def test_multiple_delete_fails_without_error(self):
+        k = 'd1'
+        v = 'v1'
+
+        self.store.put(k, v)
+
+        self.store.delete(k)
+        self.store.delete(k)
+        self.store.delete(k)
+
+    def test_can_delete_key_that_never_exists(self):
+        self.store.delete('never_ever_existed')

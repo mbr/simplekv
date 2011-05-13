@@ -23,6 +23,17 @@ class KeyValueStorage(object):
     The regular expression for what constitutes a valid key is available as
     `simplekv.VALID_KEY_REGEXP`.
     """
+    def delete(self, key):
+        """Delete key and data associated with it.
+
+        If the key does not exist, no error is reported.
+
+        :raises ValueError: If the key is not valid.
+        :raises IOError: If there was an error deleting.
+        """
+        self._check_valid_key(key)
+        return self._delete(key)
+
     def get(self, key):
         """Returns the key data as a string.
 
@@ -119,6 +130,9 @@ class KeyValueStorage(object):
     def _check_valid_key(self, key):
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
+
+    def _delete(self, key):
+        raise NotImplementedError
 
     def _get(self, key):
         buf = StringIO()
