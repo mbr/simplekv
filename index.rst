@@ -52,7 +52,7 @@ The core API
 ============
 
 .. autoclass:: simplekv.KeyValueStore
-   :members: get, get_file, open, put, put_file
+   :members:
 
 Implementing a new backend
 --------------------------
