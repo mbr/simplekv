@@ -2,6 +2,7 @@
 # coding=utf8
 
 import os
+import shutil
 
 from . import KeyValueStore
 
@@ -56,4 +57,8 @@ class FilesystemStore(KeyValueStore):
                 if len(buf) < bufsize:
                     break
 
+        return key
+
+    def _put_filename(self, key, filename):
+        shutil.move(filename, self._build_filename(key))
         return key
