@@ -23,6 +23,23 @@ class KeyValueStore(object):
     The regular expression for what constitutes a valid key is available as
     `simplekv.VALID_KEY_REGEXP`.
     """
+    def __contains__(self, key):
+        """Checks if a key is present
+
+        :param key: The key whose existence should be verified.
+
+        :raises ValueError: If the key is not valid.
+
+        :returns: True if the key exists, False otherwise.
+        """
+
+        self._check_valid_key(key)
+        return self._has_key(key)
+
+    def __iter__(self):
+        """Iterate over keys"""
+        return self.iter_keys()
+
     def delete(self, key):
         """Delete key and data associated with it.
 
@@ -166,6 +183,9 @@ class KeyValueStore(object):
         """Write key to file"""
         with open(filename, 'wb') as dest:
             return self._get_file(key, dest)
+
+    def _has_key(self, key):
+        return key in self.keys()
 
     def _open(self, key):
         """Open key for reading"""

@@ -241,3 +241,25 @@ class SimpleKVTest(object):
         l.sort()
 
         self.assertEqual(l, ['key1', 'key2', 'key3'])
+
+    def test_has_key(self):
+        k = 'keya'
+        k2 = 'key2'
+        self.store.put(k, 'vala')
+
+        self.assertTrue(k in self.store)
+        self.assertFalse(k2 in self.store)
+
+    def test_has_key_with_delete(self):
+        k = 'keyb'
+
+        self.assertFalse(k in self.store)
+
+        self.store.put(k, 'valb')
+        self.assertTrue(k in self.store)
+
+        self.store.delete(k)
+        self.assertFalse(k in self.store)
+
+        self.store.put(k, 'valc')
+        self.assertTrue(k in self.store)
