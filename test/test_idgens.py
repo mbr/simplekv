@@ -41,8 +41,14 @@ class TestUUIDGen(unittest.TestCase, SimpleKVTest):
         key = self.store.put_file(None, open('/dev/null', 'rb'))
         self.assertRegexpMatches(key, UUID_REGEXP)
 
-        key2 = self.store.put_file(None, '/dev/null')
-        self.assertRegexpMatches(key2, UUID_REGEXP)
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        try:
+            tmpfile.close()
+            key2 = self.store.put_file(None, tmpfile.name)
+            self.assertRegexpMatches(key2, UUID_REGEXP)
+        finally:
+            if os.path.exists(tmpfile.name):
+                os.unlink(tmpfile.name)
 
     def test_put_generates_valid_uuid(self):
         key = self.store.put(None, 'some_data')
@@ -52,8 +58,14 @@ class TestUUIDGen(unittest.TestCase, SimpleKVTest):
         key = self.store.put_file(None, open('/dev/null', 'rb'))
         uuid.UUID(hex=key)
 
-        key2 = self.store.put_file(None, '/dev/null')
-        uuid.UUID(hex=key2)
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        try:
+            tmpfile.close()
+            key2 = self.store.put_file(None, tmpfile.name)
+            uuid.UUID(hex=key2)
+        finally:
+            if os.path.exists(tmpfile.name):
+                os.unlink(tmpfile.name)
 
 
 class TestUUIDGenFilesystem(TestUUIDGen):
@@ -109,7 +121,8 @@ class TestHashGen(unittest.TestCase, SimpleKVTest):
             key2 = self.store.put_file(None, tmpfile.name)
             self.assertEqual(key2, hash)
         finally:
-            os.unlink(tmpfile.name)
+            if os.path.exists:
+                os.unlink(tmpfile.name)
 
     def test_put_hashfunc_is_sha1(self):
         data = 'some_test_string'

@@ -112,15 +112,19 @@ class SimpleKVTest(object):
             self.store.delete('')
 
     def test_put_file(self):
-        with tempfile.NamedTemporaryFile() as tmp:
+        tmp = tempfile.NamedTemporaryFile(delete=False)
+        try:
             k = 'filekey1'
             v = 'somedata'
             tmp.write(v)
-            tmp.flush()
+            tmp.close()
 
             self.store.put_file(k, tmp.name)
 
             self.assertEqual(self.store.get(k), v)
+        finally:
+            if os.path.exists(tmp.name):
+                os.unlink(tmp.name)
 
     def test_put_opened_file(self):
         with tempfile.NamedTemporaryFile() as tmp:
@@ -177,16 +181,17 @@ class SimpleKVTest(object):
         k = 'filenamekey1'
         v = 'some_val'
 
-        (tmpfd, tmpfile) = tempfile.mkstemp()
+        tmp = tempfile.NamedTemporaryFile(delete=False)
         try:
-            os.write(tmpfd, v)
-            os.close(tmpfd)
+            tmp.write(v)
+            tmp.close()
 
-            rv = self.store.put_file(k, tmpfile)
+            rv = self.store.put_file(k, tmp.name)
 
             self.assertEqual(rv, k)
         finally:
-            os.unlink(tmpfile)
+            if os.path.exists(tmp.name):
+                os.unlink(tmp.name)
 
     def test_delete(self):
         k = 'key_not_long_this_world'
