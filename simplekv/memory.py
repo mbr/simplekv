@@ -18,11 +18,11 @@ class DictStore(KeyValueStore):
     def __init__(self, d=None):
         self.d = d or {}
 
-    def iter_keys(self):
-        return iter(self.d)
-
     def _delete(self, key):
         self.d.pop(key, None)
+
+    def _has_key(self, key):
+        return key in self.d
 
     def _open(self, key):
         return StringIO(self.d[key])
@@ -30,3 +30,6 @@ class DictStore(KeyValueStore):
     def _put_file(self, key, file):
         self.d[key] = file.read()
         return key
+
+    def iter_keys(self):
+        return iter(self.d)

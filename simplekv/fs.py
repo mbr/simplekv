@@ -22,12 +22,6 @@ class FilesystemStore(KeyValueStore):
         self.root = root
         self.bufsize = 1024 * 1024  # 1m
 
-    def keys(self):
-        return os.listdir(self.root)
-
-    def iter_keys(self):
-        return iter(self.keys())
-
     def _build_filename(self, key):
         return os.path.join(self.root, key)
 
@@ -37,6 +31,9 @@ class FilesystemStore(KeyValueStore):
         except OSError, e:
             if not e.errno == 2:
                 raise
+
+    def _has_key(self, key):
+        return os.path.exists(self._build_filename(key))
 
     def _open(self, key):
         try:
@@ -68,3 +65,9 @@ class FilesystemStore(KeyValueStore):
     def _put_filename(self, key, filename):
         shutil.move(filename, self._build_filename(key))
         return key
+
+    def keys(self):
+        return os.listdir(self.root)
+
+    def iter_keys(self):
+        return iter(self.keys())
