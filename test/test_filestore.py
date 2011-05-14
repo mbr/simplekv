@@ -12,7 +12,7 @@ else:
     import unittest
 
 from . import SimpleUrlKVTest
-from simplekv.fs import FilesystemStore
+from simplekv.fs import FilesystemStore, WebFilesystemStore
 
 
 class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
@@ -27,3 +27,17 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
     def test_correct_file_uri(self):
         expected = 'file://' + self.tmpdir + '/somekey'
         self.assertEqual(expected, self.store.url_for('somekey'))
+
+
+class TestWebFileStore(unittest.TestCase, SimpleUrlKVTest):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.url_prefix = 'http://some/url/root/'
+        self.store = WebFilesystemStore(self.tmpdir, self.url_prefix)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def test_url(self):
+        key = 'some_key'
+        expected = self.url_prefix + '/' + 'some_key'

@@ -81,3 +81,14 @@ class FilesystemStore(UrlKeyValueStore):
 
     def iter_keys(self):
         return iter(self.keys())
+
+
+class WebFilesystemStore(FilesystemStore):
+    def __init__(self, root, url_root, **kwargs):
+        super(WebFilesystemStore, self).__init__(root, **kwargs)
+
+        self.url_root = url_root
+
+    def _url_for(self, key):
+        rel = key
+        return self.url_root + urllib.quote(rel, safe='')
