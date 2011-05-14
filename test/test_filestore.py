@@ -14,6 +14,8 @@ else:
 from . import SimpleUrlKVTest
 from simplekv.fs import FilesystemStore, WebFilesystemStore
 
+from mock import Mock
+
 
 class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
     def setUp(self):
@@ -40,4 +42,17 @@ class TestWebFileStore(unittest.TestCase, SimpleUrlKVTest):
 
     def test_url(self):
         key = 'some_key'
-        expected = self.url_prefix + '/' + 'some_key'
+        expected = self.url_prefix + 'some_key'
+        self.assertEqual(self.store.url_for(key), expected)
+
+    def test_url_callable(self):
+        prefix = 'http://some.prefix.invalid/'
+        mock_callable = Mock(return_value=prefix)
+
+        self.store = WebFilesystemStore(self.tmpdir, mock_callable)
+
+        key = 'mykey'
+        expected = prefix + key
+        self.assertEqual(self.store.url_for(key), expected)
+
+        mock_callable.assert_called_with(self.store, key)

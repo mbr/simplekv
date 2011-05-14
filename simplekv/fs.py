@@ -97,6 +97,17 @@ class WebFilesystemStore(FilesystemStore):
 
     Note that the prefix is simply prepended to the relative URL for the key.
     It therefore, in most cases, must include a trailing slash.
+
+    *url_prefix* may also be a callable, in which case it gets called with the
+    filestore and key as an argument and should return an url_prefix.
+
+    >>> from simplekv.fs import WebFilesystemStore
+    >>> webserver_url_prefix = 'https://some.domain.invalid/files/'
+    >>> webserver_root = '/var/www/some.domain.invalid/www-data/files/'
+    >>> prefix_func = lambda store, key: webserver_url_prefix
+    >>> store = WebFilesystemStore(webserver_root, prefix_func)
+    >>> print store.url_for('some_key')
+    https://some.domain.invalid/files/some_key
     """
     def __init__(self, root, url_prefix, **kwargs):
         """Initialize new WebFilesystemStore.
@@ -111,4 +122,9 @@ class WebFilesystemStore(FilesystemStore):
 
     def _url_for(self, key):
         rel = key
-        return self.url_prefix + urllib.quote(rel, safe='')
+
+        if callable(self.url_prefix):
+            stem = self.url_prefix(self, key)
+        else:
+            stem = self.url_prefix
+        return stem + urllib.quote(rel, safe='')
