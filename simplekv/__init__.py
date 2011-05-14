@@ -204,3 +204,25 @@ class KeyValueStore(object):
         """Store data from file into key"""
         with open(filename, 'rb') as source:
             return self._put_file(key, source)
+
+
+class UrlKeyValueStore(KeyValueStore):
+    """A KeyValueStore that supports getting a download URL for keys.
+    """
+    def url_for(self, key):
+        self._check_valid_key(key)
+        """Returns a full external URL that can be used to retrieve *key*.
+
+        Does not perform any checks (such as if a key exists), other than
+        whether or not *key* is a valid key.
+
+        :param key: The key for which the url is to be generated
+
+        :raises ValueError: If the key is not valid.
+
+        :return: A string containing a URL to access key
+        """
+        return self._url_for(key)
+
+    def _url_for(self, key):
+        raise NotImplementedError

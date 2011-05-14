@@ -3,11 +3,12 @@
 
 import os
 import shutil
+import urllib
 
-from . import KeyValueStore
+from . import UrlKeyValueStore
 
 
-class FilesystemStore(KeyValueStore):
+class FilesystemStore(UrlKeyValueStore):
     """Store data in files on the filesystem.
 
     The *FilesystemStore* stores every value as its own file on the filesystem,
@@ -65,6 +66,12 @@ class FilesystemStore(KeyValueStore):
     def _put_filename(self, key, filename):
         shutil.move(filename, self._build_filename(key))
         return key
+
+    def _url_for(self, key):
+        full = os.path.abspath(self._build_filename(key))
+        parts = full.split(os.sep)
+        location = '/'.join(urllib.quote(p, safe='') for p in parts)
+        return 'file://' + location
 
     def keys(self):
         return os.listdir(self.root)

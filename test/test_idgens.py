@@ -12,7 +12,7 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
-from . import SimpleKVTest
+from . import SimpleKVTest, SimpleUrlKVTest
 from simplekv.memory import DictStore
 from simplekv.idgen import UUIDMixin, HashMixin
 from simplekv.fs import FilesystemStore
@@ -68,7 +68,7 @@ class TestUUIDGen(unittest.TestCase, SimpleKVTest):
                 os.unlink(tmpfile.name)
 
 
-class TestUUIDGenFilesystem(TestUUIDGen):
+class TestUUIDGenFilesystem(TestUUIDGen, SimpleUrlKVTest):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
         self.store = _FSWithUUID(self.tmpdir)

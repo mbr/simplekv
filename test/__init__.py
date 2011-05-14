@@ -263,3 +263,29 @@ class SimpleKVTest(object):
 
         self.store.put(k, 'valc')
         self.assertTrue(k in self.store)
+
+
+class SimpleUrlKVTest(SimpleKVTest):
+    def test_url_for_for_generates_url_for(self):
+        k = 'uk'
+        self.store.put(k, 'v')
+        self.assertEqual(type(self.store.url_for(k)), str)
+
+    def test_url_for_generation_does_not_check_exists(self):
+        self.store.url_for('does_not_exist_at_all')
+
+    def test_url_for_generation_checks_valid_key(self):
+        with self.assertRaises(ValueError):
+            self.store.url_for(u'ä')
+
+        with self.assertRaises(ValueError):
+            self.store.url_for('/')
+
+        with self.assertRaises(ValueError):
+            self.store.url_for('\x00')
+
+        with self.assertRaises(ValueError):
+            self.store.url_for('*')
+
+        with self.assertRaises(ValueError):
+            self.store.url_for('')
