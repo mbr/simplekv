@@ -84,11 +84,31 @@ class FilesystemStore(UrlKeyValueStore):
 
 
 class WebFilesystemStore(FilesystemStore):
-    def __init__(self, root, url_root, **kwargs):
+    """FilesystemStore that supports generating URLs suitable for web
+    applications. Most common use is to make the *root* directory of the
+    filesystem store available through a webserver. Example:
+
+    >>> from simplekv.fs import WebFilesystemStore
+    >>> webserver_url_prefix = 'https://some.domain.invalid/files/'
+    >>> webserver_root = '/var/www/some.domain.invalid/www-data/files/'
+    >>> store = WebFilesystemStore(webserver_root, webserver_url_prefix)
+    >>> print store.url_for('some_key')
+    https://some.domain.invalid/files/some_key
+
+    Note that the prefix is simply prepended to the relative URL for the key.
+    It therefore, in most cases, must include a trailing slash.
+    """
+    def __init__(self, root, url_prefix, **kwargs):
+        """Initialize new WebFilesystemStore.
+
+        :param root: see :func:`simplekv.FilesystemStore.__init__`
+        :param url_prefix: will get prepended to every url generated with
+                           url_for.
+        """
         super(WebFilesystemStore, self).__init__(root, **kwargs)
 
-        self.url_root = url_root
+        self.url_prefix = url_prefix
 
     def _url_for(self, key):
         rel = key
-        return self.url_root + urllib.quote(rel, safe='')
+        return self.url_prefix + urllib.quote(rel, safe='')

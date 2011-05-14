@@ -11,8 +11,10 @@ else:
 import doctest
 
 import simplekv.idgen
+import simplekv.fs
 
 
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(simplekv.idgen))
+    tests.addTests(doctest.DocTestSuite(simplekv.fs))
     return tests
