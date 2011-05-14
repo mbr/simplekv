@@ -210,7 +210,6 @@ class UrlKeyValueStore(KeyValueStore):
     """A KeyValueStore that supports getting a download URL for keys.
     """
     def url_for(self, key):
-        self._check_valid_key(key)
         """Returns a full external URL that can be used to retrieve *key*.
 
         Does not perform any checks (such as if a key exists), other than
@@ -222,6 +221,7 @@ class UrlKeyValueStore(KeyValueStore):
 
         :return: A string containing a URL to access key
         """
+        self._check_valid_key(key)
         return self._url_for(key)
 
     def _url_for(self, key):

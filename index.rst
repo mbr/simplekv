@@ -55,6 +55,12 @@ The core API
    :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
              open, put, put_file
 
+In addition to that, an extended base class is available that provides an extra
+method to support URL generation:
+
+.. autoclass:: simplekv.UrlKeyValueStore
+   :members: url_for
+
 Implementing a new backend
 --------------------------
 
