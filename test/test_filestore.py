@@ -30,6 +30,25 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
         expected = 'file://' + self.tmpdir + '/somekey'
         self.assertEqual(expected, self.store.url_for('somekey'))
 
+    def test_file_uri(self):
+        data = 'Hello, World?!\n'
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        try:
+            tmpfile.write(data)
+            tmpfile.close()
+
+            key = self.store.put_file('testkey', tmpfile.name)
+            url = self.store.url_for(key)
+
+            self.assertTrue(url.startswith('file://'))
+            path = url[len('file://'):]
+
+            ndata = open(path, 'rb').read()
+            self.assertEqual(ndata, data)
+        finally:
+            if os.path.exists(tmpfile.name):
+                os.unlink(tmpfile.name)
+
 
 class TestWebFileStore(unittest.TestCase, SimpleUrlKVTest):
     def setUp(self):
