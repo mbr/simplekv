@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 import tempfile
+from urlparse import urlparse
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -41,9 +42,9 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
             url = self.store.url_for(key)
 
             self.assertTrue(url.startswith('file://'))
-            path = url[len('file://'):]
+            parts = urlparse(url)
 
-            ndata = open(path, 'rb').read()
+            ndata = open(parts.path, 'rb').read()
             self.assertEqual(ndata, data)
         finally:
             if os.path.exists(tmpfile.name):
