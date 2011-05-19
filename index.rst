@@ -7,6 +7,9 @@ backends. *simplekv*'s origins are in storing user-uploaded files on websites,
 but its low overhead and design should make it applicable for numerous other
 problems.
 
+Built upon the simple foundation are a few optional bells and whistles, such as
+automatic ID generation/hashing (in :mod:`simplekv.idgen`).
+
 Table of contents
 -----------------
 
