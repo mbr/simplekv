@@ -17,13 +17,23 @@ class FilesystemStore(UrlKeyValueStore):
     Any call to :func:`url_for` will result in a `file://`-URL pointing towards
     the internal storage to be generated.
     """
-    def __init__(self, root, **kwargs):
+    def __init__(self, root, perm=None, **kwargs):
         """Initialize new FilesystemStore
 
+        When files are created, they will receive permissions depending on the
+        current umask if *perm* is `None`. Otherwise, permissions are set
+        expliicitly.
+
+        Note that when using :func:`put_file` with a filename, an attempt to
+        move the file will be made. Permissions and ownership of the file will
+        be preserved that way. If *perm* is set, permissions will be changed.
+
         :param root: the base directory for the store
+        :param perm: the permissions for files in the filesystem store
         """
         super(FilesystemStore, self).__init__(**kwargs)
         self.root = root
+        self.perm = perm
         self.bufsize = 1024 * 1024  # 1m
 
     def _build_filename(self, key):
@@ -35,6 +45,16 @@ class FilesystemStore(UrlKeyValueStore):
         except OSError, e:
             if not e.errno == 2:
                 raise
+
+    def _fix_permissions(self, filename):
+        current_umask = os.umask(0)
+        os.umask(current_umask)
+
+        perm = self.perm
+        if None == self.perm:
+            perm = 0666 & (0777 ^ current_umask)
+
+        os.chmod(filename, perm)
 
     def _has_key(self, key):
         return os.path.exists(self._build_filename(key))
@@ -49,25 +69,31 @@ class FilesystemStore(UrlKeyValueStore):
             else:
                 raise
 
-    def _put(self, key, data):
-        with file(self._build_filename(key), 'wb') as f:
-            f.write(data)
-
-        return key
-
     def _put_file(self, key, file):
         bufsize = self.bufsize
-        with open(self._build_filename(key), 'wb') as f:
+
+        target = self._build_filename(key)
+
+        with open(target, 'wb') as f:
             while True:
                 buf = file.read(bufsize)
                 f.write(buf)
                 if len(buf) < bufsize:
                     break
 
+        # when using umask, correct permissions are automatically applied
+        # only chmod is necessary
+        if None != self.perm:
+            self._fix_permissions(target)
+
         return key
 
     def _put_filename(self, key, filename):
-        shutil.move(filename, self._build_filename(key))
+        target = self._build_filename(key)
+        shutil.move(filename, target)
+
+        # we do not know the permissions of the source file, rectify
+        self._fix_permissions(target)
         return key
 
     def _url_for(self, key):
