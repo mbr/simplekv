@@ -2,9 +2,9 @@
 # coding=utf8
 
 """
-In cases where you want to generate IDs automatically, mixins are available.
-When deriving your custom store class, ensure that the mixins are first in the
-method resolution order. Example:
+In cases where you want to generate IDs automatically, decorators are
+available. These should be the outermost decorators, as they change the
+signature of some of the put methods slightly.
 
 >>> from simplekv.memory import DictStore
 >>> from simplekv.idgen import HashDecorator
@@ -28,7 +28,7 @@ class HashDecorator(StoreDecorator):
     """Hash function decorator
 
     Overrides :func:`put` and :func:`put_file`. If a key of *None* is passed,
-    the data/file is hashed using :func:`hashfunc`, which defaults to
+    the data/file is hashed using :attr:`hashfunc`, which defaults to
     *hashlib.sha1*.
     """
 
