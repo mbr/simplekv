@@ -14,24 +14,16 @@ else:
 
 from . import SimpleKVTest, SimpleUrlKVTest
 from simplekv.memory import DictStore
-from simplekv.idgen import UUIDMixin, HashMixin
+from simplekv.idgen import UUIDDecorator, HashDecorator
 from simplekv.fs import FilesystemStore
 
 
 UUID_REGEXP = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 
 
-class _DictWithUUID(UUIDMixin, DictStore):
-    pass
-
-
-class _FSWithUUID(UUIDMixin, FilesystemStore):
-    pass
-
-
 class TestUUIDGen(unittest.TestCase, SimpleKVTest):
     def setUp(self):
-        self.store = _DictWithUUID()
+        self.store = UUIDDecorator(DictStore())
 
     def test_put_generates_uuid_form(self):
         key = self.store.put(None, 'some_data')
@@ -71,19 +63,15 @@ class TestUUIDGen(unittest.TestCase, SimpleKVTest):
 class TestUUIDGenFilesystem(TestUUIDGen, SimpleUrlKVTest):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        self.store = _FSWithUUID(self.tmpdir)
+        self.store = UUIDDecorator(FilesystemStore(self.tmpdir))
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
 
 
-class _DictWithHashMixin(HashMixin, DictStore):
-    pass
-
-
 class TestHashGen(unittest.TestCase, SimpleKVTest):
     def setUp(self):
-        self.store = _DictWithHashMixin()
+        self.store = HashDecorator(DictStore())
         self.hash_regexp = r'^[0-9a-f]{%d}$' % (
             self.store.hashfunc().digest_size * 2,
         )

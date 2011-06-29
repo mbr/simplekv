@@ -7,13 +7,9 @@ When deriving your custom store class, ensure that the mixins are first in the
 method resolution order. Example:
 
 >>> from simplekv.memory import DictStore
->>> from simplekv.idgen import HashMixin
+>>> from simplekv.idgen import HashDecorator
 >>>
->>> class Sha1Store(HashMixin, DictStore):
-...     pass  # note: sha1 is the default hash function for HashMixin
-...
->>>
->>> store = Sha1Store()
+>>> store = HashDecorator(DictStore())
 >>>
 >>> key = store.put(None, 'my_data') #  note the passing of 'None' as key
 >>> print key
@@ -25,22 +21,26 @@ import os
 import tempfile
 import uuid
 
+from decorator import StoreDecorator
 
-class HashMixin(object):
-    """Hash function mixin
+
+class HashDecorator(StoreDecorator):
+    """Hash function decorator
 
     Overrides :func:`put` and :func:`put_file`. If a key of *None* is passed,
     the data/file is hashed using :func:`hashfunc`, which defaults to
     *hashlib.sha1*.
     """
 
-    hashfunc = hashlib.sha1
+    def __init__(self, decorated_store, hashfunc=hashlib.sha1):
+        self.hashfunc = hashfunc
+        super(HashDecorator, self).__init__(decorated_store)
 
     def put(self, key, data):
         if not key:
             key = self.hashfunc(data).hexdigest()
 
-        return super(HashMixin, self).put(key, data)
+        return self._dstore.put(key, data)
 
     def put_file(self, key, file):
         bufsize = 1024 * 1024
@@ -56,7 +56,7 @@ class HashMixin(object):
                         if len(buf) < bufsize:
                             break
 
-                    return super(HashMixin, self).put_file(
+                    return self._dstore.put_file(
                         phash.hexdigest(),
                         file)
             else:
@@ -71,17 +71,17 @@ class HashMixin(object):
                             break
 
                     tmpfile.close()
-                    return super(HashMixin, self).put_file(
+                    return self._dstore.put_file(
                         phash.hexdigest(),
                         tmpfile.name
                     )
                 finally:
                     os.unlink(tmpfile.name)
-        return super(HashMixin, self).put_file(key, file)
+        return self._dstore.put_file(key, file)
 
 
-class UUIDMixin(object):
-    """UUID generating mixin
+class UUIDDecorator(StoreDecorator):
+    """UUID generating decorator
 
     Overrides :func:`put` and :func:`put_file`. If a key of *None* is passed,
     a new UUID will be generated as the key. The attribute `uuidfunc`
@@ -100,10 +100,10 @@ class UUIDMixin(object):
         if not key:
             key = str(getattr(uuid, self.uuidfunc)())
 
-        return super(UUIDMixin, self).put(key, data)
+        return self._dstore.put(key, data)
 
     def put_file(self, key, file):
         if not key:
             key = str(getattr(uuid, self.uuidfunc)())
 
-        return super(UUIDMixin, self).put_file(key, file)
+        return self._dstore.put_file(key, file)
