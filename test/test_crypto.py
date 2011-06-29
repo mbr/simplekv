@@ -4,7 +4,9 @@
 import hashlib
 import hmac
 from cStringIO import StringIO
+import os
 import sys
+import tempfile
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -164,4 +166,19 @@ class TestHMACDictBackend(unittest.TestCase, SimpleKVTest):
         with self.assertRaises(VerificationException):
             val = self.store.get('the_key')
 
+    def test_get_file_fails_on_manipulation(self):
+        k = 'the_key!'
+        self.store.put(k, 'somevalue')
+
+        self.store.d[k] += 'a'
+        with tempfile.TemporaryFile() as tmp:
+            with self.assertRaises(VerificationException):
+                val = self.store.get_file(k, tmp)
+
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            try:
+                with self.assertRaises(VerificationException):
+                    val = self.store.get_file(k, tmp.name)
+            finally:
+                os.unlink(tmp.name)
     # FIXME: more tests with manipulated input
