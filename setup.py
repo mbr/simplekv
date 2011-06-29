@@ -12,7 +12,7 @@ else:
     test_suite = 'unittest.collector'
 
 setup(name='simplekv',
-      version='0.1',
+      version='0.2',
       description='A simple key-value storage for binary data.',
       author='Marc Brinkmann',
       author_email='git@marcbrinkmann.de',
