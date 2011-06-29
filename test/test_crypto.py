@@ -11,7 +11,10 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
-from simplekv.crypt import _HMACFileReader, VerificationException
+from simplekv.crypt import _HMACFileReader, VerificationException,\
+                           HMACDecorator
+from simplekv.memory import DictStore
+from . import SimpleKVTest
 
 
 def _alter_byte(s, n):
@@ -100,6 +103,9 @@ class TestHMACFileReader(unittest.TestCase):
                 StringIO('a')
             )
 
+    def test_unbounded_read(self):
+        self.assertEqual(self.data, self.reader.read())
+
 
 # run all tests on input that is shorter/longer/equal than the hash
 class TestHMACFileReaderLongInput(TestHMACFileReader):
@@ -144,3 +150,18 @@ class TestHMACFileReaderDifferentHashfuncAndKey(TestHMACFileReader):
     stored_data_and_hash = TestHMACFileReader.data + expected_digest
 
     reading_lengths = range(1, 100)
+
+
+# test the "real" now HMACMixin: core functionality and checks
+class TestHMACDictBackend(unittest.TestCase, SimpleKVTest):
+    def setUp(self):
+        self.store = HMACDecorator('my_secret_key', DictStore())
+
+    def test_get_fails_on_manipulation(self):
+        self.store.put('the_key', 'somevalue')
+
+        self.store.d['the_key'] += 'a'
+        with self.assertRaises(VerificationException):
+            val = self.store.get('the_key')
+
+    # FIXME: more tests with manipulated input

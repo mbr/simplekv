@@ -19,6 +19,7 @@ Table of contents
    filesystem
    memory
    idgen
+   crypt
 
 Why it's not a trendy NoSQL database
 ------------------------------------
