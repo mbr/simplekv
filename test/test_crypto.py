@@ -181,4 +181,31 @@ class TestHMACDictBackend(unittest.TestCase, SimpleKVTest):
                     val = self.store.get_file(k, tmp.name)
             finally:
                 os.unlink(tmp.name)
-    # FIXME: more tests with manipulated input
+
+    def test_open_fails_on_manipulation(self):
+        k = 'the_key!'
+        v = 'somevalue'
+        self.store.put(k, v)
+
+        self.store.d[k] += 'a'
+        with self.assertRaises(VerificationException):
+            val = self.store.open(k).read()
+
+        handle = self.store.open(k)
+
+        # we read 1 extra byte now, because the value is actually l onger
+        handle.read(len(v) + 1)
+        with self.assertRaises(VerificationException):
+            handle.read(1)
+
+    def test_get_fails_on_replay_manipulation(self):
+        k = 'somekey'
+        evil = 'evilkey'
+        self.store.put(k, 'myvalue')
+
+        self.store.d[evil] = self.store.d[k]
+
+        self.store.get(k)
+
+        with self.assertRaises(VerificationException):
+            self.store.get(evil)
