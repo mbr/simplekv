@@ -21,7 +21,7 @@ def read(fname):
 setup(name='simplekv',
       version='0.3dev',
       description='A simple key-value storage for binary data.',
-      long_description=read('README.markdown'),
+      long_description=read('README.rst'),
       keywords='',
       author='Marc Brinkmann',
       author_email='git@marcbrinkmann.de',
