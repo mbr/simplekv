@@ -19,7 +19,7 @@ def read(fname):
 
 
 setup(name='simplekv',
-      version='0.3dev',
+      version='0.4dev',
       description='A simple key-value storage for binary data.',
       long_description=read('README.rst'),
       keywords='key-value-store storage key-value db database',
