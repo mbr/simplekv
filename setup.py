@@ -30,5 +30,13 @@ setup(name='simplekv',
       packages=['simplekv'],
       py_modules=[],
       tests_require=tests_require,
-      test_suite='unittest2.collector'
+      test_suite='unittest2.collector',
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python',
+          'Topic :: Database',
+          'Topic :: Software Development :: Libraries',
+      ]
      )
