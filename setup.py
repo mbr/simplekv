@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from setuptools import setup
+import os
 import sys
+
+from setuptools import setup
 
 if sys.version_info < (2, 7):
     tests_require = ['unittest2', 'mock']
@@ -11,12 +13,20 @@ else:
     tests_require = ['mock']
     test_suite = 'unittest.collector'
 
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
 setup(name='simplekv',
       version='0.1',
       description='A simple key-value storage for binary data.',
+      long_description=read('README.markdown'),
+      keywords='',
       author='Marc Brinkmann',
       author_email='git@marcbrinkmann.de',
       url='http://github.com/mbr/simplekv',
+      license='MIT',
       packages=['simplekv'],
       py_modules=[],
       tests_require=tests_require,
