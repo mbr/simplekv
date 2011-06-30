@@ -7,6 +7,11 @@ backends. *simplekv*'s origins are in storing user-uploaded files on websites,
 but its low overhead and design should make it applicable for numerous other
 problems.
 
+Documentation
+-------------
+The documentation for *simplekv* is available at
+`<http://simplekv.readthedocs.org>`_.
+
 License
 -------
 *simplekv* is `MIT licensed
