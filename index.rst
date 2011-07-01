@@ -67,6 +67,10 @@ method to support URL generation:
 .. autoclass:: simplekv.UrlKeyValueStore
    :members: url_for
 
+.. autodata:: simplekv.VALID_KEY_REGEXP
+
+.. autodata:: simplekv.VALID_KEY_RE
+
 Implementing a new backend
 --------------------------
 
