@@ -21,6 +21,8 @@ Table of contents
    idgen
    crypt
 
+   changes
+
 Why it's not a trendy NoSQL database
 ------------------------------------
 
