@@ -13,7 +13,7 @@ simplekv is `available on PyPI <http://pypi.python.org/pypi/simplekv/>`_ and
 can be installed through `pip <http://pypi.python.org/pypi/pip>`_ or
 `easy_install <http://pypi.python.org/pypi/setuptools>`_:
 
-.. code-block:: sh
+::
 
    $ pip install simplekv
 
