@@ -159,13 +159,30 @@ class KeyValueStore(object):
             return self._put_file(key, file)
 
     def _check_valid_key(self, key):
+        """Checks if a key is valid and raises a ValueError if its not.
+
+        When in need of checking a key for validity, always use this
+        method if possible.
+
+        :param key: The key to be checked
+        """
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
 
     def _delete(self, key):
+        """Implementation for :meth:`~simplekv.KeyValueStore.delete`. The
+        default implementation will simply raise a
+        :py:exc:`NotImplementedError`.
+        """
         raise NotImplementedError
 
     def _get(self, key):
+        """Implementation for :meth:`~simplekv.KeyValueStore.get`. The default
+        implementation will create a :mod:`StringIO`-buffer and then call
+        :meth:`~simplekv.KeyValueStore.get_file`.
+
+        :param key: Key to be retrieved
+        """
         buf = StringIO()
 
         self.get_file(key, buf)
@@ -173,7 +190,14 @@ class KeyValueStore(object):
         return buf.getvalue()
 
     def _get_file(self, key, file):
-        """Write key to file-like object file."""
+        """Write key to file-like object file. Either this method or
+        :meth:`~simplekv.KeyValueStore._get_filename` will be called by
+        :meth:`~simplekv.KeyValueStore.get_file`. Note that this method does
+        not accept strings.
+
+        :param key: Key to be retrieved
+        :param file: File-like object to write to
+        """
         source = self.open(key)
         bufsize = 1024 * 1024
 
@@ -185,27 +209,73 @@ class KeyValueStore(object):
                 break
 
     def _get_filename(self, key, filename):
-        """Write key to file"""
+        """Write key to file. Either this method or
+        :meth:`~simplekv.KeyValueStore._get_file` will be called by
+        :meth:`~simplekv.KeyValueStore.get_file`. This method only accepts
+        filenames and will open the file with a mode of ``wb``, then call
+        :meth:`~simplekv.KeyValueStore._get_file`.
+
+        :param key: Key to be retrieved
+        :param filename: Filename to write to
+        """
         with open(filename, 'wb') as dest:
             return self._get_file(key, dest)
 
     def _has_key(self, key):
+        """Default implementation for
+        :meth:`~simplekv.KeyValueStore.__contains__`.
+
+        Determines whether or not a key exists by calling
+        :meth:`~simplekv.KeyValueStore.keys`.
+
+        :param key: Key to check existance of
+        """
         return key in self.keys()
 
     def _open(self, key):
-        """Open key for reading"""
+        """Open key for reading. Default implementation simply raises a
+        :exc:`NotImplementedError`.
+
+        :param key: Key to open
+        """
         raise NotImplementedError
 
     def _put(self, key, data):
-        """Store data into key"""
+        """Implementation for :meth:`~simplekv.KeyValueStore.put`. The default
+        implementation will create a :mod:`StringIO`-buffer and then call
+        :meth:`~simplekv.KeyValueStore._put_file`.
+
+        :param key: Key under which data should be stored
+        :param data: Data to be stored
+        """
         return self._put_file(key, StringIO(data))
 
     def _put_file(self, key, file):
-        """Store data from file object into key"""
+        """Store data from file-like object in key. Either this method or
+        :meth:`~simplekv.KeyValueStore._put_filename` will be called by
+        :meth:`~simplekv.KeyValueStore.put_file`. Note that this method does
+        not accept strings.
+
+        The default implementation will simply raise a
+        :exc:`NotImplementedError`.
+
+        :param key: Key under which data should be stored
+        :param file: File-like object to store data from
+        """
         raise NotImplementedError
 
     def _put_filename(self, key, filename):
-        """Store data from file into key"""
+        """Store data from file in key. Either this method or
+        :meth:`~simplekv.KeyValueStore._put_file` will be called by
+        :meth:`~simplekv.KeyValueStore.put_file`. Note that this method does
+        not accept strings.
+
+        The default implementation will open the file in ``rb`` mode, then call
+        :meth:`~simplekv.KeyValueStore._put_file`.
+
+        :param key: Key under which data should be stored
+        :param file: Filename of file to store
+        """
         with open(filename, 'rb') as source:
             return self._put_file(key, source)
 

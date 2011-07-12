@@ -12,7 +12,7 @@ Built upon the solid foundation are a few optional bells and whistles, such as
 automatic ID generation/hashing (in :mod:`simplekv.idgen`).
 
 Table of contents
------------------
+=================
 .. toctree::
    :maxdepth: 3
 
@@ -70,7 +70,7 @@ method to support URL generation:
 .. autodata:: simplekv.VALID_KEY_RE
 
 Implementing a new backend
---------------------------
+==========================
 Subclassing :class:`~simplekv.KeyValueStore` is the fastest way to implement a
 new backend. It suffices to override the
 :func:`~simplekv.KeyValueStore._delete`,
@@ -82,8 +82,32 @@ have default implementations that call these.
 After that, you can override any number of underscore-prefixed methods with
 more specialized implementations to gain speed improvements.
 
+Default implementation
+----------------------
+Classes derived from :class:`~simplekv.KeyValueStore` inherit a number of
+default implementations for the core API mehthods. Specifically, the
+:func:`~simplekv.KeyValueStore.delete`,
+:func:`~simplekv.KeyValueStore.get`,
+:func:`~simplekv.KeyValueStore.get_file`,
+:func:`~simplekv.KeyValueStore.keys`,
+:func:`~simplekv.KeyValueStore.open`,
+:func:`~simplekv.KeyValueStore.put`,
+:func:`~simplekv.KeyValueStore.put_file`,
+methods will each call the :func:`~simplekv.KeyValueStore._check_valid_key` method if a key has been provided and then call one of the following protected methods:
+
+.. automethod:: simplekv.KeyValueStore._check_valid_key
+.. automethod:: simplekv.KeyValueStore._delete
+.. automethod:: simplekv.KeyValueStore._get
+.. automethod:: simplekv.KeyValueStore._get_file
+.. automethod:: simplekv.KeyValueStore._get_filename
+.. automethod:: simplekv.KeyValueStore._has_key
+.. automethod:: simplekv.KeyValueStore._open
+.. automethod:: simplekv.KeyValueStore._put
+.. automethod:: simplekv.KeyValueStore._put_file
+.. automethod:: simplekv.KeyValueStore._put_filename
+
 Atomicity
----------
+=========
 Every call to a method on a KeyValueStore results in a single operation on the
 underlying backend. No guarantees are made above that, if you check if a key
 exists and then try to retrieve it, it may have already been deleted in between
