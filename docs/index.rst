@@ -1,18 +1,18 @@
 simple key-value storage api
 ****************************
 
-*simplekv* is an API for very basic key-value stores for storing binary data.
-Due to its basic interface, it is easy to implemented a large number of
-backends. *simplekv*'s origins are in storing user-uploaded files on websites,
-but its low overhead and design should make it applicable for numerous other
-problems.
+*simplekv* is an API for key-value store of binary data.  Due to its basic
+interface, it is easy to implemented a large number of backends. *simplekv*'s
+origins are in storing user-uploaded files on websites, but its low overhead
+and design should make it applicable for numerous other problems, an example is
+a `session backend for the Flask framework
+<https://github.com/mbr/flask-kvsession>`_.
 
-Built upon the simple foundation are a few optional bells and whistles, such as
+Built upon the solid foundation are a few optional bells and whistles, such as
 automatic ID generation/hashing (in :mod:`simplekv.idgen`).
 
 Table of contents
 -----------------
-
 .. toctree::
    :maxdepth: 3
 
@@ -23,18 +23,17 @@ Table of contents
 
    changes
 
-Why it's not a trendy NoSQL database
+It's not a NoSQL database
 ------------------------------------
-
 There are many projects that offer a similiar functionality, so called "NoSQL"
 databases like CouchDB_. *simplekv* is different in its goals:
 
 no server dependencies
   *simplekv* does only depend on python and possibly a few libraries easily
-  fetchable from PyPI_. You do not have to run and install any server software
-  to use *simplekv*.
+  fetchable from PyPI_, if you want to use extra features. You do not have to
+  run and install any server software to use *simplekv*.
 
-much, much simpler
+less features
   The database applications offer a whole lot more features than *simplekv*.
   This is by choice. Keep your metadata in a regular database, *simplekv* does
   only one thing for you: Store and retrieve binary data.
@@ -56,7 +55,6 @@ to use it as a backend for *simplekv* instead.
 
 The core API
 ============
-
 .. autoclass:: simplekv.KeyValueStore
    :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
              open, put, put_file
@@ -73,13 +71,12 @@ method to support URL generation:
 
 Implementing a new backend
 --------------------------
-
-Subclassing :class:`simplekv.KeyValueStore` is the fastest way to implement a
+Subclassing :class:`~simplekv.KeyValueStore` is the fastest way to implement a
 new backend. It suffices to override the
-:func:`simplekv.KeyValueStore._delete`,
-:func:`simplekv.KeyValueStore.iter_keys`,
-:func:`simplekv.KeyValueStore._open` and
-:func:`simplekv.KeyValueStore._put_file` methods, as all the other methods
+:func:`~simplekv.KeyValueStore._delete`,
+:func:`~simplekv.KeyValueStore.iter_keys`,
+:func:`~simplekv.KeyValueStore._open` and
+:func:`~simplekv.KeyValueStore._put_file` methods, as all the other methods
 have default implementations that call these.
 
 After that, you can override any number of underscore-prefixed methods with
@@ -94,8 +91,6 @@ exists and then try to retrieve it, it may have already been deleted in between
 
 Indices and tables
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
