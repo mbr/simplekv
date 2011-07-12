@@ -179,13 +179,13 @@ class KeyValueStore(object):
     def _get(self, key):
         """Implementation for :meth:`~simplekv.KeyValueStore.get`. The default
         implementation will create a :mod:`StringIO`-buffer and then call
-        :meth:`~simplekv.KeyValueStore.get_file`.
+        :meth:`~simplekv.KeyValueStore._get_file`.
 
         :param key: Key to be retrieved
         """
         buf = StringIO()
 
-        self.get_file(key, buf)
+        self._get_file(key, buf)
 
         return buf.getvalue()
 
