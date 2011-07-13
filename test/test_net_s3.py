@@ -74,7 +74,7 @@ class BucketManagerTest(unittest.TestCase):
         manager.drop_bucket(bucket)
 
     @unittest.skipIf(skip_reason, skip_reason)
-    def test_content_manger(self):
+    def test_context_manager(self):
         with S3BucketManager() as bucket:
             k = bucket.new_key('test_key')
             k.set_contents_from_string('asdf')
