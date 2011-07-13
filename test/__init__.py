@@ -289,3 +289,11 @@ class SimpleUrlKVTest(SimpleKVTest):
 
         with self.assertRaises(ValueError):
             self.store.url_for('')
+
+# import test modules to make selective testing from the command line work
+import test_crypto
+import test_doctests
+import test_filestore
+import test_idgens
+import test_memorystore
+import test_net_s3
