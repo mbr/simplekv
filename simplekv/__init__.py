@@ -33,6 +33,7 @@ class KeyValueStore(object):
         :param key: The key whose existence should be verified.
 
         :raises ValueError: If the key is not valid.
+        :raises IOError: If there was an error accessing the store.
 
         :returns: True if the key exists, False otherwise.
         """
@@ -41,7 +42,10 @@ class KeyValueStore(object):
         return self._has_key(key)
 
     def __iter__(self):
-        """Iterate over keys"""
+        """Iterate over keys
+
+        :raises IOError: If there was an error accessing the store.
+        """
         return self.iter_keys()
 
     def delete(self, key):
@@ -93,11 +97,16 @@ class KeyValueStore(object):
     def iter_keys(self):
         """Return an Iterator over all keys currently in the store, in any
         order.
+
+        :raises IOError: If there was an error accessing the store.
         """
         raise NotImplementedError
 
     def keys(self):
-        """Return a list of keys currently in store, in any order"""
+        """Return a list of keys currently in store, in any order
+
+        :raises IOError: If there was an error accessing the store.
+        """
         return list(self.iter_keys())
 
     def open(self, key):
