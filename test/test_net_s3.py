@@ -11,6 +11,8 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
+from simplekv.net.s3 import S3Store
+
 from . import SimpleUrlKVTest
 
 skip_reason = None
@@ -88,3 +90,14 @@ class BucketManagerTest(unittest.TestCase):
             resp = conn.get_bucket(bucket_name)
         except S3ResponseError, e:
             self.assertEqual(e.code, 'NoSuchBucket')
+
+
+class S3StorageTest(unittest.TestCase, SimpleUrlKVTest):
+    def setUp(self):
+        self.manager = S3BucketManager()
+        self.bucket = self.manager.create_bucket()
+
+        self.store = S3Store(self.bucket, '/test-prefix')
+
+    def tearDown(self):
+        self.manager.drop_bucket(self.bucket)
