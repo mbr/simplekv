@@ -27,11 +27,12 @@ if not s3conf.read(conffile):
 try:
     from boto.s3.connection import S3Connection
     from boto.exception import S3ResponseError
+    import boto
 except ImportError:
     skip_reason = 'boto not installed'
 
 if not skip_reason:
-    from simplekv.net.s3 import S3Store
+    from simplekv.net.botostore import BotoStore
 
 
 class S3BucketManager(object):
@@ -99,7 +100,7 @@ class S3StorageTest(unittest.TestCase, SimpleUrlKVTest):
         self.manager = S3BucketManager()
         self.bucket = self.manager.create_bucket()
 
-        self.store = S3Store(self.bucket, '/test-prefix')
+        self.store = BotoStore(self.bucket, '/test-prefix')
 
     def tearDown(self):
         self.manager.drop_bucket(self.bucket)
