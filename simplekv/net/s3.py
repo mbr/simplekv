@@ -43,7 +43,7 @@ class S3Store(UrlKeyValueStore):
             self.bucket.delete_key(self.prefix + key)
         except S3ResponseError, e:
             if e.code != 'NoSuchKey':
-                raise
+                raise IOError(str(e))
 
     def _get(self, key):
         k = Key(self.bucket, self.prefix + key)
@@ -52,7 +52,7 @@ class S3Store(UrlKeyValueStore):
         except S3ResponseError, e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
-            raise
+            raise IOError(str(e))
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
 
@@ -63,7 +63,7 @@ class S3Store(UrlKeyValueStore):
         except S3ResponseError, e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
-            raise
+            raise IOError(str(e))
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
 
@@ -74,7 +74,7 @@ class S3Store(UrlKeyValueStore):
         except S3ResponseError, e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
-            raise
+            raise IOError(str(e))
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
 
@@ -86,7 +86,7 @@ class S3Store(UrlKeyValueStore):
         except S3ResponseError, e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
-            raise
+            raise IOError(str(e))
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
 
