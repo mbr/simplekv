@@ -11,8 +11,6 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
-from simplekv.net.s3 import S3Store
-
 from . import SimpleUrlKVTest
 
 skip_reason = None
@@ -29,6 +27,7 @@ if not s3conf.read(conffile):
 try:
     from boto.s3.connection import S3Connection
     from boto.exception import S3ResponseError
+    from simplekv.net.s3 import S3Store
 except ImportError:
     skip_reason = 'boto not installed'
 
@@ -92,6 +91,7 @@ class BucketManagerTest(unittest.TestCase):
             self.assertEqual(e.code, 'NoSuchBucket')
 
 
+@unittest.skipIf(skip_reason, skip_reason)
 class S3StorageTest(unittest.TestCase, SimpleUrlKVTest):
     def setUp(self):
         self.manager = S3BucketManager()
