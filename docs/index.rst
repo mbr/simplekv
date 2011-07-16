@@ -9,7 +9,11 @@ a `session backend for the Flask framework
 <https://github.com/mbr/flask-kvsession>`_.
 
 Built upon the solid foundation are a few optional bells and whistles, such as
-automatic ID generation/hashing (in :mod:`simplekv.idgen`).
+automatic ID generation/hashing (in :mod:`simplekv.idgen`). A number of
+backends are available, ranging from :class:`~simplekv.fs.FilesystemStore` to
+support for `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
+Storage <http://code.google.com/apis/storage/>`_ through
+:class:`~simplekv.net.botostore.BotoStore`.
 
 Table of contents
 =================
@@ -17,6 +21,7 @@ Table of contents
    :maxdepth: 3
 
    filesystem
+   net
    memory
    idgen
    crypt

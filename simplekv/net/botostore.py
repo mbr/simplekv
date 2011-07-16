@@ -15,10 +15,6 @@ class BotoStore(UrlKeyValueStore):
         self.bucket = bucket
         self.url_valid_time = url_valid_time
 
-    @classmethod
-    def new_using_bucket(cls, con, bucketname, *args, **kwargs):
-        return cls(conn.get_bucket(bucket_name))
-
     def iter_keys(self):
         try:
             prefix_len = len(self.prefix)

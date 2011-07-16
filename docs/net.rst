@@ -1,0 +1,47 @@
+.. cannot use auto-doc here, we do not want boto as a dependency for building
+   the docs!
+
+Network and cloud-based storage
+*******************************
+A core feature of simplekv is the ability to transparently store data using
+cloud storage services like `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
+Storage <http://code.google.com/apis/storage/>`_. This is achieved by providing
+a backend that utilizes `boto <http://boto.cloudhackers.com/>`_.
+
+Here is a short example:
+
+::
+
+   from simplekv.net.botostore import BotoStore
+   import boto
+
+   con = boto.connect_s3('your_access_key', 'your_secret_key')
+
+   # use get_bucket instead, if you already have one!
+   bucket = con.create_bucket('simplekv-testbucket')
+
+   store = BotoStore(bucket)
+
+   # at this point, we can use the store like any other
+   store.put('some-key', 'Hello, World!')
+
+   # print out what's behind some-key. you should be able to see it
+   # in the bucket now as well
+   print store.get('some-key')
+
+
+.. class:: simplekv.net.boto.BotoStore
+
+   Backend using the storage api of boto.
+
+   .. method:: __init__(bucket, prefix='', url_valid_time=0)
+
+      Constructs a new boto based backend.
+
+      :param bucket: An instance of :class:`boto.s3.bucket.Bucket`,
+                     :class:`boto.gs.bucket.Bucket` or similiar.
+      :param prefix: A string that will transparently prefixed to all handled
+                     keys.
+      :param url_valid_time: When using
+                     :meth:`~simplekv.UrlKeyValueStore.url_for`, URLs should be
+                     valid for this many seconds at most.

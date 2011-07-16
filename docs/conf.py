@@ -198,4 +198,5 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_use_modindex = True
 
-intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {'http://docs.python.org/': None,
+                       'http://boto.cloudhackers.com/': None}

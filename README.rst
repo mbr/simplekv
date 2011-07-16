@@ -7,6 +7,10 @@ backends. *simplekv*'s origins are in storing user-uploaded files on websites,
 but its low overhead and design should make it applicable for numerous other
 problems.
 
+Features include storage in memory, local and remote filesystems and cloud
+storage services such as `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
+Storage <http://code.google.com/apis/storage/>`_.
+
 Installation
 ------------
 simplekv is `available on PyPI <http://pypi.python.org/pypi/simplekv/>`_ and

@@ -3,6 +3,9 @@ Changelog
 
 0.4
 ===
+* Support for cloud-based storage using
+  `boto <http://boto.cloudhackers.com/>`_ (see
+  :class:`simplekv.net.botostore.BotoStore`).
 * First time changes were recorded in docs
 
 0.3
