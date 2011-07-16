@@ -27,9 +27,11 @@ if not s3conf.read(conffile):
 try:
     from boto.s3.connection import S3Connection
     from boto.exception import S3ResponseError
-    from simplekv.net.s3 import S3Store
 except ImportError:
     skip_reason = 'boto not installed'
+
+if not skip_reason:
+    from simplekv.net.s3 import S3Store
 
 
 class S3BucketManager(object):
