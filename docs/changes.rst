@@ -1,5 +1,5 @@
-Version changes
-***************
+Changelog
+*********
 
 0.4
 ===
