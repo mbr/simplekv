@@ -7,7 +7,7 @@ Version changes
 
 0.3
 ===
-* Major API Change: Mixins replaced with decorators (see
+* **Major API Change**: Mixins replaced with decorators (see
   :class:`simplekv.idgen.HashDecorator` for an example)
 * Added `simplekv.crypt`
 
