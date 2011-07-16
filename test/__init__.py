@@ -296,5 +296,5 @@ import test_doctests
 import test_filestore
 import test_idgens
 import test_memorystore
-import test_net_s3
+import test_net_botostore
 import test_bucket_manager
