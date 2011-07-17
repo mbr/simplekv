@@ -20,7 +20,7 @@ except ImportError:
     skip_reason = 'Boto library not installed.'
 else:
     # read config file when module is loaded
-    conffile = os.path.expanduser('~/.simplekv-test.boto')
+    conffile = os.path.expanduser('~/.simplekv-test')
     conf = ConfigParser.RawConfigParser()
 
     skip_reason = None
