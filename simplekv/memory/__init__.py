@@ -6,7 +6,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from . import KeyValueStore
+from .. import KeyValueStore
 
 
 class DictStore(KeyValueStore):
