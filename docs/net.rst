@@ -8,6 +8,9 @@ cloud storage services like `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
 Storage <http://code.google.com/apis/storage/>`_. This is achieved by providing
 a backend that utilizes `boto <http://boto.cloudhackers.com/>`_.
 
+Note that boto is not a dependency for simplekv. You need to install it
+"manually", otherwise you will see an :exc:`~exceptions.ImportError`.
+
 Here is a short example:
 
 ::
