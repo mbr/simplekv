@@ -264,6 +264,30 @@ class SimpleKVTest(object):
         self.store.put(k, 'valc')
         self.assertTrue(k in self.store)
 
+    def test_max_key_length(self):
+        key = 'a' * 250
+        val = '1234'
+
+        new_key = self.store.put(key, val)
+
+        self.assertEqual(new_key, key)
+        self.assertEqual(val, self.store.get(key))
+
+    def test_key_special_characters(self):
+        key = """'!"`#$%&'()+,-.<=>?@[]^_{}~'"""
+
+        val = '1234'
+        new_key = self.store.put(key, val)
+
+        self.assertEqual(new_key, key)
+        self.assertEqual(val, self.store.get(key))
+
+    def test_keys_with_whitespace_rejected(self):
+        key = 'an invalid key'
+
+        with self.assertRaises(ValueError):
+            new_key = self.store.put(key, 'foo')
+
 
 class SimpleUrlKVTest(SimpleKVTest):
     def test_url_for_for_generates_url_for(self):
