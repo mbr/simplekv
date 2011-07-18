@@ -4,7 +4,7 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 if sys.version_info < (2, 7):
     tests_require = ['unittest2', 'mock']
@@ -27,7 +27,7 @@ setup(name='simplekv',
       author_email='git@marcbrinkmann.de',
       url='http://github.com/mbr/simplekv',
       license='MIT',
-      packages=['simplekv'],
+      packages=find_packages(exclude=['test']),
       py_modules=[],
       tests_require=tests_require,
       test_suite='unittest2.collector',
