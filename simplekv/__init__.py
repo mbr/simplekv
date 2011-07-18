@@ -21,7 +21,7 @@ class KeyValueStore(object):
     """The smallest API supported by all backends.
 
     Keys are ascii-strings with certain restrictions, guaranteed to be properly
-    handled up to a length of at least 256 characters. Any function that takes
+    handled up to a length of at least 250 characters. Any function that takes
     a key as an argument raises a ValueError if the key is incorrect.
 
     The regular expression for what constitutes a valid key is available as

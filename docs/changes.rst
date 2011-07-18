@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.5
+===
+* Maximum key length that needs to be supported by all backends is 250
+  characters (was 256 before).
+
 0.4
 ===
 * Support for cloud-based storage using
