@@ -162,6 +162,18 @@ class SimpleKVTest(object):
         self.store.get_file(k, output)
         self.assertEqual(v, output.getvalue())
 
+    def test_get_nonexistant(self):
+        with self.assertRaises(KeyError):
+            self.store.get('nonexistantkey')
+
+    def test_get_file_nonexistant(self):
+        with self.assertRaises(KeyError):
+            self.store.get_file('nonexistantkey', StringIO())
+
+    def test_get_filename_nonexistant(self):
+        with self.assertRaises(KeyError):
+            self.store.get_file('nonexistantkey', '/dev/null')
+
     def test_put_return_value(self):
         k = 'mykey456'
         v = 'some_val'
