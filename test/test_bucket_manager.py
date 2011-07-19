@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding=utf8
 
-import ConfigParser
-import os
 import sys
 
 if sys.version_info < (2, 7):
@@ -10,6 +8,7 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
+from . import testconf_available, testconf, testconf_filename
 
 s3_available = False
 gs_available = False
@@ -20,26 +19,23 @@ except ImportError:
     skip_reason = 'Boto library not installed.'
 else:
     # read config file when module is loaded
-    conffile = os.path.expanduser('~/.simplekv-test')
-    conf = ConfigParser.RawConfigParser()
-
     skip_reason = None
-    if not conf.read(conffile):
+    if not testconf_available:
         skip_reason = 'No boto test configuration supplied. If you wish '\
             'to test the S3 or Google Storage backend, create a file '\
             'called %r with your credentials first. See the '\
             'simplekv.net.botostore documentation for details.'\
-            % conffile
+            % testconf_filename
     else:
-        s3_available = conf.has_section('s3')
-        gs_available = conf.has_section('gs')
+        s3_available = testconf.has_section('s3')
+        gs_available = testconf.has_section('gs')
         import random
 
         class BucketManager(object):
             def create_bucket(self, name=None):
                 conn = self.connection_func(
-                    conf.get(self.config_section, 'access_key'),
-                    conf.get(self.config_section, 'secret_key'))
+                    testconf.get(self.config_section, 'access_key'),
+                    testconf.get(self.config_section, 'secret_key'))
 
                 name = name or 'simplekv-unittest-%x' %\
                     random.SystemRandom().getrandbits(64)
@@ -95,8 +91,8 @@ class BucketManagerTest():
             bucket_name = bucket.name
 
         conn = self.manager_class.connection_func(
-                    conf.get(self.manager_class.config_section, 'access_key'),
-                    conf.get(self.manager_class.config_section, 'secret_key'))
+                 testconf.get(self.manager_class.config_section, 'access_key'),
+                 testconf.get(self.manager_class.config_section, 'secret_key'))
         try:
             resp = conn.get_bucket(bucket_name)
         except StorageResponseError, e:

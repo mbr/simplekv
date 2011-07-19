@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
+import ConfigParser
 from StringIO import StringIO
 import os
 import shutil
@@ -313,6 +314,13 @@ class SimpleUrlKVTest(SimpleKVTest):
 
         with self.assertRaises(ValueError):
             self.store.url_for('')
+
+
+# read test configuration
+testconf_filename = os.path.expanduser('~/.simplekv-test')
+testconf = ConfigParser.RawConfigParser()
+testconf_available = bool(testconf.read(testconf_filename))
+
 
 # import test modules to make selective testing from the command line work
 import test_crypto
