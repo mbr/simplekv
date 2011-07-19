@@ -50,3 +50,19 @@ class MemcacheStoreTest(unittest.TestCase, SimpleKVTest):
     test_has_key_with_delete = None
     test_key_iterator = None
     test_keys = None
+
+    def test_keys_throws_io_error(self):
+        with self.assertRaises(IOError):
+            self.store.keys()
+
+        with self.assertRaises(IOError):
+            self.store.iter_keys()
+
+        with self.assertRaises(IOError):
+            iter(self.store)
+
+    def test_contains_throws_io_error_or_succeeds(self):
+        try:
+            'a' in self.store
+        except IOError:
+            pass
