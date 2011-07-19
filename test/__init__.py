@@ -359,3 +359,4 @@ import test_idgens
 import test_memorystore
 import test_net_botostore
 import test_bucket_manager
+import test_memcache
