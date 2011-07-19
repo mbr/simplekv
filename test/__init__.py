@@ -265,6 +265,23 @@ class SimpleKVTest(object):
         self.store.put(k, 'valc')
         self.assertTrue(k in self.store)
 
+    def test_get_with_delete(self):
+        k = 'keyb'
+
+        with self.assertRaises(KeyError):
+            self.store.get(k)
+
+        self.store.put(k, 'valb')
+        self.store.get(k)
+
+        self.store.delete(k)
+
+        with self.assertRaises(KeyError):
+            self.store.get(k)
+
+        self.store.put(k, 'valc')
+        self.store.get(k)
+
     def test_max_key_length(self):
         key = 'a' * 250
         val = '1234'
