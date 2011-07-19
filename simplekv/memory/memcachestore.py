@@ -21,7 +21,8 @@ class MemcacheStore(KeyValueStore):
         self.mc = mc
 
     def _delete(self, key):
-        self.mc.delete(key)
+        if not self.mc.delete(key):
+            raise IOError('Error deleting key')
 
     def _get(self, key):
         rv = self.mc.get(key)
@@ -36,12 +37,15 @@ class MemcacheStore(KeyValueStore):
         return StringIO(self._get(key))
 
     def _put(self, key, data):
-        self.mc.set(key, data)
+        if not self.mc.set(key, data):
+            if len(data) >= 1024 * 1023:
+                raise IOError('Failed to store data, probably too large. '\
+                              'memcached limit is 1M')
+            raise IOError('Failed to store data')
         return key
 
     def _put_file(self, key, file):
-        self.mc.set(key, file.read())
-        return key
+        return self._put(key, file.read())
 
     def keys(self):
         raise IOError('Memcache does not support listing keys.')
