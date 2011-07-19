@@ -9,7 +9,9 @@ problems.
 
 Features include storage in memory, local and remote filesystems and cloud
 storage services such as `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
-Storage <http://code.google.com/apis/storage/>`_.
+Storage <http://code.google.com/apis/storage/>`_. It also handles caching
+through support of various Python
+`memcached <http://memcached.org>`_-libraries.
 
 Installation
 ------------

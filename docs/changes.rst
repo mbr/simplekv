@@ -5,6 +5,8 @@ Changelog
 ===
 * Maximum key length that needs to be supported by all backends is 250
   characters (was 256 before).
+* Added `memcached <http://memcached.org>`_ backend:
+  :class:`~simplekv.memory.memcachestore.MemcacheStore`
 
 0.4
 ===

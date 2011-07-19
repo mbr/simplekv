@@ -199,4 +199,5 @@ latex_documents = [
 #latex_use_modindex = True
 
 intersphinx_mapping = {'http://docs.python.org/': None,
-                       'http://boto.cloudhackers.com/': None}
+                       'http://boto.cloudhackers.com/': None,
+                       'http://sendapatch.se/projects/pylibmc/': None}
