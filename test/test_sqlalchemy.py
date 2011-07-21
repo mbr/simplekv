@@ -10,12 +10,18 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
-from sqlalchemy import create_engine, MetaData
+skip_reason = None
+try:
+    from sqlalchemy import create_engine, MetaData
+except ImportError:
+    skip_reason = 'SQLAlchemy not installed'
+else:
+    from simplekv.db.sql import SQLAlchemyStore
 
-from simplekv.db.sql import SQLAlchemyStore
 from . import SimpleKVTest
 
 
+@unittest.skipIf(skip_reason, skip_reason)
 class TestSQLAlchemy(unittest.TestCase, SimpleKVTest):
     def setUp(self):
         (fd, self.tmpfile) = tempfile.mkstemp('.sqlite', 'simplekv-test')
