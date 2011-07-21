@@ -7,6 +7,8 @@ Changelog
   characters (was 256 before).
 * Added `memcached <http://memcached.org>`_ backend:
   :class:`~simplekv.memory.memcachestore.MemcacheStore`
+* Added `SQLAlchemy <http://sqlalchemy.org>`_ support:
+  :class:`~simplekv.db.sql.SQLAlchemyStore`
 
 0.4
 ===

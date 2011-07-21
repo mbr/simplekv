@@ -23,6 +23,7 @@ Table of contents
    filesystem
    net
    memory
+   db
    idgen
    crypt
 
