@@ -26,6 +26,7 @@ Table of contents
    db
    idgen
    crypt
+   cache
 
    changes
 
