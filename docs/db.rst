@@ -32,6 +32,10 @@ based store is available:
    Stores data in a table in a database through `SQLAlchemy
    <http://sqlalchemy.org>`_.
 
+   Note that this storage is not well-suited for large binary data, as
+   currently it does not support streaming of large blobs. In other words,
+   every value must be read into memory, before it can be returned.
+
    .. method:: __init__(bind, metadata, tablename)
 
       Generates a new :meth:`~sqlalchemy.schema.Table` for use as a
