@@ -6,11 +6,11 @@ To store data in existing databases, an `SQLAlchemy <http://sqlalchemy.org>`_
 based store is available:
 
 ::
-  
+
   from simplekv.db.sql import SQLAlchemyStore
   from sqlalchemy import create_engine, MetaData
 
-  # use echo=True to see queries 
+  # use echo=True to see queries
   engine = create_engine('sqlite:///:memory:', echo=True)
 
   metadata = MetaData(bind=engine)
@@ -42,7 +42,7 @@ based store is available:
       backend (see :attr:`~simplekv.db.sql.SQLAlchemyStore.table`) on the
       supplied metadata.
 
-      :param bind: Any queries made by the store run 
+      :param bind: Any queries made by the store run
                    :meth:`~sqlalchemy.sql.expression.Executable.execute`
                    using this bind.
       :param metadata: :class:`sqlalchemy.schema.MetaData` instance on which
