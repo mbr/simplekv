@@ -349,14 +349,3 @@ class SimpleUrlKVTest(SimpleKVTest):
 testconf_filename = os.path.expanduser('~/.simplekv-test')
 testconf = ConfigParser.RawConfigParser()
 testconf_available = bool(testconf.read(testconf_filename))
-
-
-# import test modules to make selective testing from the command line work
-import test_crypto
-import test_doctests
-import test_filestore
-import test_idgens
-import test_memorystore
-import test_net_botostore
-import test_bucket_manager
-import test_memcache
