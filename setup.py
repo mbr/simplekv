@@ -20,9 +20,11 @@ def read(fname):
 
 setup(name='simplekv',
       version='0.6dev',
-      description='A simple key-value storage for binary data.',
+      description='A key-value storage for binary data, support many '\
+                  'backends.',
       long_description=read('README.rst'),
-      keywords='key-value-store storage key-value db database',
+      keywords='key-value-store storage key-value db database s3 gs boto'\
+               'memcache cache',
       author='Marc Brinkmann',
       author_email='git@marcbrinkmann.de',
       url='http://github.com/mbr/simplekv',
