@@ -9,6 +9,7 @@ Changelog
   :class:`~simplekv.memory.memcachestore.MemcacheStore`
 * Added `SQLAlchemy <http://sqlalchemy.org>`_ support:
   :class:`~simplekv.db.sql.SQLAlchemyStore`
+* Added :mod:`simplekv.cache` module.
 
 0.4
 ===
