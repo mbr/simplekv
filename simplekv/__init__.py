@@ -305,6 +305,8 @@ class UrlKeyValueStore(KeyValueStore):
         :return: A string containing a URL to access key
         """
         self._check_valid_key(key)
+        if not key in self:
+            raise KeyError(key)
         return self._url_for(key)
 
     def _url_for(self, key):
