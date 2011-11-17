@@ -76,7 +76,8 @@ class HashDecorator(StoreDecorator):
                         tmpfile.name
                     )
                 finally:
-                    os.unlink(tmpfile.name)
+                    if os.path.exists(tmpfile.name):
+                        os.unlink(tmpfile.name)
         return self._dstore.put_file(key, file)
 
 
