@@ -32,8 +32,9 @@ class HashDecorator(StoreDecorator):
     *hashlib.sha1*.
     """
 
-    def __init__(self, decorated_store, hashfunc=hashlib.sha1):
+    def __init__(self, decorated_store, hashfunc=hashlib.sha1, tmpdir=None):
         self.hashfunc = hashfunc
+        self.tmpdir = tmpdir
         super(HashDecorator, self).__init__(decorated_store)
 
     def put(self, key, data):
@@ -60,7 +61,7 @@ class HashDecorator(StoreDecorator):
                         phash.hexdigest(),
                         file)
             else:
-                tmpfile = tempfile.NamedTemporaryFile(delete=False)
+                tmpfile = tempfile.NamedTemporaryFile(dir=self.tmpdir, delete=False)
                 try:
                     while True:
                         buf = file.read(bufsize)
