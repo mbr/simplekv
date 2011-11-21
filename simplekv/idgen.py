@@ -76,7 +76,13 @@ class HashDecorator(StoreDecorator):
                         tmpfile.name
                     )
                 finally:
-                    os.unlink(tmpfile.name)
+                    try:
+                        os.unlink(tmpfile.name)
+                    except OSError, e:
+                        if 2 == e.errno:
+                            pass  # file already gone
+                        else:
+                            raise
         return self._dstore.put_file(key, file)
 
 

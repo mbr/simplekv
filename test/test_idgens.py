@@ -119,3 +119,13 @@ class TestHashGen(unittest.TestCase, SimpleKVTest):
         hash = '7a3ae7e083965679a6965e4a4d89c5f0d6a1f7e4'
 
         self.assertEqual(self.store.put(None, data), hash)
+
+
+class TestHashGenFilesystem(TestHashGen, SimpleUrlKVTest):
+    def setUp(self):
+        TestHashGen.setUp(self)
+        self.tmpdir = tempfile.mkdtemp()
+        self.store = HashDecorator(FilesystemStore(self.tmpdir))
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
