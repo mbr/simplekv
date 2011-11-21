@@ -84,8 +84,10 @@ class TestHashGen(unittest.TestCase, SimpleKVTest):
         key = self.store.put_file(None, open('/dev/null', 'rb'))
         self.assertRegexpMatches(key, self.hash_regexp)
 
-        key2 = self.store.put_file(None, '/dev/null')
-        self.assertRegexpMatches(key2, self.hash_regexp)
+        # this is not correct according to our interface
+        # /dev/null cannot be claimed by the store
+        # key2 = self.store.put_file(None, '/dev/null')
+        # self.assertRegexpMatches(key2, self.hash_regexp)
 
     def test_put_generates_correct_hash(self):
         data = 'abcdXefg'
