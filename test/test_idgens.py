@@ -109,7 +109,7 @@ class TestHashGen(unittest.TestCase, SimpleKVTest):
             key2 = self.store.put_file(None, tmpfile.name)
             self.assertEqual(key2, hash)
         finally:
-            if os.path.exists:
+            if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)
 
     def test_put_hashfunc_is_sha1(self):
