@@ -6,12 +6,9 @@ import sys
 
 from setuptools import setup, find_packages
 
-if sys.version_info < (2, 7):
-    tests_require = ['unittest2', 'mock']
-    test_suite = 'unittest2.collector'
-else:
-    tests_require = ['mock']
-    test_suite = 'unittest.collector'
+# the "test" command has been removed, as the test discovery does not
+# work with the packaged unittest in python 2.7 (it's missing the
+# unittest2.collector)
 
 
 def read(fname):
@@ -31,8 +28,6 @@ setup(name='simplekv',
       license='MIT',
       packages=find_packages(exclude=['test']),
       py_modules=[],
-      tests_require=tests_require,
-      test_suite='unittest2.collector',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
