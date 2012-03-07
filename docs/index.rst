@@ -27,6 +27,7 @@ Table of contents
    idgen
    crypt
    cache
+   development
 
    changes
 
