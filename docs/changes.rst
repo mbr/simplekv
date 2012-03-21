@@ -1,5 +1,8 @@
 Changelog
 *********
+0.6
+===
+* Fixed bug: No initial value for String() column in SQLAlchemy store.
 
 0.5
 ===
