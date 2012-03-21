@@ -19,7 +19,9 @@ class SQLAlchemyStore(KeyValueStore):
         self.bind = bind
 
         self.table = Table(tablename, metadata,
-            Column('key', String, primary_key=True),
+            # 250 characters is the maximum key length that we guarantee can be
+            # handled by any kind of backend
+            Column('key', String(250), primary_key=True),
             Column('value', LargeBinary, nullable=False)
         )
 
