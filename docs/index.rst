@@ -22,6 +22,7 @@ Table of contents
 
    filesystem
    net
+   gae
    memory
    db
    idgen
