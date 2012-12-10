@@ -62,6 +62,7 @@ class SQLAlchemyStore(KeyValueStore):
 
             # commit happens here
 
+        con.close()
         return key
 
     def _put_file(self, key, file):
