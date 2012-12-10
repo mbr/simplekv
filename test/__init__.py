@@ -318,6 +318,14 @@ class SimpleKVTest(object):
         with self.assertRaises(ValueError):
             new_key = self.store.put(key, 'foo')
 
+    def test_a_lot_of_puts(self):
+        a_lot = 20
+
+        for i in xrange(a_lot):
+            key = 'this_is_key_%d_of_%d' % (i, a_lot)
+            val = os.urandom(512)
+            self.store.put(key, val)
+
 
 class SimpleUrlKVTest(SimpleKVTest):
     def test_url_for_for_generates_url_for(self):
