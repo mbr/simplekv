@@ -201,4 +201,5 @@ latex_documents = [
 intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://boto.cloudhackers.com/': None,
                        'http://sendapatch.se/projects/pylibmc/': None,
-                       'http://www.sqlalchemy.org/docs/': None}
+                       'http://www.sqlalchemy.org/docs/': None,
+                       'http://redis-py.readthedocs.org/en/latest/': None}

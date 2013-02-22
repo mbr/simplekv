@@ -2,6 +2,8 @@ Changelog
 *********
 0.6
 ===
+* Now supports `redis <http://redis.io>`_ backend:
+  :class:`~simplekv.memory.redisstore.RedisStore`.
 * Fixed bug: No initial value for String() column in SQLAlchemy store.
 
 0.5
