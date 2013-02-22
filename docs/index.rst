@@ -20,6 +20,33 @@ the likes of :class:`~simplekv.memory.redisstore.RedisStore` or
 :class:`~simplekv.memory.memcachestore.MemcacheStore`.
 
 
+Example
+=======
+Here's a simple example::
+
+  from simplekv.fs import FilesystemStore
+
+  store = FilesystemStore('./data')
+
+  store.put('key1', 'hello')
+
+  # will print "hello"
+  print store.get('key1')
+
+  # move the contents of a file to "key2" as efficiently as possible
+  store.put_file('key2', '/path/to/data')
+
+Note that by changing the first two lines to::
+
+  from simplekv.memory.redisstore import RedisStore
+  import redis
+
+  store = RedisStore(redis.StrictRedis())
+
+you could use the code exactly the same way, this time storing data inside a
+Redis database.
+
+
 Why you should  use simplekv
 ============================
 
