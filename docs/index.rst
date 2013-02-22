@@ -15,6 +15,31 @@ support for `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
 Storage <http://code.google.com/apis/storage/>`_ through
 :class:`~simplekv.net.botostore.BotoStore`.
 
+Faster in-memory stores suitable for session management are supported through
+the likes of :class:`~simplekv.memory.redisstore.RedisStore` or
+:class:`~simplekv.memory.memcachestore.MemcacheStore`.
+
+
+Why you should  use simplekv
+============================
+
+no server dependencies
+  *simplekv* does only depend on python and possibly a few libraries easily
+  fetchable from PyPI_, if you want to use extra features. You do not have to
+  run and install any server software to use *simplekv* (but can at any point
+  later on).
+
+specializes in (even large!) blobs
+  The fastest, most basic *simplekv* backend implementation stores files on
+  your harddrive and is just as fast. This underlines the focus on storing
+  big blobs without overhead or metadata. A typical usecase is starting out
+  small with local files and then migrating all your binary data to something
+  like Amazon's S3_.
+
+.. _PyPI: http://pypi.python.org
+.. _S3: https://s3.amazonaws.com/
+
+
 Table of contents
 =================
 .. toctree::
@@ -32,35 +57,6 @@ Table of contents
 
    changes
 
-It's not a NoSQL database
-------------------------------------
-There are many projects that offer a similiar functionality, so called "NoSQL"
-databases like CouchDB_. *simplekv* is different in its goals:
-
-no server dependencies
-  *simplekv* does only depend on python and possibly a few libraries easily
-  fetchable from PyPI_, if you want to use extra features. You do not have to
-  run and install any server software to use *simplekv*.
-
-less features
-  The database applications offer a whole lot more features than *simplekv*.
-  This is by choice. Keep your metadata in a regular database, *simplekv* does
-  only one thing for you: Store and retrieve binary data.
-
-specializes in blobs
-  The fastest, most basic *simplekv* backend implementation stores files on
-  your harddrive and is just as fast. This underlines the focus on storing
-  big blobs without overhead or metadata. A typical usecase is starting out
-  small with local files and then migrating all your binary data to something
-  like Amazon's S3_.
-
-Should you require the simple feature-set of *simplekv*, but some of the
-replication/scaling capabilities of a full "NoSQL" database, it should be easy
-to use it as a backend for *simplekv* instead.
-
-.. _CouchDB: http://couchdb.apache.org/
-.. _PyPI: http://pypi.python.org
-.. _S3: https://s3.amazonaws.com/
 
 The core API
 ============

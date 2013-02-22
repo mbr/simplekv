@@ -1,18 +1,10 @@
 simple key-value storage api
 ============================
 
-*simplekv* is an API for very basic key-value stores for storing binary data.
-Due to its basic interface, it is easy to implemented a large number of
-backends. *simplekv*'s origins are in storing user-uploaded files on websites,
-but its low overhead and design should make it applicable for numerous other
-problems.
-
-Features include storage in memory, local and remote filesystems and cloud
-storage services such as `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
-Storage <http://code.google.com/apis/storage/>`_. It also handles caching
-through support of various Python
-`memcached <http://memcached.org>`_-libraries and storage in databases through
-`SQLAlchemy <http://sqlalchemy.org>`_.
+*simplekv* is an API for very basic key-value stores used for small, frequently
+accessed data or large binary blobs. Its basic interface is easy to implement
+and it supports a number of backends, including the filesystem, SQLAlchemy,
+Redis and Amazon S3/Google Storage.
 
 Installation
 ------------
