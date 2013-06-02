@@ -12,6 +12,7 @@ from . import testconf_available, testconf, testconf_filename
 
 s3_available = False
 gs_available = False
+S3BucketManager = GSBucketManager = None # Avoid error in tests manager_class
 try:
     import boto
     from boto.exception import StorageResponseError
