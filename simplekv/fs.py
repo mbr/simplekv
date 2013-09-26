@@ -37,7 +37,7 @@ class FilesystemStore(UrlKeyValueStore):
         self.bufsize = 1024 * 1024  # 1m
 
     def _build_filename(self, key):
-        return os.path.join(self.root, key)
+        return os.path.abspath(os.path.join(self.root, key))
 
     def _delete(self, key):
         try:
