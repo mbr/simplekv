@@ -46,8 +46,8 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
             self.assertTrue(url.startswith('file://'))
             parts = urlparse(url)
 
-            ndata = open(parts.path, 'rb').read()
-            self.assertEqual(ndata, data)
+            with open(parts.path, 'rb') as ndata:
+                self.assertEqual(ndata.read(), data)
         finally:
             if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)

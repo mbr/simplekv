@@ -44,17 +44,18 @@ class SimpleKVTest(object):
         k = 'key1'
 
         self.store.put_file(k, StringIO(v))
-        self.assertEqual(v, self.store.open(k).read())
+        with self.store.open(k) as blob:
+            self.assertEqual(v, blob.read())
 
     def test_open_incremental_read(self):
         v = 'data_abc'
         k = 'key1'
 
         self.store.put_file(k, StringIO(v))
-        ok = self.store.open(k)
-        self.assertEqual(v[:3], ok.read(3))
-        self.assertEqual(v[3:5], ok.read(2))
-        self.assertEqual(v[5:8], ok.read(3))
+        with self.store.open(k) as ok:
+            self.assertEqual(v[:3], ok.read(3))
+            self.assertEqual(v[3:5], ok.read(2))
+            self.assertEqual(v[5:8], ok.read(3))
 
     def test_key_error_on_nonexistant_get(self):
         with self.assertRaises(KeyError):
@@ -113,19 +114,19 @@ class SimpleKVTest(object):
             self.store.delete('')
 
     def test_put_file(self):
-        tmp = tempfile.NamedTemporaryFile(delete=False)
-        try:
-            k = 'filekey1'
-            v = 'somedata'
-            tmp.write(v)
-            tmp.close()
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            try:
+                k = 'filekey1'
+                v = 'somedata'
+                tmp.write(v)
+                tmp.close()
 
-            self.store.put_file(k, tmp.name)
+                self.store.put_file(k, tmp.name)
 
-            self.assertEqual(self.store.get(k), v)
-        finally:
-            if os.path.exists(tmp.name):
-                os.unlink(tmp.name)
+                self.assertEqual(self.store.get(k), v)
+            finally:
+                if os.path.exists(tmp.name):
+                    os.unlink(tmp.name)
 
     def test_put_opened_file(self):
         with tempfile.NamedTemporaryFile() as tmp:
@@ -134,7 +135,8 @@ class SimpleKVTest(object):
             tmp.write(v)
             tmp.flush()
 
-            self.store.put_file(k, open(tmp.name, 'rb'))
+            with open(tmp.name, 'rb') as stream:
+                self.store.put_file(k, stream)
 
             self.assertEqual(self.store.get(k), v)
 
@@ -148,7 +150,8 @@ class SimpleKVTest(object):
 
             self.store.get_file(k, out_filename)
 
-            self.assertEqual(open(out_filename, 'rb').read(), v)
+            with open(out_filename, 'rb') as stream:
+                self.assertEqual(stream.read(), v)
         finally:
             shutil.rmtree(tmpdir)
 

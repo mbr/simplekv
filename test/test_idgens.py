@@ -30,8 +30,9 @@ class TestUUIDGen(unittest.TestCase, SimpleKVTest):
         self.assertRegexpMatches(key, UUID_REGEXP)
 
     def test_put_file_generates_uuid_form(self):
-        key = self.store.put_file(None, open('/dev/null', 'rb'))
-        self.assertRegexpMatches(key, UUID_REGEXP)
+        with open('/dev/null', 'rb') as null_file:
+            key = self.store.put_file(None, null_file)
+            self.assertRegexpMatches(key, UUID_REGEXP)
 
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
@@ -47,17 +48,18 @@ class TestUUIDGen(unittest.TestCase, SimpleKVTest):
         uuid.UUID(hex=key)
 
     def test_put_file_generates_valid_uuid(self):
-        key = self.store.put_file(None, open('/dev/null', 'rb'))
-        uuid.UUID(hex=key)
+        with open('/dev/null', 'rb') as null_file:
+            key = self.store.put_file(None, null_file)
+            uuid.UUID(hex=key)
 
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        try:
-            tmpfile.close()
-            key2 = self.store.put_file(None, tmpfile.name)
-            uuid.UUID(hex=key2)
-        finally:
-            if os.path.exists(tmpfile.name):
-                os.unlink(tmpfile.name)
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            try:
+                tmpfile.close()
+                key2 = self.store.put_file(None, tmpfile.name)
+                uuid.UUID(hex=key2)
+            finally:
+                if os.path.exists(tmpfile.name):
+                    os.unlink(tmpfile.name)
 
 
 class TestUUIDGenFilesystem(TestUUIDGen, SimpleUrlKVTest):
@@ -81,8 +83,9 @@ class TestHashGen(unittest.TestCase, SimpleKVTest):
         self.assertRegexpMatches(key, self.hash_regexp)
 
     def test_put_file_generates_valid_form(self):
-        key = self.store.put_file(None, open('/dev/null', 'rb'))
-        self.assertRegexpMatches(key, self.hash_regexp)
+        with open('/dev/null', 'rb') as null_file:
+            key = self.store.put_file(None, null_file)
+            self.assertRegexpMatches(key, self.hash_regexp)
 
         # this is not correct according to our interface
         # /dev/null cannot be claimed by the store
