@@ -10,6 +10,17 @@ else:
 
 from . import testconf_available, testconf, testconf_filename
 
+
+class BucketManager(object):
+    pass
+
+class S3BucketManager(BucketManager):
+    pass
+
+class GSBucketManager(BucketManager):
+    pass
+
+
 s3_available = False
 gs_available = False
 try:
