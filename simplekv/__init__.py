@@ -207,15 +207,15 @@ class KeyValueStore(object):
         :param key: Key to be retrieved
         :param file: File-like object to write to
         """
-        source = self.open(key)
         bufsize = 1024 * 1024
 
-        while True:
-            buf = source.read(bufsize)
-            file.write(buf)
+        with self.open(key) as source:
+            while True:
+                buf = source.read(bufsize)
+                file.write(buf)
 
-            if len(buf) < bufsize:
-                break
+                if len(buf) < bufsize:
+                    break
 
     def _get_filename(self, key, filename):
         """Write key to file. Either this method or
