@@ -45,7 +45,7 @@ class _HMACFileReader(object):
 
         return rv
 
-    def close():
+    def close(self):
         self.source.close()
 
 
