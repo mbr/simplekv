@@ -48,6 +48,12 @@ class _HMACFileReader(object):
     def close(self):
         self.source.close()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
+
 
 class VerificationException(Exception):
     """This exception is thrown whenever there was an error with an
