@@ -16,6 +16,16 @@ can be installed through `pip <http://pypi.python.org/pypi/pip>`_ or
 
    $ pip install simplekv
 
+
+Development
+-----------
+`tox <https://pypi.python.org/pypi/tox>`_ is used to test packaging and python2.6 and python2.7 support.
+
+::
+   $ pip install tox
+   $ tox
+
+
 Documentation
 -------------
 The documentation for *simplekv* is available at
