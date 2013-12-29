@@ -6,7 +6,6 @@ import shutil
 import sys
 import stat
 import tempfile
-from urlparse import urlparse
 from io import BytesIO
 
 if sys.version_info < (2, 7):
@@ -15,6 +14,7 @@ else:
     import unittest
 
 from . import SimpleUrlKVTest
+from simplekv._compat import urlparse
 from simplekv.fs import FilesystemStore, WebFilesystemStore
 
 from mock import Mock

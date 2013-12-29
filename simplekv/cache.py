@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from decorator import StoreDecorator
+from .decorator import StoreDecorator
 
 
 class CacheDecorator(StoreDecorator):

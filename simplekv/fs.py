@@ -3,9 +3,9 @@
 
 import os
 import shutil
-import urllib
 
 from . import UrlKeyValueStore
+from ._compat import url_quote
 
 
 class FilesystemStore(UrlKeyValueStore):
@@ -99,7 +99,7 @@ class FilesystemStore(UrlKeyValueStore):
     def _url_for(self, key):
         full = os.path.abspath(self._build_filename(key))
         parts = full.split(os.sep)
-        location = '/'.join(urllib.quote(p, safe='') for p in parts)
+        location = '/'.join(url_quote(p, safe='') for p in parts)
         return 'file://' + location
 
     def keys(self):
@@ -153,4 +153,4 @@ class WebFilesystemStore(FilesystemStore):
             stem = self.url_prefix(self, key)
         else:
             stem = self.url_prefix
-        return stem + urllib.quote(rel, safe='')
+        return stem + url_quote(rel, safe='')

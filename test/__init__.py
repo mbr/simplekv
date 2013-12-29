@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # coding=utf8
 
-import ConfigParser
 import os
 import shutil
 import tempfile
 from io import BytesIO
 
 from mock import Mock
+
+from simplekv._compat import ConfigParser, xrange
 
 
 class SimpleKVTest(object):
