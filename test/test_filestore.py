@@ -59,7 +59,7 @@ class TestFileStoreUmask(TestFileStore):
 
         current_umask = os.umask(0)
         os.umask(current_umask)
-        self.perm = 0666 & (0777 ^ current_umask)
+        self.perm = 0o666 & (0o777 ^ current_umask)
 
     def test_file_permission_on_new_file_have_correct_value(self):
         src = BytesIO(b'nonsense')
@@ -78,7 +78,7 @@ class TestFileStoreUmask(TestFileStore):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         tmpfile.write(b'foo')
         tmpfile.close()
-        os.chmod(tmpfile.name, 0777)
+        os.chmod(tmpfile.name, 0o777)
         try:
             key = self.store.put_file('test123', tmpfile.name)
 
@@ -97,7 +97,7 @@ class TestFileStoreUmask(TestFileStore):
 class TestFileStorePerm(TestFileStoreUmask):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        self.perm = 0612
+        self.perm = 0o612
         self.store = FilesystemStore(self.tmpdir, perm=self.perm)
 
 
