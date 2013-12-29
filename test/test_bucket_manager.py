@@ -106,7 +106,7 @@ class BucketManagerTest():
                  testconf.get(self.manager_class.config_section, 'secret_key'))
         try:
             resp = conn.get_bucket(bucket_name)
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             self.assertEqual(e.code, 'NoSuchBucket')
 
 

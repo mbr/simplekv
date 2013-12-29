@@ -6,6 +6,7 @@ import hmac
 import os
 import sys
 import tempfile
+import itertools
 from io import BytesIO
 from functools import partial
 
@@ -66,7 +67,8 @@ class TestHMACFileReader(unittest.TestCase):
             self.assertEqual(data, self.data)
 
     def test_manipulated_input_full_read(self):
-        for n in range(0, 20) + range(-1, -20, -1):
+        sizes = itertools.chain(range(0, 20), range(-1, -20, -1))
+        for n in sizes:
             broken_stored_data_and_hash = _alter_byte(
                 self.stored_data_and_hash,
                 n
@@ -74,14 +76,15 @@ class TestHMACFileReader(unittest.TestCase):
 
             reader = _HMACFileReader(
                 hmac.HMAC(self.secret_key, None, self.hashfunc),
-                StringIO(broken_stored_data_and_hash)
+                BytesIO(broken_stored_data_and_hash)
             )
 
             with self.assertRaises(VerificationException):
                 reader.read()
 
     def test_manipulated_input_incremental_read(self):
-        for n in range(0, 20) + range(-1, -20, -1):
+        sizes = itertools.chain(range(0, 20), range(-1, -20, -1))
+        for n in sizes:
             broken_stored_data_and_hash = _alter_byte(
                 self.stored_data_and_hash,
                 n
