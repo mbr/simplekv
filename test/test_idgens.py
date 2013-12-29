@@ -34,7 +34,7 @@ class TestUUIDGen(_TestCase, SimpleKVTest):
         self.store = UUIDDecorator(DictStore())
 
     def test_put_generates_uuid_form(self):
-        key = self.store.put(None, 'some_data')
+        key = self.store.put(None, b'some_data')
         self.assertRegex(key, UUID_REGEXP)
 
     def test_put_file_generates_uuid_form(self):
@@ -52,7 +52,7 @@ class TestUUIDGen(_TestCase, SimpleKVTest):
                 os.unlink(tmpfile.name)
 
     def test_put_generates_valid_uuid(self):
-        key = self.store.put(None, 'some_data')
+        key = self.store.put(None, b'some_data')
         uuid.UUID(hex=key)
 
     def test_put_file_generates_valid_uuid(self):
@@ -87,7 +87,7 @@ class TestHashGen(_TestCase, SimpleKVTest):
         )
 
     def test_put_generates_valid_form(self):
-        key = self.store.put(None, 'some_data')
+        key = self.store.put(None, b'some_data')
         self.assertRegex(key, self.hash_regexp)
 
     def test_put_file_generates_valid_form(self):
@@ -101,7 +101,7 @@ class TestHashGen(_TestCase, SimpleKVTest):
         # self.assertRegex(key2, self.hash_regexp)
 
     def test_put_generates_correct_hash(self):
-        data = 'abcdXefg'
+        data = b'abcdXefg'
         key = self.store.put(None, data)
 
         hash = self.store.hashfunc(data).hexdigest()
@@ -109,7 +109,7 @@ class TestHashGen(_TestCase, SimpleKVTest):
         self.assertEqual(hash, key)
 
     def test_put_file_generates_correct_hash(self):
-        data = '!bcdXefQ'
+        data = b'!bcdXefQ'
         hash = self.store.hashfunc(data).hexdigest()
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
@@ -126,7 +126,7 @@ class TestHashGen(_TestCase, SimpleKVTest):
                 os.unlink(tmpfile.name)
 
     def test_put_hashfunc_is_sha1(self):
-        data = 'some_test_string'
+        data = b'some_test_string'
         hash = '7a3ae7e083965679a6965e4a4d89c5f0d6a1f7e4'
 
         self.assertEqual(self.store.put(None, data), hash)

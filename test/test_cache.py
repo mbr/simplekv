@@ -21,13 +21,13 @@ class TestCacheDecorator(unittest.TestCase, SimpleKVTest):
         self.store = CacheDecorator(self.cache, self.backing_store)
 
     def test_works_when_cache_loses_key(self):
-        self.store.put('keya', 'valuea')
-        self.store.put('keyb', 'valueb')
+        self.store.put('keya', b'valuea')
+        self.store.put('keyb', b'valueb')
 
-        self.assertEqual('valuea', self.store.get('keya'))
-        self.assertEqual('valueb', self.store.get('keyb'))
+        self.assertEqual(b'valuea', self.store.get('keya'))
+        self.assertEqual(b'valueb', self.store.get('keyb'))
 
         del self.store.cache.d['keya']
 
-        self.assertEqual('valuea', self.store.get('keya'))
-        self.assertEqual('valueb', self.store.get('keyb'))
+        self.assertEqual(b'valuea', self.store.get('keya'))
+        self.assertEqual(b'valueb', self.store.get('keyb'))

@@ -3,10 +3,11 @@
 
 import hashlib
 import hmac
-from cStringIO import StringIO
 import os
 import sys
 import tempfile
+from io import BytesIO
+from functools import partial
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -16,26 +17,30 @@ else:
 from simplekv.crypt import _HMACFileReader, VerificationException,\
                            HMACDecorator
 from simplekv.memory import DictStore
+from simplekv._compat import xrange
 from . import SimpleKVTest
 
 
 def _alter_byte(s, n):
-    return s[:n] + chr((ord(s[n]) + 1) % 255) + s[n + 1:]
+    try:
+        return s[:n] + bytes((s[n] + 1) % 255) + s[n + 1:]  # python3
+    except TypeError:
+        return s[:n] + chr((ord(s[n]) + 1) % 255) + s[n + 1:]  # python2
 
 
 class TestHMACFileReader(unittest.TestCase):
-    secret_key = 'devkey##123'
-    data = 'helloworld!'\
-           '@\xa9;\x99\xfai0\xb9!2\xd7\x82\xf4\xf3g\xf8\xa9\xcd\xcf\xff'
+    secret_key = b'devkey##123'
+    data = b'helloworld!'\
+           b'@\xa9;\x99\xfai0\xb9!2\xd7\x82\xf4\xf3g\xf8\xa9\xcd\xcf\xff'
     hashfunc = hashlib.sha256
-    expected_digest = '\x05n\xbc\x91\x02\x171\xe1G\xcc\xd6\xc6\x01'\
-                      '\xc4\x0b+W\xb8W\xb1\x027\x03\xf2B\x98\xf7'\
-                      '\xb4\xf7\x91KD'
+    expected_digest = b'\x05n\xbc\x91\x02\x171\xe1G\xcc\xd6\xc6\x01'\
+                      b'\xc4\x0b+W\xb8W\xb1\x027\x03\xf2B\x98\xf7'\
+                      b'\xb4\xf7\x91KD'
     stored_data_and_hash = data + expected_digest
     reading_lengths = range(1, len(data) * 3)
 
     def setUp(self):
-        self.buf = StringIO(self.stored_data_and_hash)
+        self.buf = BytesIO(self.stored_data_and_hash)
         self.hm = hmac.HMAC(self.secret_key, None, self.hashfunc)
         self.reader = _HMACFileReader(self.hm, self.buf)
 
@@ -51,17 +56,12 @@ class TestHMACFileReader(unittest.TestCase):
     def test_reading_with_limit(self):
         # try for different read lengths
         for n in self.reading_lengths:
-            buf = StringIO(self.stored_data_and_hash)
+            buf = BytesIO(self.stored_data_and_hash)
             hm = hmac.HMAC(self.secret_key, None, self.hashfunc)
 
             reader = _HMACFileReader(hm, buf)
 
-            data = ''
-            while True:
-                r = reader.read(n)
-                if '' == r:
-                    break
-                data += r
+            data = b''.join(iter(partial(reader.read, n), b''))
 
             self.assertEqual(data, self.data)
 
@@ -89,7 +89,7 @@ class TestHMACFileReader(unittest.TestCase):
 
             reader = _HMACFileReader(
                 hmac.HMAC(self.secret_key, None, self.hashfunc),
-                StringIO(broken_stored_data_and_hash)
+                BytesIO(broken_stored_data_and_hash)
             )
 
             with self.assertRaises(VerificationException):
@@ -102,7 +102,7 @@ class TestHMACFileReader(unittest.TestCase):
         with self.assertRaises(VerificationException):
             reader = _HMACFileReader(
                 hmac.HMAC(self.secret_key, None, self.hashfunc),
-                StringIO('a')
+                BytesIO(b'a')
             )
 
     def test_unbounded_read(self):
@@ -111,7 +111,7 @@ class TestHMACFileReader(unittest.TestCase):
 
 # run all tests on input that is shorter/longer/equal than the hash
 class TestHMACFileReaderLongInput(TestHMACFileReader):
-    data = '\x99\xfai0\xb9!2\xd7\x82\xf4\xf3' * 1024 * 1024
+    data = b'\x99\xfai0\xb9!2\xd7\x82\xf4\xf3' * 1024 * 1024
     expected_digest = hmac.HMAC(
         TestHMACFileReader.secret_key, data, TestHMACFileReader.hashfunc
     ).digest()
@@ -121,7 +121,7 @@ class TestHMACFileReaderLongInput(TestHMACFileReader):
 
 
 class TestHMACFileReaderShortInput(TestHMACFileReader):
-    data = 'aca4'
+    data = b'aca4'
     expected_digest = hmac.HMAC(
         TestHMACFileReader.secret_key, data, TestHMACFileReader.hashfunc
     ).digest()
@@ -132,7 +132,7 @@ class TestHMACFileReaderShortInput(TestHMACFileReader):
 
 class TestHMACFileReaderEqualInput(TestHMACFileReader):
     # this string is as long as a sha256 sum
-    data = '8b97bca79750847558d488e2ea4de79903c9c71c9af27ecf1b3dff5dba2abdd9'
+    data = b'8b97bca79750847558d488e2ea4de79903c9c71c9af27ecf1b3dff5dba2abdd9'
     expected_digest = hmac.HMAC(
         TestHMACFileReader.secret_key, data, TestHMACFileReader.hashfunc
     ).digest()
@@ -145,7 +145,7 @@ class TestHMACFileReaderEqualInput(TestHMACFileReader):
 class TestHMACFileReaderDifferentHashfuncAndKey(TestHMACFileReader):
     # this string is as long as a sha256 sum
     hashfunc = hashlib.sha1
-    secret_key = 'secret_key_b'
+    secret_key = b'secret_key_b'
     expected_digest = hmac.HMAC(
         secret_key, TestHMACFileReader.data, hashfunc
     ).digest()
@@ -157,20 +157,21 @@ class TestHMACFileReaderDifferentHashfuncAndKey(TestHMACFileReader):
 # test the "real" now HMACMixin: core functionality and checks
 class TestHMACDictBackend(unittest.TestCase, SimpleKVTest):
     def setUp(self):
-        self.store = HMACDecorator('my_secret_key', DictStore())
+        self.store = HMACDecorator(b'my_secret_key', DictStore())
 
     def test_get_fails_on_manipulation(self):
-        self.store.put('the_key', 'somevalue')
+        self.store.put('the_key', b'somevalue')
 
-        self.store.d['the_key'] += 'a'
+        self.store.d['the_key'] += b'a'
         with self.assertRaises(VerificationException):
             val = self.store.get('the_key')
 
     def test_get_file_fails_on_manipulation(self):
         k = 'the_key!'
-        self.store.put(k, 'somevalue')
+        self.store.put(k, b'somevalue')
 
-        self.store.d[k] += 'a'
+        self.store.d[k] += b'a'
+
         with tempfile.TemporaryFile() as tmp:
             with self.assertRaises(VerificationException):
                 val = self.store.get_file(k, tmp)
@@ -184,10 +185,10 @@ class TestHMACDictBackend(unittest.TestCase, SimpleKVTest):
 
     def test_open_fails_on_manipulation(self):
         k = 'the_key!'
-        v = 'somevalue'
+        v = b'somevalue'
         self.store.put(k, v)
 
-        self.store.d[k] += 'a'
+        self.store.d[k] += b'a'
         with self.assertRaises(VerificationException):
             val = self.store.open(k).read()
 
@@ -201,7 +202,7 @@ class TestHMACDictBackend(unittest.TestCase, SimpleKVTest):
     def test_get_fails_on_replay_manipulation(self):
         k = 'somekey'
         evil = 'evilkey'
-        self.store.put(k, 'myvalue')
+        self.store.put(k, b'myvalue')
 
         self.store.d[evil] = self.store.d[k]
 

@@ -3,11 +3,11 @@
 
 import os
 import shutil
-from StringIO import StringIO
 import sys
 import stat
 import tempfile
 from urlparse import urlparse
+from io import BytesIO
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -34,7 +34,7 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
         self.assertEqual(expected, self.store.url_for('somekey'))
 
     def test_file_uri(self):
-        data = 'Hello, World?!\n'
+        data = b'Hello, World?!\n'
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
             tmpfile.write(data)
@@ -62,7 +62,7 @@ class TestFileStoreUmask(TestFileStore):
         self.perm = 0666 & (0777 ^ current_umask)
 
     def test_file_permission_on_new_file_have_correct_value(self):
-        src = StringIO('nonsense')
+        src = BytesIO(b'nonsense')
 
         key = self.store.put_file('test123', src)
 
@@ -76,7 +76,7 @@ class TestFileStoreUmask(TestFileStore):
 
     def test_file_permissions_on_moved_in_file_have_correct_value(self):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        tmpfile.write('foo')
+        tmpfile.write(b'foo')
         tmpfile.close()
         os.chmod(tmpfile.name, 0777)
         try:
