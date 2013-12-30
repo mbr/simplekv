@@ -3,11 +3,10 @@
 
 import os
 import shutil
-from StringIO import StringIO
 import sys
 import stat
 import tempfile
-from urlparse import urlparse
+from io import BytesIO
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -15,6 +14,7 @@ else:
     import unittest
 
 from . import SimpleUrlKVTest
+from simplekv._compat import urlparse
 from simplekv.fs import FilesystemStore, WebFilesystemStore
 
 from mock import Mock
@@ -34,7 +34,7 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
         self.assertEqual(expected, self.store.url_for('somekey'))
 
     def test_file_uri(self):
-        data = 'Hello, World?!\n'
+        data = b'Hello, World?!\n'
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
             tmpfile.write(data)
@@ -46,8 +46,8 @@ class TestFileStore(unittest.TestCase, SimpleUrlKVTest):
             self.assertTrue(url.startswith('file://'))
             parts = urlparse(url)
 
-            ndata = open(parts.path, 'rb').read()
-            self.assertEqual(ndata, data)
+            with open(parts.path, 'rb') as ndata:
+                self.assertEqual(ndata.read(), data)
         finally:
             if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)
@@ -59,10 +59,10 @@ class TestFileStoreUmask(TestFileStore):
 
         current_umask = os.umask(0)
         os.umask(current_umask)
-        self.perm = 0666 & (0777 ^ current_umask)
+        self.perm = 0o666 & (0o777 ^ current_umask)
 
     def test_file_permission_on_new_file_have_correct_value(self):
-        src = StringIO('nonsense')
+        src = BytesIO(b'nonsense')
 
         key = self.store.put_file('test123', src)
 
@@ -76,9 +76,9 @@ class TestFileStoreUmask(TestFileStore):
 
     def test_file_permissions_on_moved_in_file_have_correct_value(self):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        tmpfile.write('foo')
+        tmpfile.write(b'foo')
         tmpfile.close()
-        os.chmod(tmpfile.name, 0777)
+        os.chmod(tmpfile.name, 0o777)
         try:
             key = self.store.put_file('test123', tmpfile.name)
 
@@ -97,7 +97,7 @@ class TestFileStoreUmask(TestFileStore):
 class TestFileStorePerm(TestFileStoreUmask):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        self.perm = 0612
+        self.perm = 0o612
         self.store = FilesystemStore(self.tmpdir, perm=self.perm)
 
 

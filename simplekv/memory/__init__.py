@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 
 from .. import KeyValueStore
 
@@ -25,7 +22,7 @@ class DictStore(KeyValueStore):
         return key in self.d
 
     def _open(self, key):
-        return StringIO(self.d[key])
+        return BytesIO(self.d[key])
 
     def _put_file(self, key, file):
         self.d[key] = file.read()

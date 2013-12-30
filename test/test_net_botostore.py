@@ -8,8 +8,8 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
-from . import SimpleUrlKVTest
-import test_bucket_manager
+from . import SimpleUrlKVTest, test_bucket_manager
+
 
 if test_bucket_manager.s3_available or test_bucket_manager.gs_available:
     from simplekv.net.botostore import BotoStore

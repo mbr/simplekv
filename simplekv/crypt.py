@@ -6,7 +6,7 @@ import hmac
 import os
 import tempfile
 
-from decorator import StoreDecorator
+from .decorator import StoreDecorator
 
 
 class _HMACFileReader(object):
@@ -45,8 +45,14 @@ class _HMACFileReader(object):
 
         return rv
 
-    def close():
+    def close(self):
         self.source.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
 
 class VerificationException(Exception):
@@ -84,7 +90,7 @@ class HMACDecorator(StoreDecorator):
         super(HMACDecorator, self).__init__(decorated_store)
 
         self.__hashfunc = hashfunc
-        self.__secret_key = secret_key
+        self.__secret_key = bytes(secret_key)
 
     @property
     def hmac_digestsize(self):
@@ -93,11 +99,11 @@ class HMACDecorator(StoreDecorator):
 
     def __new_hmac(self, key, msg=None):
         if not msg:
-            msg = ''
+            msg = b''
 
         # item key is used as salt for secret_key
         hm = hmac.HMAC(
-            key=key + self.__secret_key,
+            key=key.encode('ascii') + self.__secret_key,
             msg=msg,
             digestmod=self.__hashfunc)
 
@@ -122,7 +128,7 @@ class HMACDecorator(StoreDecorator):
         if isinstance(file, str):
             try:
                 f = open(file, 'wb')
-            except OSError, e:
+            except OSError as e:
                 raise IOError('Error opening %s for writing: %r' % (
                     file, e
                 ))

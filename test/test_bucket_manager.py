@@ -10,6 +10,17 @@ else:
 
 from . import testconf_available, testconf, testconf_filename
 
+
+class BucketManager(object):
+    pass
+
+class S3BucketManager(BucketManager):
+    pass
+
+class GSBucketManager(BucketManager):
+    pass
+
+
 s3_available = False
 gs_available = False
 try:
@@ -95,7 +106,7 @@ class BucketManagerTest():
                  testconf.get(self.manager_class.config_section, 'secret_key'))
         try:
             resp = conn.get_bucket(bucket_name)
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             self.assertEqual(e.code, 'NoSuchBucket')
 
 

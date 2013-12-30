@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # coding=utf8
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 
-import itertools
-
+from .._compat import imap
 from .. import KeyValueStore
 
 from sqlalchemy import MetaData, Table, Column, String, LargeBinary, select,\
@@ -46,7 +42,7 @@ class SQLAlchemyStore(KeyValueStore):
         return rv
 
     def _open(self, key):
-        return StringIO(self._get(key))
+        return BytesIO(self._get(key))
 
     def _put(self, key, data):
         con = self.bind.connect()
@@ -69,5 +65,5 @@ class SQLAlchemyStore(KeyValueStore):
         return self._put(key, file.read())
 
     def iter_keys(self):
-        return itertools.imap(lambda v: v[0],
-                              self.bind.execute(select([self.table.c.key])))
+        return imap(lambda v: v[0],
+                   self.bind.execute(select([self.table.c.key])))

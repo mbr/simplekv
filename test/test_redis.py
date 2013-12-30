@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding=utf8
 
-import ConfigParser
 import os
 import sys
 
@@ -10,6 +9,7 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
+from simplekv._compat import ConfigParser
 from simplekv.memory.redisstore import RedisStore
 
 from . import testconf_available, testconf_filename, testconf

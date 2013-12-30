@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # coding=utf8
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 import re
+from io import BytesIO
+
 
 VALID_NON_NUM = r"""\`\!"#$%&'()+,-.<=>?@[]^_{}~"""
 VALID_KEY_REGEXP = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM)
@@ -187,12 +184,12 @@ class KeyValueStore(object):
 
     def _get(self, key):
         """Implementation for :meth:`~simplekv.KeyValueStore.get`. The default
-        implementation will create a :mod:`StringIO`-buffer and then call
+        implementation will create a :class:`io.BytesIO`-buffer and then call
         :meth:`~simplekv.KeyValueStore._get_file`.
 
         :param key: Key to be retrieved
         """
-        buf = StringIO()
+        buf = BytesIO()
 
         self._get_file(key, buf)
 
@@ -207,15 +204,15 @@ class KeyValueStore(object):
         :param key: Key to be retrieved
         :param file: File-like object to write to
         """
-        source = self.open(key)
         bufsize = 1024 * 1024
 
-        while True:
-            buf = source.read(bufsize)
-            file.write(buf)
+        with self.open(key) as source:
+            while True:
+                buf = source.read(bufsize)
+                file.write(buf)
 
-            if len(buf) < bufsize:
-                break
+                if len(buf) < bufsize:
+                    break
 
     def _get_filename(self, key, filename):
         """Write key to file. Either this method or
@@ -251,13 +248,13 @@ class KeyValueStore(object):
 
     def _put(self, key, data):
         """Implementation for :meth:`~simplekv.KeyValueStore.put`. The default
-        implementation will create a :mod:`StringIO`-buffer and then call
+        implementation will create a :class:`io.BytesIO`-buffer and then call
         :meth:`~simplekv.KeyValueStore._put_file`.
 
         :param key: Key under which data should be stored
         :param data: Data to be stored
         """
-        return self._put_file(key, StringIO(data))
+        return self._put_file(key, BytesIO(data))
 
     def _put_file(self, key, file):
         """Store data from file-like object in key. Either this method or

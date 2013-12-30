@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 
 from .. import KeyValueStore
 
@@ -41,7 +38,7 @@ class RedisStore(KeyValueStore):
         file.write(self._get(key))
 
     def _open(self, key):
-        return StringIO(self._get(key))
+        return BytesIO(self._get(key))
 
     def _put(self, key, value):
         self.redis.set(key, value)
