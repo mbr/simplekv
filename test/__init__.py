@@ -7,8 +7,6 @@ import os
 import shutil
 import tempfile
 
-from mock import Mock
-
 
 class SimpleKVTest(object):
     def test_store(self):
