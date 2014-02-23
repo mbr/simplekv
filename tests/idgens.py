@@ -1,4 +1,3 @@
-import hashlib
 import os
 import re
 import tempfile
@@ -55,10 +54,6 @@ class UUIDGen(object):
 
 
 class HashGen(object):
-    @pytest.fixture(params=['sha1', 'sha256', 'md5'])
-    def hashfunc(self, request):
-        return getattr(hashlib, request.param)
-
     @pytest.fixture
     def hashstore(self, store, hashfunc):
         return HashDecorator(store, hashfunc)
