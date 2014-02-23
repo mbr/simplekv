@@ -21,5 +21,5 @@ class TestRedisStore(BasicStore):
             pytest.skip('Could not connect to redis server')
 
         r.flushdb()
-        yield RedisStore()
+        yield RedisStore(r)
         r.flushdb()
