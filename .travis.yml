@@ -7,3 +7,6 @@ script: tox
 services:
   - redis-server
   - memcached
+before_script:
+  - psql -c 'create database simplekv_test;' -U postgres
+  - mysql -e 'create database simplekv_test;'
