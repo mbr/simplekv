@@ -30,13 +30,13 @@ class TestMemcacheStore(BasicStore):
 
     def test_keys_throws_io_error(self, store):
         with pytest.raises(IOError):
-            self.store.keys()
+            store.keys()
 
         with pytest.raises(IOError):
-            self.store.iter_keys()
+            store.iter_keys()
 
         with pytest.raises(IOError):
-            iter(self.store)
+            iter(store)
 
     def test_contains_throws_io_error_or_succeeds(self, store):
         try:
