@@ -10,7 +10,7 @@ from redis.exceptions import ConnectionError
 
 
 class TestRedisStore(BasicStore):
-    @pytest.fixture()
+    @pytest.yield_fixture()
     def store(self):
         from simplekv.memory.redisstore import RedisStore
         r = StrictRedis()
