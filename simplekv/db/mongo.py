@@ -27,7 +27,7 @@ class MongoStore(KeyValueStore):
 
     def _get(self, key):
         try:
-            item = self.db[self.collection].find({"_id": key}).next()
+            item = next(self.db[self.collection].find({"_id": key}))
             return pickle.loads(item["v"])
         except StopIteration:
             raise KeyError(key)
