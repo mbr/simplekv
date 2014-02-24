@@ -23,7 +23,7 @@ def value(request):
     return request.param
 
 
-@pytest.fixture(params=[b('the_other_value'), ('other_value_2')])
+@pytest.fixture(params=[b('the_other_value'), b('other_value_2')])
 def value2(request):
     return request.param
 
