@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # coding=utf8
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 import itertools
+from io import BytesIO
 
 from .. import KeyValueStore
 
@@ -46,7 +42,7 @@ class SQLAlchemyStore(KeyValueStore):
         return rv
 
     def _open(self, key):
-        return StringIO(self._get(key))
+        return BytesIO(self._get(key))
 
     def _put(self, key, data):
         con = self.bind.connect()

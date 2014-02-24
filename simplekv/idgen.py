@@ -11,7 +11,7 @@ signature of some of the put methods slightly.
 >>>
 >>> store = HashDecorator(DictStore())
 >>>
->>> key = store.put(None, 'my_data') #  note the passing of 'None' as key
+>>> key = store.put(None, b'my_data') #  note the passing of 'None' as key
 >>> print key
 ab0c15b6029fdffce16b393f2d27ca839a76249e
 """
