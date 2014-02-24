@@ -41,3 +41,8 @@ class TestBotoStorage(BasicStore, UrlStore):
         with TempDir() as tmpdir:
             with pytest.raises(KeyError):
                 store.get_file(key, os.path.join(tmpdir, 'a'))
+
+    def test_key_error_on_nonexistant_get_filename(self, store, key):
+        with TempDir() as tmpdir:
+            with pytest.raises(KeyError):
+                store.get_file(key, os.path.join(tmpdir, 'a'))
