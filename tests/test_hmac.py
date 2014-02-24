@@ -6,6 +6,7 @@ import tempfile
 from simplekv.crypt import _HMACFileReader, VerificationException,\
     HMACDecorator
 
+from six import b
 import pytest
 
 
@@ -84,7 +85,7 @@ class TestHMACFileReader(object):
         with pytest.raises(VerificationException):
             _HMACFileReader(
                 hmac.HMAC(secret_key, None, hashfunc),
-                BytesIO('a')
+                BytesIO(b('a'))
             )
 
     def test_unbounded_read(self, value, create_reader):
@@ -101,14 +102,14 @@ class HMACDec(object):
 
     def test_get_fails_on_manipulation(self, hmacstore, key, value):
         hmacstore.put(key, value)
-        hmacstore.d[key] += value[-1]
+        hmacstore.d[key] += b('a')
 
         with pytest.raises(VerificationException):
             hmacstore.get(key)
 
     def test_get_file_fails_on_manipulation(self, hmacstore, key, value):
         hmacstore.put(key, value)
-        hmacstore.d[key] += value[-1]
+        hmacstore.d[key] += b('a')
 
         with tempfile.TemporaryFile() as tmp:
             with pytest.raises(VerificationException):
@@ -123,7 +124,7 @@ class HMACDec(object):
 
     def test_open_fails_on_manipulation(self, hmacstore, key, value):
         hmacstore.put(key, value)
-        hmacstore.d[key] += value[-1]
+        hmacstore.d[key] += b('a')
 
         with pytest.raises(VerificationException):
             hmacstore.open(key).read()
@@ -136,8 +137,10 @@ class HMACDec(object):
         with pytest.raises(VerificationException):
             handle.read(1)
 
-    def test_get_fails_on_replay_manipulation(self, hmacstore, key, key2):
-        hmacstore.put(key, 'myvalue')
+    def test_get_fails_on_replay_manipulation(
+        self, hmacstore, key, key2, value
+    ):
+        hmacstore.put(key, value)
         hmacstore.d[key2] = hmacstore.d[key]
         hmacstore.get(key)
 
