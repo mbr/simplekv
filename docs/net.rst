@@ -69,6 +69,8 @@ If a section is not present, the tests for that backend will be skipped.
                      :class:`boto.gs.bucket.Bucket` or similiar.
       :param prefix: A string that will transparently prefixed to all handled
                      keys.
-      :param url_valid_time: When using
+      :param url_valid_time=0: When using
                      :meth:`~simplekv.UrlKeyValueStore.url_for`, URLs should be
                      valid for this many seconds at most.
+      :param reduced_redundancy=False: Use reduced redundancy storage for
+                                       storing keys.
