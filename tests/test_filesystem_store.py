@@ -2,7 +2,7 @@
 
 import os
 import stat
-from simplekv._compat import BytesIO
+from simplekv._compat import BytesIO, url_quote, url_unquote
 import tempfile
 from simplekv._compat import urlparse
 
@@ -32,7 +32,7 @@ class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
     @pytest.mark.skipif(os.name != 'posix',
                         reason='Not supported outside posix.')
     def test_correct_file_uri(self, store, tmpdir, key):
-        expected = 'file://' + tmpdir + '/' + key
+        expected = 'file://' + tmpdir + '/' + url_quote(key)
         assert store.url_for(key) == expected
 
     def test_file_uri(self, store, value):
@@ -94,7 +94,7 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
             key = store.put_file(key, tmpfile.name)
 
             parts = urlparse(store.url_for(key))
-            path = parts.path
+            path = url_unquote(parts.path)
 
             mode = os.stat(path).st_mode
             mask = (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
@@ -126,7 +126,7 @@ class TestWebFileStore(TestBaseFilesystemStore):
         return WebFilesystemStore(tmpdir, url_prefix)
 
     def test_url(self, store, url_prefix, key):
-        expected = url_prefix + key
+        expected = url_prefix + url_quote(key)
         assert store.url_for(key) == expected
 
     def test_url_callable(self, tmpdir, key):
@@ -135,7 +135,7 @@ class TestWebFileStore(TestBaseFilesystemStore):
 
         store = WebFilesystemStore(tmpdir, mock_callable)
 
-        expected = prefix + key
+        expected = prefix + url_quote(key)
         assert store.url_for(key) == expected
 
         mock_callable.assert_called_with(store, key)

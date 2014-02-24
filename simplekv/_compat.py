@@ -11,9 +11,10 @@ else:
     from ConfigParser import ConfigParser
 
 if not PY2:
-    from urllib.parse import quote as url_quote
+    from urllib.parse import quote as url_quote, unquote as url_unquote
 else:
     from urllib import quote as url_quote
+    from urllib import unquote as url_unquote
 
 if not PY2:
     from urllib.parse import urlparse
