@@ -34,10 +34,10 @@ class TestBotoStorage(BasicStore, UrlStore):
     def store(self, bucket, prefix):
         return BotoStore(bucket, prefix)
 
-    def test_get_filename_nonexistant(self, store):
+    def test_get_filename_nonexistant(self, store, key):
         # NOTE: boto misbehaves here and tries to erase the target file
         # the parent tests use /dev/null, which you really should not try
         # to os.remove!
         with TempDir() as tmpdir:
             with pytest.raises(KeyError):
-                store.get_file('nonexistantkey', os.path.join(tmpdir, 'a'))
+                store.get_file(key, os.path.join(tmpdir, 'a'))
