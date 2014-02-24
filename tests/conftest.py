@@ -1,6 +1,4 @@
 # coding: utf8
-from __future__ import unicode_literals
-
 import hashlib
 
 from six import b
@@ -35,23 +33,24 @@ def long_value(request):
 
 
 # keys are always strings. only ascii chars are allowed
-@pytest.fixture(params=['short_key', 'different_key',
+@pytest.fixture(params=[u'short_key', u'different_key',
                         """'!"`#$%&'()+,-.<=>?@[]^_{}~'"""])
 def key(request):
     return request.param
 
 
-@pytest.fixture(params=['key_number_2', 'and_again_a_second_key'])
+@pytest.fixture(params=[u'key_number_2', u'and_again_a_second_key'])
 def key2(request):
     return request.param
 
 
-@pytest.fixture(params=['ä', '/', '\x00', '*', '', 'no whitespace allowed'])
+@pytest.fixture(params=[u'ä', u'/', u'\x00', u'*', u'',
+                        u'no whitespace allowed'])
 def invalid_key(request):
     return request.param
 
 
 # maximum length key
-@pytest.fixture(params=['a' * 250, 'b' * 250])
+@pytest.fixture(params=[u'a' * 250, u'b' * 250])
 def max_key(request):
     return request.param
