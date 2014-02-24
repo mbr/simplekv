@@ -18,11 +18,11 @@ class MemcacheStore(KeyValueStore):
         self.mc = mc
 
     def _delete(self, key):
-        if not self.mc.delete(key):
+        if not self.mc.delete(key.encode('ascii')):
             raise IOError('Error deleting key')
 
     def _get(self, key):
-        rv = self.mc.get(key)
+        rv = self.mc.get(key.encode('ascii'))
         if None == rv:
             raise KeyError(key)
         return rv
@@ -34,7 +34,7 @@ class MemcacheStore(KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put(self, key, data):
-        if not self.mc.set(key, data):
+        if not self.mc.set(key.encode('ascii'), data):
             if len(data) >= 1024 * 1023:
                 raise IOError('Failed to store data, probably too large. '\
                               'memcached limit is 1M')
