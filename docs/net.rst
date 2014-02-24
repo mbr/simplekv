@@ -36,19 +36,23 @@ Here is a short example:
 
 Unit testing
 ============
+
 The unit-tests for the boto storage can only run if you have access to a Google
 Storage and/or Amazon S3 account. The tests will look in a file
-``~/.simplekv-test`` for account info, here is an example file:
+``boto_credentials`` in the simplekv source root folder for account
+credentials, here is an example file:
 
 ::
 
   [s3]
   access_key = YOUR_AMAZON_S3_ACCESS_KEY
   secret_key = YOUR_AMAZON_S3_SECRET_KEY
+  connect_func = connect_s3
 
   [gs]
   access_key = YOUR_GOOGLE_STORAGE_ACCESS_KEY
   secret_key = YOUR_GOOGLE_STORAGE_SECRET_KEY
+  connect_func = connect_gs
 
 If a section is not present, the tests for that backend will be skipped.
 
