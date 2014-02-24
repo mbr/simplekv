@@ -4,7 +4,7 @@
 from .. import KeyValueStore
 from .._compat import BytesIO
 
-from .._compat.Pickle import dumps, loads
+from .._compat import pickle
 from bson.binary import Binary
 
 
@@ -28,7 +28,7 @@ class MongoStore(KeyValueStore):
     def _get(self, key):
         try:
             item = self.db[self.collection].find({"_id": key}).next()
-            return loads(item["v"])
+            return pickle.loads(item["v"])
         except StopIteration:
             raise KeyError(key)
 
@@ -36,9 +36,10 @@ class MongoStore(KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put(self, key, value):
-        self.db[self.collection].update({"_id": key},
-                                        {"$set": {"v": Binary(dumps(value))}},
-                                        upsert=True)
+        self.db[self.collection].update(
+            {"_id": key},
+            {"$set": {"v": Binary(pickle.dumps(value))}},
+            upsert=True)
         return key
 
     def _put_file(self, key, file):
