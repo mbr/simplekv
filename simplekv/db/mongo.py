@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .. import KeyValueStore, StringIO
+from .. import KeyValueStore
+from .._compat import BytesIO
 
-try:
-    from cPickle import dumps, loads
-except ImportError:
-    from pickle import dumps, loads
+from .._compat.Pickle import dumps, loads
 from bson.binary import Binary
 
 
@@ -35,7 +33,7 @@ class MongoStore(KeyValueStore):
             raise KeyError(key)
 
     def _open(self, key):
-        return StringIO(self._get(key))
+        return BytesIO(self._get(key))
 
     def _put(self, key, value):
         self.db[self.collection].update({"_id": key},
