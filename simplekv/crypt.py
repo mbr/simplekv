@@ -6,7 +6,7 @@ import hmac
 import os
 import tempfile
 
-from decorator import StoreDecorator
+from .decorator import StoreDecorator
 
 
 class _HMACFileReader(object):

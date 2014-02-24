@@ -21,7 +21,7 @@ import os
 import tempfile
 import uuid
 
-from decorator import StoreDecorator
+from .decorator import StoreDecorator
 
 
 class HashDecorator(StoreDecorator):
