@@ -18,8 +18,8 @@ class UUIDGen(object):
     def uuidstore(self, store):
         return UUIDDecorator(store)
 
-    def test_put_generates_uuid_form(self, uuidstore):
-        key = uuidstore.put(None, 'some_data')
+    def test_put_generates_uuid_form(self, uuidstore, value):
+        key = uuidstore.put(None, value)
         assert UUID_REGEXP.match(key)
 
     def test_put_file_generates_uuid_form(self, uuidstore):
@@ -35,8 +35,8 @@ class UUIDGen(object):
             if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)
 
-    def test_put_generates_valid_uuid(self, uuidstore):
-        key = uuidstore.put(None, 'some_data')
+    def test_put_generates_valid_uuid(self, uuidstore, value):
+        key = uuidstore.put(None, value)
         uuid.UUID(hex=key)
 
     def test_put_file_generates_valid_uuid(self, uuidstore):
@@ -66,8 +66,8 @@ class HashGen(object):
 
         return hash_regexp.match
 
-    def test_put_generates_valid_form(self, hashstore, validate_hash):
-        key = hashstore.put(None, 'some_data')
+    def test_put_generates_valid_form(self, hashstore, validate_hash, value):
+        key = hashstore.put(None, value)
         assert validate_hash(key)
 
     def test_put_file_generates_valid_form(self, hashstore, validate_hash):
@@ -79,19 +79,17 @@ class HashGen(object):
         # key2 = hashstore.put_file(None, '/dev/null')
         # assert validate_hash(key2)
 
-    def test_put_generates_correct_hash(self, hashstore, hashfunc):
-        data = 'abcdXefg'
-        key = hashstore.put(None, data)
+    def test_put_generates_correct_hash(self, hashstore, hashfunc, value):
+        key = hashstore.put(None, value)
 
-        assert hashfunc(data).hexdigest() == key
+        assert hashfunc(value).hexdigest() == key
 
-    def test_put_file_generates_correct_hash(self, hashstore, hashfunc):
-        data = '!bcdXefQ'
-        h = hashfunc(data).hexdigest()
+    def test_put_file_generates_correct_hash(self, hashstore, hashfunc, value):
+        h = hashfunc(value).hexdigest()
 
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
-            tmpfile.write(data)
+            tmpfile.write(value)
             tmpfile.close()
             with open(tmpfile.name, 'rb') as f:
                 key = hashstore.put_file(None, f)

@@ -12,7 +12,7 @@ def hashfunc(request):
     return getattr(hashlib, request.param)
 
 
-@pytest.fixture(params=['secret_key_a', '\x12\x00\x12test'])
+@pytest.fixture(params=[b'secret_key_a', b'\x12\x00\x12test'])
 def secret_key(request):
     return request.param
 
