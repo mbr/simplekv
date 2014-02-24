@@ -68,7 +68,7 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
     @pytest.fixture(scope='class')
     def perms(self, current_umask):
         # the permissions we expect on files are inverse to the mask
-        return 0666 & (0777 ^ current_umask)
+        return 0o666 & (0o777 ^ current_umask)
 
     def test_file_permission_on_new_file_have_correct_value(
         self, store, perms
@@ -91,7 +91,7 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         tmpfile.write('foo')
         tmpfile.close()
-        os.chmod(tmpfile.name, 0777)
+        os.chmod(tmpfile.name, 0o777)
         try:
             key = store.put_file('test123', tmpfile.name)
 
@@ -110,7 +110,7 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
 class TestFileStoreSetPermissions(TestFilesystemStoreUmask):
     @pytest.fixture
     def perms(self):
-        return 0612
+        return 0o612
         self.tmpdir = tempfile.mkdtemp()
 
     @pytest.fixture

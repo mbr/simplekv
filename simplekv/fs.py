@@ -52,7 +52,7 @@ class FilesystemStore(UrlKeyValueStore):
 
         perm = self.perm
         if None == self.perm:
-            perm = 0666 & (0777 ^ current_umask)
+            perm = 0o666 & (0o777 ^ current_umask)
 
         os.chmod(filename, perm)
 
