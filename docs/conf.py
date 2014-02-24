@@ -201,7 +201,7 @@ latex_documents = [
 #latex_use_modindex = True
 
 intersphinx_mapping = {'http://docs.python.org/': None,
-                       'http://boto.cloudhackers.com/': None,
+                       'http://docs.pythonboto.org/en/latest/': None,
                        'http://sendapatch.se/projects/pylibmc/': None,
                        'http://www.sqlalchemy.org/docs/': None,
                        'http://redis-py.readthedocs.org/en/latest/': None}
