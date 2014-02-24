@@ -4,26 +4,13 @@ import pytest
 
 
 class UrlStore(object):
-    def test_url_for_for_generates_url_for(self, store):
-        k = 'uk'
-        store.put(k, 'v')
-        assert type(store.url_for(k)), str
+    def test_url_for_for_generates_url_for(self, store, key, value):
+        store.put(key, value)
+        assert isinstance(store.url_for(key), basestring)
 
-    def test_url_for_generation_does_not_check_exists(self, store):
-        store.url_for('does_not_exist_at_all')
+    def test_url_for_generation_does_not_check_exists(self, store, key):
+        store.url_for(key)
 
-    def test_url_for_generation_checks_valid_key(self, store):
+    def test_url_for_generation_checks_valid_key(self, store, invalid_key):
         with pytest.raises(ValueError):
-            store.url_for(u'ä')
-
-        with pytest.raises(ValueError):
-            store.url_for('/')
-
-        with pytest.raises(ValueError):
-            store.url_for('\x00')
-
-        with pytest.raises(ValueError):
-            store.url_for('*')
-
-        with pytest.raises(ValueError):
-            store.url_for('')
+            store.url_for(invalid_key)
