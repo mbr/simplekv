@@ -6,9 +6,9 @@ PY2 = sys.version_info[0] == 2
 
 
 if not PY2:
-    import configparser as ConfigParser
+    from configparser import ConfigParser
 else:
-    import ConfigParser
+    from ConfigParser import configparser
 
 if not PY2:
     from urllib.parse import quote as url_quote
