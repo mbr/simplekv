@@ -19,7 +19,7 @@ class RedisStore(KeyValueStore):
         return self.redis.delete(key)
 
     def keys(self):
-        return self.redis.keys()
+        return list(map(lambda b: b.decode(), self.redis.keys()))
 
     def iter_keys(self):
         return iter(self.keys())
@@ -30,7 +30,7 @@ class RedisStore(KeyValueStore):
     def _get(self, key):
         val = self.redis.get(key)
 
-        if val == None:
+        if val is None:
             raise KeyError(key)
         return val
 
