@@ -14,7 +14,7 @@ from basic_store import BasicStore
 # FIXME: for local testing, this needs configurable dsns
 class TestSQLAlchemyStore(BasicStore):
     DSNS = [
-        ('pymsql',
+        ('pymysql',
          'mysql+pymysql://travis:@localhost/simplekv_test'),
         ('psycopg2',
          'postgresql+psycopg2://postgres:@127.0.0.1/simplekv_test'),
