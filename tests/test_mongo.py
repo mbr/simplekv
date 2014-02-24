@@ -17,6 +17,9 @@ class TestMongoDB(BasicStore):
 
     @pytest.yield_fixture
     def store(self, db_name):
-        conn = pymongo.MongoClient()
+        try:
+            conn = pymongo.MongoClient()
+        except pymongo.errors.ConnectionFailure:
+            pytest.skip('could not connect to mongodb')
         yield MongoStore(conn[db_name], 'simplekv-tests')
         conn.drop_database(db_name)
