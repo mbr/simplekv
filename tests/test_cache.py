@@ -20,14 +20,11 @@ class TestCache(BasicStore):
     def store(self, front_store, backing_store):
         return CacheDecorator(front_store, backing_store)
 
-    def test_works_when_cache_loses_key(self, store, front_store):
-        store.put('keya', 'valuea')
-        store.put('keyb', 'valueb')
+    def test_works_when_cache_loses_key(self, store, front_store, key, value):
+        store.put(key, value)
 
-        assert 'valuea' == store.get('keya')
-        assert 'valueb' == store.get('keyb')
+        assert store.get(key) == value
 
-        front_store.delete('keya')
+        front_store.delete(key)
 
-        assert 'valuea' == store.get('keya')
-        assert 'valueb' == store.get('keyb')
+        assert store.get(key) == value
