@@ -1,6 +1,6 @@
 import hmac
 import os
-from simplekv._compat import BytesIO
+from simplekv._compat import BytesIO, xrange
 import tempfile
 
 from simplekv.crypt import _HMACFileReader, VerificationException,\
@@ -16,7 +16,7 @@ class TestHMACFileReader(object):
         def _alter_byte(s, n):
             return s[:n] + chr((ord(s[n]) + 1) % 255) + s[n + 1:]
 
-        return (_alter_byte(value, i) for i in range(len(value)))
+        return (_alter_byte(value, i) for i in xrange(len(value)))
 
     @pytest.fixture
     def expected_digest(self, secret_key, value, hashfunc):
