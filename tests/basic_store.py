@@ -1,6 +1,6 @@
 # coding: utf8
 
-from StringIO import StringIO
+from simplekv._compat import BytesIO
 import os
 import tempfile
 from tempdir import TempDir
@@ -22,7 +22,7 @@ class BasicStore(object):
         v = 'data1'
         k = 'key1'
 
-        store.put_file(k, StringIO(v))
+        store.put_file(k, BytesIO(v))
         assert store.get(k) == v
 
     def test_store_and_retrieve_overwrite(self, store):
@@ -31,7 +31,7 @@ class BasicStore(object):
 
         k = 'key1'
 
-        store.put_file(k, StringIO(v))
+        store.put_file(k, BytesIO(v))
         assert store.get(k) == v
 
         store.put(k, v2)
@@ -41,14 +41,14 @@ class BasicStore(object):
         v = 'data1'
         k = 'key1'
 
-        store.put_file(k, StringIO(v))
+        store.put_file(k, BytesIO(v))
         assert store.open(k).read() == v
 
     def test_open_incremental_read(self, store):
         v = 'data_abc'
         k = 'key1'
 
-        store.put_file(k, StringIO(v))
+        store.put_file(k, BytesIO(v))
         ok = store.open(k)
         assert v[:3] == ok.read(3)
         assert v[3:5] == ok.read(2)
@@ -152,7 +152,7 @@ class BasicStore(object):
         v = 'another_value'
         store.put(k, v)
 
-        output = StringIO()
+        output = BytesIO()
 
         store.get_file(k, output)
         assert output.getvalue() == v
@@ -163,7 +163,7 @@ class BasicStore(object):
 
     def test_get_file_nonexistant(self, store):
         with pytest.raises(KeyError):
-            store.get_file('nonexistantkey', StringIO())
+            store.get_file('nonexistantkey', BytesIO())
 
     def test_get_filename_nonexistant(self, store):
         with pytest.raises(KeyError):
@@ -181,7 +181,7 @@ class BasicStore(object):
         k = 'rvkey12'
         v = 'some_val'
 
-        rv = store.put_file(k, StringIO(v))
+        rv = store.put_file(k, BytesIO(v))
 
         assert k == rv
 

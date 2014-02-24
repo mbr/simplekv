@@ -2,7 +2,7 @@
 
 import os
 import stat
-from StringIO import StringIO
+from simplekv._compat import BytesIO
 import tempfile
 from urlparse import urlparse
 
@@ -73,7 +73,7 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
     def test_file_permission_on_new_file_have_correct_value(
         self, store, perms
     ):
-        src = StringIO('nonsense')
+        src = BytesIO('nonsense')
 
         key = store.put_file('test123', src)
 

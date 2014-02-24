@@ -1,6 +1,6 @@
 import hmac
 import os
-from StringIO import StringIO
+from simplekv._compat import BytesIO
 import tempfile
 
 from simplekv.crypt import _HMACFileReader, VerificationException,\
@@ -40,7 +40,7 @@ class TestHMACFileReader(object):
     @pytest.fixture
     def create_reader(self, stored_blob, secret_key, hashfunc):
         return lambda: _HMACFileReader(hmac.HMAC(secret_key, None, hashfunc),
-                                       StringIO(stored_blob))
+                                       BytesIO(stored_blob))
 
     @pytest.fixture
     def chunk_sizes(self, sample_data):
@@ -71,7 +71,7 @@ class TestHMACFileReader(object):
         for bad_data in bad_datas:
             reader = _HMACFileReader(
                 hmac.HMAC(secret_key, None, hashfunc),
-                StringIO(bad_datas)
+                BytesIO(bad_datas)
             )
 
             with pytest.raises(VerificationException):
@@ -83,7 +83,7 @@ class TestHMACFileReader(object):
         for bad_data in bad_datas:
             reader = _HMACFileReader(
                 hmac.HMAC(secret_key, None, hashfunc),
-                StringIO(bad_datas)
+                BytesIO(bad_datas)
             )
 
             with pytest.raises(VerificationException):
@@ -96,7 +96,7 @@ class TestHMACFileReader(object):
         with pytest.raises(VerificationException):
             _HMACFileReader(
                 hmac.HMAC(secret_key, None, hashfunc),
-                StringIO('a')
+                BytesIO('a')
             )
 
     def test_unbounded_read(self, sample_data, create_reader):
