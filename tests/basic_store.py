@@ -9,8 +9,8 @@ import pytest
 
 
 class BasicStore(object):
-    def test_store(self, store):
-        store.put('key1', 'data1')
+    def test_store(self, store, key, value):
+        store.put(key, value)
 
     def test_store_and_retrieve(self, store, key, value):
         store.put(key, value)
