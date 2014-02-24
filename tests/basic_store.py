@@ -38,13 +38,13 @@ class BasicStore(object):
         assert long_value[3:5] == ok.read(2)
         assert long_value[5:8] == ok.read(3)
 
-    def test_key_error_on_nonexistant_get(self, store, value):
+    def test_key_error_on_nonexistant_get(self, store, key):
         with pytest.raises(KeyError):
-            store.get(value)
+            store.get(key)
 
-    def test_key_error_on_nonexistant_open(self, store, value):
+    def test_key_error_on_nonexistant_open(self, store, key):
         with pytest.raises(KeyError):
-            store.open(value)
+            store.open(key)
 
     def test_key_error_on_nonexistant_get_file(self, store, key):
         with pytest.raises(KeyError):
