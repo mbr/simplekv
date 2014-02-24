@@ -8,7 +8,6 @@ from uuid import uuid4 as uuid
 import pytest
 
 boto = pytest.importorskip('boto')
-from boto.exception import StorageResponseError
 
 
 @contextmanager
