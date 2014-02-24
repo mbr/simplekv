@@ -25,4 +25,9 @@ if not PY2:
 else:
     from itertools import imap
 
+if not PY2:
+    from io import BytesIO
+else:
+    from cStringIO import StringIO as BytesIO
+
 xrange = range if not PY2 else xrange
