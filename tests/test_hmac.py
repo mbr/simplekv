@@ -13,12 +13,14 @@ import pytest
 class TestHMACFileReader(object):
     @pytest.fixture
     def bad_datas(self, value):
+        val = value * 3
+
         def _alter_byte(byte_string, pos):
             old_val = indexbytes(byte_string, pos)
             new_byte = int2byte((old_val + 1 % 255))
             return byte_string[:pos] + new_byte + byte_string[pos + 1:]
 
-        return (_alter_byte(value, i) for i in xrange(len(value)))
+        return (_alter_byte(val, i) for i in xrange(len(val)))
 
     @pytest.fixture
     def expected_digest(self, secret_key, value, hashfunc):
@@ -62,7 +64,7 @@ class TestHMACFileReader(object):
         for bad_data in bad_datas:
             reader = _HMACFileReader(
                 hmac.HMAC(secret_key, None, hashfunc),
-                BytesIO(bad_datas)
+                BytesIO(bad_data)
             )
 
             with pytest.raises(VerificationException):
@@ -74,7 +76,7 @@ class TestHMACFileReader(object):
         for bad_data in bad_datas:
             reader = _HMACFileReader(
                 hmac.HMAC(secret_key, None, hashfunc),
-                BytesIO(bad_datas)
+                BytesIO(bad_data)
             )
 
             with pytest.raises(VerificationException):
