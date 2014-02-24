@@ -6,15 +6,17 @@ import tempfile
 from simplekv.crypt import _HMACFileReader, VerificationException,\
     HMACDecorator
 
-from six import b
+from six import b, indexbytes, int2byte
 import pytest
 
 
 class TestHMACFileReader(object):
     @pytest.fixture
     def bad_datas(self, value):
-        def _alter_byte(s, n):
-            return s[:n] + chr((ord(s[n]) + 1) % 255) + s[n + 1:]
+        def _alter_byte(byte_string, pos):
+            old_val = indexbytes(byte_string, pos)
+            new_byte = int2byte((old_val + 1 % 255))
+            return byte_string[:pos] + new_byte + byte_string[pos + 1:]
 
         return (_alter_byte(value, i) for i in xrange(len(value)))
 
@@ -44,15 +46,15 @@ class TestHMACFileReader(object):
                                 create_reader, chunk_sizes):
         # try for different read lengths
         for n in chunk_sizes:
-            data = ''
+            chunks = []
             reader = create_reader()
             while True:
                 r = reader.read(n)
-                if '' == r:
+                if not r:
                     break
-                data += r
+                chunks.append(r)
 
-            assert data == value
+            assert b('').join(chunks) == value
 
     def test_manipulated_input_full_read(
         self, secret_key, value, bad_datas, hashfunc
