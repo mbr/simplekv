@@ -20,7 +20,7 @@ class BotoStore(UrlKeyValueStore):
         self.url_valid_time = url_valid_time
 
     def __new_key(self, name):
-        k = Key(self.bucket, name)
+        k = Key(self.bucket, self.prefix + name)
         return k
 
     def iter_keys(self):
@@ -45,7 +45,7 @@ class BotoStore(UrlKeyValueStore):
                 raise IOError(str(e))
 
     def _get(self, key):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             return k.get_contents_as_string()
         except StorageResponseError, e:
@@ -56,7 +56,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _get_file(self, key, file):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             return k.get_contents_to_file(file)
         except StorageResponseError, e:
@@ -67,7 +67,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _get_filename(self, key, filename):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             return k.get_contents_to_filename(filename)
         except StorageResponseError, e:
@@ -78,7 +78,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _open(self, key):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             k.open_read()
             return k
@@ -90,7 +90,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _put(self, key, data):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             k.set_contents_from_string(
                 data, reduced_redundancy=self.reduced_redundancy
@@ -102,7 +102,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _put_file(self, key, file):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             k.set_contents_from_file(
                 file, reduced_redundancy=self.reduced_redundancy
@@ -114,7 +114,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _put_filename(self, key, filename):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             k.set_contents_from_filename(
                 filename, reduced_redundancy=self.reduced_redundancy
@@ -126,7 +126,7 @@ class BotoStore(UrlKeyValueStore):
             raise IOError(str(e))
 
     def _url_for(self, key):
-        k = self.__new_key(self.prefix + key)
+        k = self.__new_key(key)
         try:
             return k.generate_url(self.url_valid_time)
         except (BotoClientError, BotoServerError), e:
