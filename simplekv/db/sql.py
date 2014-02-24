@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=utf8
 
-import itertools
 from io import BytesIO
 
+from .._compat import imap
 from .. import KeyValueStore
 
 from sqlalchemy import MetaData, Table, Column, String, LargeBinary, select,\
@@ -65,5 +65,5 @@ class SQLAlchemyStore(KeyValueStore):
         return self._put(key, file.read())
 
     def iter_keys(self):
-        return itertools.imap(lambda v: v[0],
-                              self.bind.execute(select([self.table.c.key])))
+        return imap(lambda v: v[0],
+                   self.bind.execute(select([self.table.c.key])))
