@@ -61,7 +61,7 @@ If a section is not present, the tests for that backend will be skipped.
 
    Backend using the storage api of boto.
 
-   .. method:: __init__(bucket, prefix='', url_valid_time=0, reduced_redundancy=False)
+   .. method:: __init__(bucket, prefix='', url_valid_time=0, reduced_redundancy=False, public=False)
 
       Constructs a new boto based backend.
 
@@ -74,3 +74,5 @@ If a section is not present, the tests for that backend will be skipped.
                      valid for this many seconds at most.
       :param reduced_redundancy: Use reduced redundancy storage for
                                        storing keys.
+      :param public: If set, all newly updated values will be made public
+                     immediately.
