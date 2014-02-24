@@ -31,16 +31,14 @@ class TestBaseFilesystemStore(BasicStore, UrlStore, UUIDGen, HashGen):
 class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
     @pytest.mark.skipif(os.name != 'posix',
                         reason='Not supported outside posix.')
-    def test_correct_file_uri(self, store, tmpdir):
-        expected = 'file://' + tmpdir + '/somekey'
-        assert store.url_for('somekey') == expected
+    def test_correct_file_uri(self, store, tmpdir, key):
+        expected = 'file://' + tmpdir + '/' + key
+        assert store.url_for(key) == expected
 
-    def test_file_uri(self, store):
-        data = 'Hello, World?!\n'
-
+    def test_file_uri(self, store, value):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
-            tmpfile.write(data)
+            tmpfile.write(value)
             tmpfile.close()
 
             key = store.put_file('testkey', tmpfile.name)
@@ -50,7 +48,7 @@ class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
             parts = urlparse(url)
 
             ndata = open(parts.path, 'rb').read()
-            assert data == ndata
+            assert value == ndata
         finally:
             if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)
@@ -71,9 +69,9 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
         return 0o666 & (0o777 ^ current_umask)
 
     def test_file_permission_on_new_file_have_correct_value(
-        self, store, perms
+        self, store, perms, value
     ):
-        src = BytesIO('nonsense')
+        src = BytesIO(value)
 
         key = store.put_file('test123', src)
 
@@ -86,14 +84,14 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
         assert mode & mask == perms
 
     def test_file_permissions_on_moved_in_file_have_correct_value(
-        self, store, perms
+        self, store, perms, key, value
     ):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        tmpfile.write('foo')
+        tmpfile.write(value)
         tmpfile.close()
         os.chmod(tmpfile.name, 0o777)
         try:
-            key = store.put_file('test123', tmpfile.name)
+            key = store.put_file(key, tmpfile.name)
 
             parts = urlparse(store.url_for(key))
             path = parts.path
@@ -127,18 +125,16 @@ class TestWebFileStore(TestBaseFilesystemStore):
     def store(self, tmpdir, url_prefix):
         return WebFilesystemStore(tmpdir, url_prefix)
 
-    def test_url(self, store, url_prefix):
-        key = 'some_key'
-        expected = url_prefix + 'some_key'
+    def test_url(self, store, url_prefix, key):
+        expected = url_prefix + key
         assert store.url_for(key) == expected
 
-    def test_url_callable(self, tmpdir):
+    def test_url_callable(self, tmpdir, key):
         prefix = 'http://some.prefix.invalid/'
         mock_callable = Mock(return_value=prefix)
 
         store = WebFilesystemStore(tmpdir, mock_callable)
 
-        key = 'mykey'
         expected = prefix + key
         assert store.url_for(key) == expected
 
