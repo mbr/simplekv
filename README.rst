@@ -1,6 +1,9 @@
 simple key-value storage api
 ============================
 
+.. image:: https://travis-ci.org/mbr/simplekv.png?branch=master
+   :target: https://travis-ci.org/mbr/simplekv
+
 *simplekv* is an API for very basic key-value stores used for small, frequently
 accessed data or large binary blobs. Its basic interface is easy to implement
 and it supports a number of backends, including the filesystem, SQLAlchemy,
