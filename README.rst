@@ -12,8 +12,7 @@ MongoDB, Redis and Amazon S3/Google Storage.
 Installation
 ------------
 simplekv is `available on PyPI <http://pypi.python.org/pypi/simplekv/>`_ and
-can be installed through `pip <http://pypi.python.org/pypi/pip>`_ or
-`easy_install <http://pypi.python.org/pypi/setuptools>`_:
+can be installed through `pip <http://pypi.python.org/pypi/pip>`_:
 
 ::
 
