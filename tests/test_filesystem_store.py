@@ -4,7 +4,7 @@ import os
 import stat
 from simplekv._compat import BytesIO
 import tempfile
-from urlparse import urlparse
+from simplekv._compat import urlparse
 
 from simplekv.fs import FilesystemStore, WebFilesystemStore
 from tempdir import TempDir
