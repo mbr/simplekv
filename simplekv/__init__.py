@@ -206,13 +206,17 @@ class KeyValueStore(object):
         """
         bufsize = 1024 * 1024
 
-        with self.open(key) as source:
-            while True:
-                buf = source.read(bufsize)
-                file.write(buf)
+        # note: we do not use a context manager here or close the source.
+        # the source goes out of scope shortly after, taking care of the issue
+        # this allows us to support file-like objects without close as well,
+        # such as BytesIO.
+        source = self.open(key)
+        while True:
+            buf = source.read(bufsize)
+            file.write(buf)
 
-                if len(buf) < bufsize:
-                    break
+            if len(buf) < bufsize:
+                break
 
     def _get_filename(self, key, filename):
         """Write key to file. Either this method or
