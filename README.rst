@@ -19,7 +19,7 @@ can be installed through `pip <http://pypi.python.org/pypi/pip>`_ or
 Documentation
 -------------
 The documentation for *simplekv* is available at
-`<http://simplekv.readthedocs.org>`_.
+http://pythonhosted.org/simplekv.
 
 License
 -------
