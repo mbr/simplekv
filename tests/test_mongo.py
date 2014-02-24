@@ -18,5 +18,5 @@ class TestMongoDB(BasicStore):
     @pytest.yield_fixture
     def store(self, db_name):
         conn = pymongo.MongoClient()
-        yield MongoStore(conn[db_name])
+        yield MongoStore(conn[db_name], 'simplekv-tests')
         conn.drop_database(self.db_name)
