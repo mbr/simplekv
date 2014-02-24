@@ -12,10 +12,11 @@ from .. import UrlKeyValueStore
 
 class BotoStore(UrlKeyValueStore):
     def __init__(self, bucket, prefix='', url_valid_time=0,
-                 reduced_redundancy=False):
+                 reduced_redundancy=False, public=False):
         self.prefix = prefix.strip().lstrip('/')
         self.bucket = bucket
         self.reduced_redundancy = reduced_redundancy
+        self.public = public
         self.url_valid_time = url_valid_time
 
     def __new_key(self, name):
@@ -94,6 +95,8 @@ class BotoStore(UrlKeyValueStore):
             k.set_contents_from_string(
                 data, reduced_redundancy=self.reduced_redundancy
             )
+            if self.public:
+                k.make_public()
             return key
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
@@ -101,9 +104,11 @@ class BotoStore(UrlKeyValueStore):
     def _put_file(self, key, file):
         k = self.__new_key(self.prefix + key)
         try:
-            k.set_contents_from_file(file,
-                reduced_redundancy=self.reduced_redundancy
+            k.set_contents_from_file(
+                file, reduced_redundancy=self.reduced_redundancy
             )
+            if self.public:
+                k.make_public()
             return key
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
@@ -111,9 +116,11 @@ class BotoStore(UrlKeyValueStore):
     def _put_filename(self, key, filename):
         k = self.__new_key(self.prefix + key)
         try:
-            k.set_contents_from_filename(filename,
-                reduced_redundancy=self.reduced_redundancy
+            k.set_contents_from_filename(
+                filename, reduced_redundancy=self.reduced_redundancy
             )
+            if self.public:
+                k.make_public()
             return key
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
