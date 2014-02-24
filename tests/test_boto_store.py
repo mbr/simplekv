@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import os
+from tempdir import TempDir
+
 import pytest
 
 boto = pytest.importorskip('boto')
@@ -30,3 +33,11 @@ class TestBotoStorage(BasicStore, UrlStore):
     @pytest.fixture
     def store(self, bucket, prefix):
         return BotoStore(bucket, prefix)
+
+    def test_get_filename_nonexistant(self, store):
+        # NOTE: boto misbehaves here and tries to erase the target file
+        # the parent tests use /dev/null, which you really should not try
+        # to os.remove!
+        with TempDir() as tmpdir:
+            with pytest.raises(KeyError):
+                store.get_file('nonexistantkey', os.path.join(tmpdir, 'a'))
