@@ -12,7 +12,7 @@ signature of some of the put methods slightly.
 >>> store = HashDecorator(DictStore())
 >>>
 >>> key = store.put(None, b'my_data') #  note the passing of 'None' as key
->>> print key
+>>> print(key)
 ab0c15b6029fdffce16b393f2d27ca839a76249e
 """
 
@@ -78,7 +78,7 @@ class HashDecorator(StoreDecorator):
                 finally:
                     try:
                         os.unlink(tmpfile.name)
-                    except OSError, e:
+                    except OSError as e:
                         if 2 == e.errno:
                             pass  # file already gone
                         else:
