@@ -61,7 +61,7 @@ If a section is not present, the tests for that backend will be skipped.
 
    Backend using the storage api of boto.
 
-   .. method:: __init__(bucket, prefix='', url_valid_time=0)
+   .. method:: __init__(bucket, prefix='', url_valid_time=0, reduced_redundancy=False)
 
       Constructs a new boto based backend.
 
@@ -72,5 +72,5 @@ If a section is not present, the tests for that backend will be skipped.
       :param url_valid_time=0: When using
                      :meth:`~simplekv.UrlKeyValueStore.url_for`, URLs should be
                      valid for this many seconds at most.
-      :param reduced_redundancy=False: Use reduced redundancy storage for
+      :param reduced_redundancy: Use reduced redundancy storage for
                                        storing keys.
