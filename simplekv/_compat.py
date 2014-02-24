@@ -31,4 +31,12 @@ if not PY2:
 else:
     from cStringIO import StringIO as BytesIO
 
+if not PY2:
+    import pickle
+else:
+    try:
+        import cPickle as pickle
+    except ImportError:
+        import pickle
+
 xrange = range if not PY2 else xrange
