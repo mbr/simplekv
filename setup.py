@@ -20,4 +20,5 @@ setup(name='simplekv',
       url='http://github.com/mbr/simplekv',
       license='MIT',
       packages=find_packages(exclude=['test']),
+      install_requires=['six'],
       )
