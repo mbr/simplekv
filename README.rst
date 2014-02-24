@@ -4,7 +4,7 @@ simple key-value storage api
 *simplekv* is an API for very basic key-value stores used for small, frequently
 accessed data or large binary blobs. Its basic interface is easy to implement
 and it supports a number of backends, including the filesystem, SQLAlchemy,
-Redis and Amazon S3/Google Storage.
+MongoDB, Redis and Amazon S3/Google Storage.
 
 Installation
 ------------
