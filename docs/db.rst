@@ -2,6 +2,11 @@
 
 Database-based stores
 *********************
+
+
+SQLAlchemy
+----------
+
 To store data in existing databases, an `SQLAlchemy <http://sqlalchemy.org>`_
 based store is available:
 
@@ -55,6 +60,17 @@ based store is available:
       :meth:`__init__`.  Calling :meth:`~sqlalchemy.schema.Table.create` can be
       used to create the table in the database.
 
-.. autoclass:: simplekv.db.mongo.MongoStore
+MongoDB
+-------
 
-   :members:
+The :class:`~simplekv.db.mongo.MongoStore` class requires the ``pymongo``
+package to be installed.
+
+.. class:: simplekv.db.mongo.MongoStore
+
+   .. method:: __init__(db, collection)
+
+       Uses a MongoDB collection as the backend, using pickle as a serializer.
+
+       :param db: A (already authenticated) pymongo database.
+       :param collection: A MongoDB collection name.
