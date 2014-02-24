@@ -90,7 +90,7 @@ class HMACDecorator(StoreDecorator):
         super(HMACDecorator, self).__init__(decorated_store)
 
         self.__hashfunc = hashfunc
-        self.__secret_key = secret_key
+        self.__secret_key = bytes(secret_key)
 
     @property
     def hmac_digestsize(self):
@@ -99,11 +99,11 @@ class HMACDecorator(StoreDecorator):
 
     def __new_hmac(self, key, msg=None):
         if not msg:
-            msg = ''
+            msg = b''
 
         # item key is used as salt for secret_key
         hm = hmac.HMAC(
-            key=key + self.__secret_key,
+            key=key.encode('ascii') + self.__secret_key,
             msg=msg,
             digestmod=self.__hashfunc)
 
