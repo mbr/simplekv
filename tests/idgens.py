@@ -13,10 +13,26 @@ UUID_REGEXP = re.compile(
 )
 
 
-class UUIDGen(object):
+class IDGen(object):
+    @pytest.fixture(params=[
+        'constant',
+        'foo{}bar',
+        '{}.jpeg',
+        'prefix-{}.hello',
+        'justprefix{}',
+    ])
+    def idgen_template(self, request):
+        return request.param
+
+
+class UUIDGen(IDGen):
     @pytest.fixture
     def uuidstore(self, store):
         return UUIDDecorator(store)
+
+    @pytest.fixture
+    def templated_uuidstore(self, store, idgen_template):
+        return UUIDDecorator(store, idgen_template)
 
     def test_put_generates_uuid_form(self, uuidstore, value):
         key = uuidstore.put(None, value)
@@ -52,11 +68,21 @@ class UUIDGen(object):
             if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)
 
+    def test_templates_work(self, templated_uuidstore, value, idgen_template):
+        key = templated_uuidstore.put(None, value)
 
-class HashGen(object):
+        # should not be a valid UUID
+        assert not UUID_REGEXP.match(key)
+
+
+class HashGen(IDGen):
     @pytest.fixture
     def hashstore(self, store, hashfunc):
         return HashDecorator(store, hashfunc)
+
+    @pytest.fixture
+    def templated_hashstore(self, store, hashfunc, idgen_template):
+        return HashDecorator(store, hashfunc, idgen_template)
 
     @pytest.fixture
     def validate_hash(self, hashfunc):
@@ -65,6 +91,10 @@ class HashGen(object):
         ))
 
         return hash_regexp.match
+
+    @pytest.fixture
+    def value_hash(self, hashfunc, value):
+        return hashfunc(value).hexdigest()
 
     def test_put_generates_valid_form(self, hashstore, validate_hash, value):
         key = hashstore.put(None, value)
@@ -79,24 +109,31 @@ class HashGen(object):
         # key2 = hashstore.put_file(None, '/dev/null')
         # assert validate_hash(key2)
 
-    def test_put_generates_correct_hash(self, hashstore, hashfunc, value):
+    def test_put_generates_correct_hash(self, hashstore, value_hash, value):
         key = hashstore.put(None, value)
 
-        assert hashfunc(value).hexdigest() == key
+        assert value_hash == key
 
-    def test_put_file_generates_correct_hash(self, hashstore, hashfunc, value):
-        h = hashfunc(value).hexdigest()
-
+    def test_put_file_generates_correct_hash(
+        self, hashstore, value_hash, value
+    ):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         try:
             tmpfile.write(value)
             tmpfile.close()
             with open(tmpfile.name, 'rb') as f:
                 key = hashstore.put_file(None, f)
-            assert key == h
+            assert key == value_hash
 
             key2 = hashstore.put_file(None, tmpfile.name)
-            assert key2 == h
+            assert key2 == value_hash
         finally:
             if os.path.exists(tmpfile.name):
                 os.unlink(tmpfile.name)
+
+    def test_templates_work(
+        self, templated_hashstore, value, idgen_template, value_hash
+    ):
+        key = templated_hashstore.put(None, value)
+
+        assert idgen_template.format(value_hash) == key

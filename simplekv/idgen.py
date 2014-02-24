@@ -32,13 +32,14 @@ class HashDecorator(StoreDecorator):
     *hashlib.sha1*.
     """
 
-    def __init__(self, decorated_store, hashfunc=hashlib.sha1):
+    def __init__(self, decorated_store, hashfunc=hashlib.sha1, template='{}'):
         self.hashfunc = hashfunc
+        self._template = template
         super(HashDecorator, self).__init__(decorated_store)
 
     def put(self, key, data):
         if not key:
-            key = self.hashfunc(data).hexdigest()
+            key = self._template.format(self.hashfunc(data).hexdigest())
 
         return self._dstore.put(key, data)
 
@@ -57,7 +58,7 @@ class HashDecorator(StoreDecorator):
                             break
 
                     return self._dstore.put_file(
-                        phash.hexdigest(),
+                        self._template.format(phash.hexdigest()),
                         file)
             else:
                 tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -72,7 +73,7 @@ class HashDecorator(StoreDecorator):
 
                     tmpfile.close()
                     return self._dstore.put_file(
-                        phash.hexdigest(),
+                        self._template.format(phash.hexdigest()),
                         tmpfile.name
                     )
                 finally:
@@ -102,14 +103,18 @@ class UUIDDecorator(StoreDecorator):
     uuidfunc = 'uuid1'  # for strange reasons, this needs to be looked up
                         # as late as possible
 
+    def __init__(self, store, template='{}'):
+        super(UUIDDecorator, self).__init__(store)
+        self._template = template
+
     def put(self, key, data):
         if not key:
             key = str(getattr(uuid, self.uuidfunc)())
 
-        return self._dstore.put(key, data)
+        return self._dstore.put(self._template.format(key), data)
 
     def put_file(self, key, file):
         if not key:
             key = str(getattr(uuid, self.uuidfunc)())
 
-        return self._dstore.put_file(key, file)
+        return self._dstore.put_file(self._template.format(key), file)
