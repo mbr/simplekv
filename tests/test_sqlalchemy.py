@@ -5,6 +5,7 @@ import pytest
 
 sqlalchemy = pytest.importorskip('sqlalchemy')
 from sqlalchemy import create_engine, MetaData
+from sqlalchemy.exc import OperationalError
 
 from simplekv.db.sql import SQLAlchemyStore
 
@@ -27,7 +28,12 @@ class TestSQLAlchemyStore(BasicStore):
         module_name, dsn = request.param
         # check module is available
         pytest.importorskip(module_name)
-        return create_engine(dsn)
+        engine = create_engine(dsn)
+        try:
+            engine.connect()
+        except OperationalError:
+            pytest.skip('could not connect to database {}'.format(dsn))
+        return engine
 
     @pytest.yield_fixture
     def store(self, engine):
