@@ -13,9 +13,9 @@ from bson.binary import Binary
 class MongoStore(KeyValueStore):
     """Uses a MongoDB collection as the backend, using pickle as a serializer.
 
-:param db: A (already authenticated) pymongo database.
-:param collection: A MongoDB collection name, defaults to "sessions".
-"""
+    :param db: A (already authenticated) pymongo database.
+    :param collection: A MongoDB collection name.
+    """
 
     def __init__(self, db, collection):
         self.db = db
