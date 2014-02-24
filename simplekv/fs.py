@@ -42,7 +42,7 @@ class FilesystemStore(UrlKeyValueStore):
     def _delete(self, key):
         try:
             os.unlink(self._build_filename(key))
-        except OSError, e:
+        except OSError as e:
             if not e.errno == 2:
                 raise
 
@@ -63,7 +63,7 @@ class FilesystemStore(UrlKeyValueStore):
         try:
             f = open(self._build_filename(key), 'rb')
             return f
-        except IOError, e:
+        except IOError as e:
             if 2 == e.errno:
                 raise KeyError(key)
             else:
@@ -118,7 +118,7 @@ class WebFilesystemStore(FilesystemStore):
     >>> webserver_url_prefix = 'https://some.domain.invalid/files/'
     >>> webserver_root = '/var/www/some.domain.invalid/www-data/files/'
     >>> store = WebFilesystemStore(webserver_root, webserver_url_prefix)
-    >>> print store.url_for('some_key')
+    >>> print(store.url_for('some_key'))
     https://some.domain.invalid/files/some_key
 
     Note that the prefix is simply prepended to the relative URL for the key.
@@ -132,7 +132,7 @@ class WebFilesystemStore(FilesystemStore):
     >>> webserver_root = '/var/www/some.domain.invalid/www-data/files/'
     >>> prefix_func = lambda store, key: webserver_url_prefix
     >>> store = WebFilesystemStore(webserver_root, prefix_func)
-    >>> print store.url_for('some_key')
+    >>> print(store.url_for('some_key'))
     https://some.domain.invalid/files/some_key
     """
     def __init__(self, root, url_prefix, **kwargs):
