@@ -17,7 +17,7 @@ class MongoStore(KeyValueStore):
 :param collection: A MongoDB collection name, defaults to "sessions".
 """
 
-    def __init__(self, db, collection="sessions"):
+    def __init__(self, db, collection):
         self.db = db
         self.collection = collection
 
