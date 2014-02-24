@@ -6,7 +6,8 @@ Network and cloud-based storage
 A core feature of simplekv is the ability to transparently store data using
 cloud storage services like `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
 Storage <http://code.google.com/apis/storage/>`_. This is achieved by providing
-a backend that utilizes `boto <http://boto.cloudhackers.com/>`_.
+a backend that utilizes `boto <http://boto.cloudhackers.com/>`_ (preferably >=
+2.25).
 
 Note that boto is not a dependency for simplekv. You need to install it
 "manually", otherwise you will see an :exc:`~exceptions.ImportError`.
