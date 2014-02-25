@@ -12,15 +12,18 @@ from .. import UrlKeyValueStore
 
 class BotoStore(UrlKeyValueStore):
     def __init__(self, bucket, prefix='', url_valid_time=0,
-                 reduced_redundancy=False, public=False):
+                 reduced_redundancy=False, public=False, metadata=None):
         self.prefix = prefix.strip().lstrip('/')
         self.bucket = bucket
         self.reduced_redundancy = reduced_redundancy
         self.public = public
         self.url_valid_time = url_valid_time
+        self.metadata = metadata or {}
 
     def __new_key(self, name):
         k = Key(self.bucket, self.prefix + name)
+        if self.metadata:
+            k.update_metadata(self.metadata)
         return k
 
     def __upload_args(self):
