@@ -66,7 +66,7 @@ class TestBotoStorage(BasicStore, UrlStore):
         if storage_class != 'STANDARD':
             pytest.xfail('boto does not support checking the storage class?')
 
-        assert bucket.get_key(keyname).storage_class == storage_class
+        assert bucket.lookup(keyname).storage_class == storage_class
 
     def test_storage_class_putfile(
         self, store, prefix, key, value, storage_class, bucket
@@ -77,4 +77,4 @@ class TestBotoStorage(BasicStore, UrlStore):
 
         if storage_class != 'STANDARD':
             pytest.xfail('boto does not support checking the storage class?')
-        assert bucket.get_key(keyname).storage_class == storage_class
+        assert bucket.lookup(keyname).storage_class == storage_class
