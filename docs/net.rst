@@ -61,7 +61,7 @@ If a section is not present, the tests for that backend will be skipped.
 
    Backend using the storage api of boto.
 
-   .. method:: __init__(bucket, prefix='', url_valid_time=0, reduced_redundancy=False, public=False)
+   .. method:: __init__(bucket, prefix='', url_valid_time=0, reduced_redundancy=False, public=False, metadata=None)
 
       Constructs a new boto based backend.
 
@@ -76,3 +76,5 @@ If a section is not present, the tests for that backend will be skipped.
                                        storing keys.
       :param public: If set, all newly updated values will be made public
                      immediately.
+      :param metadata: If set, for all newly created keys to be saved with
+                       these metadata values.
