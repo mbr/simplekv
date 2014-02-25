@@ -23,6 +23,19 @@ class BotoStore(UrlKeyValueStore):
         k = Key(self.bucket, self.prefix + name)
         return k
 
+    def __upload_args(self):
+        """Generates a dictionary of arguments to pass to various
+        set_content_from* functions. This allows us to save API calls by
+        passing the necessary parameters on with the upload."""
+        d = {
+            'reduced_redundancy': self.reduced_redundancy,
+        }
+
+        if self.public:
+            d['policy'] = 'public-read'
+
+        return d
+
     def iter_keys(self):
         try:
             prefix_len = len(self.prefix)
@@ -93,10 +106,8 @@ class BotoStore(UrlKeyValueStore):
         k = self.__new_key(key)
         try:
             k.set_contents_from_string(
-                data, reduced_redundancy=self.reduced_redundancy
+                data, **self.__upload_args()
             )
-            if self.public:
-                k.make_public()
             return key
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
@@ -105,10 +116,8 @@ class BotoStore(UrlKeyValueStore):
         k = self.__new_key(key)
         try:
             k.set_contents_from_file(
-                file, reduced_redundancy=self.reduced_redundancy
+                file, **self.__upload_args()
             )
-            if self.public:
-                k.make_public()
             return key
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
@@ -117,10 +126,8 @@ class BotoStore(UrlKeyValueStore):
         k = self.__new_key(key)
         try:
             k.set_contents_from_filename(
-                filename, reduced_redundancy=self.reduced_redundancy
+                filename, **self.__upload_args()
             )
-            if self.public:
-                k.make_public()
             return key
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
