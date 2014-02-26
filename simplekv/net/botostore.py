@@ -138,6 +138,7 @@ class BotoStore(UrlKeyValueStore):
     def _url_for(self, key):
         k = self.__new_key(key)
         try:
-            return k.generate_url(self.url_valid_time)
+            return k.generate_url(expires_in=self.url_valid_time,
+                                  query_auth=False)
         except (BotoClientError, BotoServerError), e:
             raise IOError(str(e))
