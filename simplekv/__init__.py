@@ -310,3 +310,32 @@ class UrlKeyValueStore(KeyValueStore):
 
     def _url_for(self, key):
         raise NotImplementedError
+
+
+class ExpirationMixin(object):
+    """A mixin that supports adding an expiry value to a key.
+    """
+    def set_ttl(self, ttl):
+        """Set the expiry value on a Redis key
+        """
+        self._ttl = ttl
+
+    def get_ttl(self):
+        return getattr(self, '_ttl', None)
+
+    def put(self, key, data, ttl=None):
+        """Implement put with optional ttl value"""
+        self._check_valid_key(key)
+        return self._put(key, data, ttl)
+
+    def put_file(self, key, file, ttl=None):
+        """Implement put_file with optional ttl value"""
+        if isinstance(file, str):
+            return self._put_filename(key, file, ttl)
+        else:
+            return self._put_file(key, file, ttl)
+
+    def _put_filename(self, key, filename, ttl=None):
+        """Implement put_filename with optional ttl value"""
+        with open(filename, 'rb') as source:
+            return self._put_file(key, source, ttl)
