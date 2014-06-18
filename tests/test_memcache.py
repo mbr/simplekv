@@ -2,6 +2,7 @@
 # coding=utf8
 
 from simplekv.memory.memcachestore import MemcacheStore
+from simplekv._compat import BytesIO
 
 from basic_store import BasicStore
 
@@ -43,3 +44,13 @@ class TestMemcacheStore(BasicStore):
             'a' in store
         except IOError:
             pass
+
+    def test_put_with_ttl_argument(self, store, key, value):
+        ttl = 604800
+        store.put(key, value, ttl=ttl)
+        assert key, ttl in store
+
+    def test_put_file_with_ttl_argument(self, store, key, value):
+        ttl = 604800
+        store.put_file(key, BytesIO(value), ttl=ttl)
+        assert key, ttl in store

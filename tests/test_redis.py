@@ -27,37 +27,37 @@ class TestRedisStore(BasicStore):
         r.flushdb()
 
     def test_put_with_ttl_argument(self, store, key, value):
-        _ttl = 604800
-        store.put(key, value, ttl=_ttl)
-        assert key, _ttl in store
+        ttl = 604800
+        store.put(key, value, ttl=ttl)
+        assert key, ttl in store
 
-        _ttl = None
-        store.put(key, value, ttl=_ttl)
-        assert key, _ttl in store
+        ttl = None
+        store.put(key, value, ttl=ttl)
+        assert key, ttl in store
 
     def test_put_set_ttl(self, store, key, value):
-        _ttl = 604800
-        store.set_ttl(_ttl)
+        ttl = 604800
+        store.set_ttl(ttl)
         store.put(key, value)
-        assert key, _ttl in store
+        assert key, ttl in store
 
-        _ttl = None
-        store.set_ttl(_ttl)
+        ttl = None
+        store.set_ttl(ttl)
         store.put(key, value)
-        assert key, _ttl in store
+        assert key, ttl in store
 
     def test_put_file_with_ttl_argument(self, store, key, value):
-        _ttl = 604800
-        store.put_file(key, BytesIO(value), ttl=_ttl)
-        assert key, _ttl in store
+        ttl = 604800
+        store.put_file(key, BytesIO(value), ttl=ttl)
+        assert key, ttl in store
 
     def test_put_file_set_ttl(self, store, key, value):
-        _ttl = 604800
-        store.set_ttl(_ttl)
+        ttl = 604800
+        store.set_ttl(ttl)
         store.put_file(key, BytesIO(value))
-        assert key, _ttl in store
+        assert key, ttl in store
 
-        _ttl = None
-        store.set_ttl(_ttl)
+        ttl = None
+        store.set_ttl(ttl)
         store.put_file(key, BytesIO(value))
-        assert key, _ttl in store
+        assert key, ttl in store
