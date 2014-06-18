@@ -99,9 +99,8 @@ class UUIDDecorator(StoreDecorator):
        `uuidfunc` too early. For that reason, it is a string that will be
        looked up using :func:`getattr` on the :mod:`uuid` module.
     """
-
-    uuidfunc = 'uuid1'  # for strange reasons, this needs to be looked up
-                        # as late as possible
+    # for strange reasons, this needs to be looked up as late as possible
+    uuidfunc = 'uuid1'
 
     def __init__(self, store, template='{}'):
         super(UUIDDecorator, self).__init__(store)
