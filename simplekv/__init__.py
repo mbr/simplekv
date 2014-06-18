@@ -312,30 +312,43 @@ class UrlKeyValueStore(KeyValueStore):
         raise NotImplementedError
 
 
+# sentinel object to allow explicitly set None value
+_no_ttl = object()
+
+
 class ExpirationMixin(object):
     """A mixin that supports adding an expiry value to a key.
     """
-    def set_ttl(self, ttl):
+    def set_default_ttl(self, ttl):
         """Set the expiry value on a Redis key
         """
-        self._ttl = ttl
+        self._default_ttl = ttl
 
     def get_ttl(self):
-        return getattr(self, '_ttl', None)
+        return getattr(self, '_default_ttl', None)
 
-    def put(self, key, data, ttl=None):
+    def put(self, key, data, ttl=_no_ttl):
         """Implement put with optional ttl value"""
+        if ttl is _no_ttl:
+            ttl = self.get_ttl()
+
         self._check_valid_key(key)
         return self._put(key, data, ttl)
 
-    def put_file(self, key, file, ttl=None):
+    def put_file(self, key, file, ttl=_no_ttl):
         """Implement put_file with optional ttl value"""
+        if ttl is _no_ttl:
+            ttl = self.get_ttl()
+
         if isinstance(file, str):
             return self._put_filename(key, file, ttl)
         else:
             return self._put_file(key, file, ttl)
 
-    def _put_filename(self, key, filename, ttl=None):
+    def _put_filename(self, key, filename, ttl=_no_ttl):
         """Implement put_filename with optional ttl value"""
+        if ttl is _no_ttl:
+            ttl = self.get_ttl()
+
         with open(filename, 'rb') as source:
             return self._put_file(key, source, ttl)

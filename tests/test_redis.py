@@ -28,36 +28,40 @@ class TestRedisStore(BasicStore):
 
     def test_put_with_ttl_argument(self, store, key, value):
         ttl = 604800
-        store.put(key, value, ttl=ttl)
-        assert key, ttl in store
+        store.put(key, value, ttl)
+        assert ttl - 1 <= store.redis.ttl(key) <= ttl
 
         ttl = None
-        store.put(key, value, ttl=ttl)
-        assert key, ttl in store
+        store.put(key, value, ttl)
+        assert store.redis.ttl(key) == -1
 
-    def test_put_set_ttl(self, store, key, value):
+    def test_put_set_default_ttl(self, store, key, value):
         ttl = 604800
-        store.set_ttl(ttl)
+        store.set_default_ttl(ttl)
         store.put(key, value)
-        assert key, ttl in store
+        assert ttl - 1 <= store.redis.ttl(key) <= ttl
 
         ttl = None
-        store.set_ttl(ttl)
+        store.set_default_ttl(ttl)
         store.put(key, value)
-        assert key, ttl in store
+        assert store.redis.ttl(key) == -1
 
     def test_put_file_with_ttl_argument(self, store, key, value):
         ttl = 604800
-        store.put_file(key, BytesIO(value), ttl=ttl)
-        assert key, ttl in store
-
-    def test_put_file_set_ttl(self, store, key, value):
-        ttl = 604800
-        store.set_ttl(ttl)
-        store.put_file(key, BytesIO(value))
-        assert key, ttl in store
+        store.put_file(key, BytesIO(value), ttl)
+        assert ttl - 1 <= store.redis.ttl(key) <= ttl
 
         ttl = None
-        store.set_ttl(ttl)
+        store.put_file(key, BytesIO(value), ttl)
+        assert store.redis.ttl(key) == -1
+
+    def test_put_file_set_default_ttl(self, store, key, value):
+        ttl = 604800
+        store.set_default_ttl(ttl)
         store.put_file(key, BytesIO(value))
-        assert key, ttl in store
+        assert ttl - 1 <= store.redis.ttl(key) <= ttl
+
+        ttl = None
+        store.set_default_ttl(ttl)
+        store.put_file(key, BytesIO(value))
+        assert store.redis.ttl(key) == -1

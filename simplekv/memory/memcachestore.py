@@ -6,10 +6,6 @@ from io import BytesIO
 from .. import KeyValueStore, ExpirationMixin
 
 
-# sentinel object to allow explicitly set None value
-_no_ttl = object()
-
-
 class MemcacheStore(ExpirationMixin, KeyValueStore):
     def __contains__(self, key):
         try:
@@ -37,13 +33,7 @@ class MemcacheStore(ExpirationMixin, KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _put(self, key, data, ttl=_no_ttl):
-        if ttl is _no_ttl:
-            ttl = self.get_ttl()
-
-        if ttl is None:
-            ttl = 0
-
+    def _put(self, key, data, ttl):
         if not self.mc.set(key.encode('ascii'), data):
             if len(data) >= 1024 * 1023:
                 raise IOError('Failed to store data, probably too large. '\
@@ -51,7 +41,7 @@ class MemcacheStore(ExpirationMixin, KeyValueStore):
             raise IOError('Failed to store data')
         return key
 
-    def _put_file(self, key, file, ttl=_no_ttl):
+    def _put_file(self, key, file, ttl):
         return self._put(key, file.read(), ttl)
 
     def keys(self):

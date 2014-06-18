@@ -6,10 +6,6 @@ from io import BytesIO
 from .. import KeyValueStore, ExpirationMixin
 
 
-# sentinel object to allow explicitly set None value
-_no_ttl = object()
-
-
 class RedisStore(ExpirationMixin, KeyValueStore):
     """Uses a redis-database as the backend.
 
@@ -44,15 +40,13 @@ class RedisStore(ExpirationMixin, KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _put(self, key, value, ttl=_no_ttl):
-        if ttl is _no_ttl:
-            ttl = self.get_ttl()
+    def _put(self, key, value, ttl):
         if ttl is not None:
             self.redis.setex(key, ttl, value)
         else:
             self.redis.set(key, value)
         return key
 
-    def _put_file(self, key, file, ttl=_no_ttl):
+    def _put_file(self, key, file, ttl):
         self._put(key, file.read(), ttl)
         return key
