@@ -355,6 +355,7 @@ class TimeToLiveMixin(object):
 
            :param ttl_secs: Number of seconds until the key expires. See above
                             for valid values.
+           :raises ValueError: If ``ttl_secs`` is invalid.
         """
         return self._put(key, data, self._valid_ttl(ttl_secs))
 
@@ -364,6 +365,7 @@ class TimeToLiveMixin(object):
 
            :param ttl_secs: Number of seconds until the key expires. See above
                             for valid values.
+           :raises ValueError: If ``ttl_secs`` is invalid.
         """
         if ttl_secs is None:
             ttl_secs = self.default_ttl_secs
