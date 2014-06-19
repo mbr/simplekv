@@ -91,11 +91,14 @@ The core API
    :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
              open, put, put_file
 
-In addition to that, an extended base class is available that provides an extra
+In addition to that, a mixin class is available for backends that provide a
 method to support URL generation:
 
-.. autoclass:: simplekv.UrlKeyValueStore
+.. autoclass:: simplekv.UrlMixin
    :members: url_for
+
+.. autoclass:: simplekv.UrlKeyValueStore
+   :members:
 
 .. autodata:: simplekv.VALID_KEY_REGEXP
 

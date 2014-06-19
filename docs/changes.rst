@@ -1,5 +1,11 @@
 Changelog
 *********
+
+0.9
+===
+* Deprecated the :class:`~simplekv.UrlKeyValueStore`, replaced by flexible
+  mixins like :class:`~simplekv.UrlMixin`.
+
 0.6
 ===
 * Now supports `redis <http://redis.io>`_ backend:
