@@ -100,6 +100,20 @@ method to support URL generation:
 .. autoclass:: simplekv.UrlKeyValueStore
    :members:
 
+Some backends support setting a time-to-live on keys for automatic expiration,
+this is represented by the :class:`~simplekv.TimeToLiveMixin`:
+
+.. autoclass:: simplekv.TimeToLiveMixin
+
+   .. automethod:: simplekv.TimeToLiveMixin.put
+
+   .. automethod:: simplekv.TimeToLiveMixin.put_file
+
+   .. attribute:: default_ttl_secs = simplekv.NOT_SET
+
+      Passing ``None`` for any time-to-live parameter will cause this value to
+      be used.
+
 .. autodata:: simplekv.VALID_KEY_REGEXP
 
 .. autodata:: simplekv.VALID_KEY_RE
