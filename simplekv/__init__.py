@@ -311,6 +311,65 @@ class UrlMixin(object):
         raise NotImplementedError
 
 
+FOREVER = -1
+NOT_SET = -2
+
+
+class TimeToLiveMixin(object):
+    """Allows keys to expire after a certain amount of time.
+
+    This mixin overrides some of the signatures of the api of
+    :class:`~simplekv.KeyValueStore`, albeit in a backwards compatible way.
+
+    Any value given for a time-to-live parameter must be one of the following:
+
+    * A positive ``int``, representing seconds,
+    * :data:`simplekv.FOREVER`, meaning no expiration
+    * :data:`simplekv.NOT_SET`, meaning that no TTL configuration will be
+      done at all or
+    * ``None`` representing the default (see
+      :attr:`~simplekv.TimeToLiveMixin.default_ttl_secs``).
+    """
+
+    default_ttl_secs = NOT_SET
+
+    def _valid_ttl(self, ttl_secs):
+        if ttl_secs is None:
+            ttl_secs = self.default_ttl_secs
+
+        if ttl_secs in (FOREVER, NOT_SET):
+            return ttl_secs
+
+        if not isinstance(ttl_secs, int):
+            raise ValueError('Not a valid ttl_secs value: %r' % ttl_secs)
+
+        if ttl_secs < 0:
+            raise ValueError('ttl_secs must not be negative: %r' % ttl_secs)
+
+        return ttl_secs
+
+    def put(self, key, data, ttl_secs=None):
+        """Like :func:`~simplekv.KeyValueStore.put`, but with an additional
+           parameter:
+
+           :param ttl_secs: Number of seconds until the key expires. See above
+                            for valid values.
+        """
+        return self._put(key, data, self._valid_ttl(ttl_secs))
+
+    def put_file(self, key, file, ttl_secs=None):
+        """Like :func:`~simplekv.KeyValueStore.put_file`, but with an
+           additional parameter:
+
+           :param ttl_secs: Number of seconds until the key expires. See above
+                            for valid values.
+        """
+        if ttl_secs is None:
+            ttl_secs = self.default_ttl_secs
+
+        return self._put_file(key, file, self._valid_ttl(ttl_secs))
+
+
 class UrlKeyValueStore(KeyValueStore, UrlMixin):
     """
     .. deprecated:: 0.9
