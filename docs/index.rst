@@ -118,6 +118,8 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
 
 .. autodata:: simplekv.VALID_KEY_RE
 
+.. _implement:
+
 Implementing a new backend
 ==========================
 Subclassing :class:`~simplekv.KeyValueStore` is the fastest way to implement a

@@ -330,6 +330,12 @@ class TimeToLiveMixin(object):
       done at all or
     * ``None`` representing the default (see
       :attr:`~simplekv.TimeToLiveMixin.default_ttl_secs``).
+
+    .. note:: When deriving from :class:`~simplekv.TimeToLiveMixin`, the same
+       default implementations for ``_put``, ``_put_file`` and
+       ``_put_filename`` are provided, except that they all take an additional
+       ``ttl_secs`` argument. For more information on how to implement
+       backends, see :ref:`implement`.
     """
 
     default_ttl_secs = NOT_SET
@@ -377,6 +383,17 @@ class TimeToLiveMixin(object):
             return self._put_filename(key, file, self._valid_ttl(ttl_secs))
         else:
             return self._put_file(key, file, self._valid_ttl(ttl_secs))
+
+    # default implementations similar to KeyValueStore below:
+    def _put(self, key, data, ttl_secs):
+        return self._put_file(key, BytesIO(data), ttl_secs)
+
+    def _put_file(self, key, file, ttl_secs):
+        raise NotImplementedError
+
+    def _put_filename(self, key, filename, ttl_secs):
+        with open(filename, 'rb') as source:
+            return self._put_file(key, source, ttl_secs)
 
 
 class UrlKeyValueStore(KeyValueStore, UrlMixin):
