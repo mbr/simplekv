@@ -371,7 +371,12 @@ class TimeToLiveMixin(object):
         if ttl_secs is None:
             ttl_secs = self.default_ttl_secs
 
-        return self._put_file(key, file, self._valid_ttl(ttl_secs))
+        self._check_valid_key(key)
+
+        if isinstance(file, str):
+            return self._put_filename(key, file, self._valid_ttl(ttl_secs))
+        else:
+            return self._put_file(key, file, self._valid_ttl(ttl_secs))
 
 
 class UrlKeyValueStore(KeyValueStore, UrlMixin):
