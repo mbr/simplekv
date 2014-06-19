@@ -312,4 +312,8 @@ class UrlMixin(object):
 
 
 class UrlKeyValueStore(KeyValueStore, UrlMixin):
+    """
+    .. deprecated:: 0.9
+       Use the :class:`UrlMixin` instead.
+    """
     pass
