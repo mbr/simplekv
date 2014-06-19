@@ -290,9 +290,8 @@ class KeyValueStore(object):
             return self._put_file(key, source)
 
 
-class UrlKeyValueStore(KeyValueStore):
-    """A KeyValueStore that supports getting a download URL for keys.
-    """
+class UrlMixin(object):
+    """Supports getting a download URL for keys."""
     def url_for(self, key):
         """Returns a full external URL that can be used to retrieve *key*.
 
@@ -310,3 +309,7 @@ class UrlKeyValueStore(KeyValueStore):
 
     def _url_for(self, key):
         raise NotImplementedError
+
+
+class UrlKeyValueStore(KeyValueStore, UrlMixin):
+    pass

@@ -7,10 +7,10 @@ from boto.exception import BotoClientError, BotoServerError,\
                            StorageResponseError
 from boto.s3.key import Key
 
-from .. import UrlKeyValueStore
+from .. import KeyValueStore, UrlMixin
 
 
-class BotoStore(UrlKeyValueStore):
+class BotoStore(KeyValueStore, UrlMixin):
     def __init__(self, bucket, prefix='', url_valid_time=0,
                  reduced_redundancy=False, public=False, metadata=None):
         self.prefix = prefix.strip().lstrip('/')

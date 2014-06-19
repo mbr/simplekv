@@ -4,11 +4,11 @@
 import os
 import shutil
 
-from . import UrlKeyValueStore
+from . import KeyValueStore, UrlMixin
 from ._compat import url_quote
 
 
-class FilesystemStore(UrlKeyValueStore):
+class FilesystemStore(KeyValueStore, UrlMixin):
     """Store data in files on the filesystem.
 
     The *FilesystemStore* stores every value as its own file on the filesystem,
