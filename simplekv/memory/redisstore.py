@@ -3,10 +3,10 @@
 
 from io import BytesIO
 
-from .. import KeyValueStore
+from .. import KeyValueStore, ExpirationMixin
 
 
-class RedisStore(KeyValueStore):
+class RedisStore(ExpirationMixin, KeyValueStore):
     """Uses a redis-database as the backend.
 
     :param redis: An instance of :py:class:`redis.StrictRedis`.
@@ -40,10 +40,13 @@ class RedisStore(KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _put(self, key, value):
-        self.redis.set(key, value)
+    def _put(self, key, value, ttl):
+        if ttl is not None:
+            self.redis.setex(key, ttl, value)
+        else:
+            self.redis.set(key, value)
         return key
 
-    def _put_file(self, key, file):
-        self._put(key, file.read())
+    def _put_file(self, key, file, ttl):
+        self._put(key, file.read(), ttl)
         return key

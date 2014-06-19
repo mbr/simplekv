@@ -2,6 +2,7 @@
 # coding=utf8
 
 from simplekv.memory.memcachestore import MemcacheStore
+from simplekv._compat import BytesIO
 
 from basic_store import BasicStore
 
