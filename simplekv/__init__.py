@@ -396,7 +396,7 @@ class TimeToLiveMixin(object):
             return self._put_file(key, source, ttl_secs)
 
 
-class UrlKeyValueStore(KeyValueStore, UrlMixin):
+class UrlKeyValueStore(UrlMixin, KeyValueStore):
     """
     .. deprecated:: 0.9
        Use the :class:`UrlMixin` instead.
