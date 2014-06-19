@@ -159,6 +159,7 @@ class KeyValueStore(object):
         :raises ValueError: If the key is not valid.
         :raises IOError: If there was a problem moving the file in.
         """
+        # FIXME: shouldn't we call self._check_valid_key here?
         if isinstance(file, str):
             return self._put_filename(key, file)
         else:
