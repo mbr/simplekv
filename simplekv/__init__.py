@@ -357,6 +357,7 @@ class TimeToLiveMixin(object):
                             for valid values.
            :raises ValueError: If ``ttl_secs`` is invalid.
         """
+        self._check_valid_key(key)
         return self._put(key, data, self._valid_ttl(ttl_secs))
 
     def put_file(self, key, file, ttl_secs=None):
