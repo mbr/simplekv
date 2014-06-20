@@ -35,18 +35,13 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
 
     def _put(self, key, data, ttl_secs):
         if ttl_secs == NOT_SET or ttl_secs is None:
-            if not self.mc.set(key.encode('ascii'), data):
-                if len(data) >= 1024 * 1023:
-                    raise IOError('Failed to store data, probably too large. '\
-                                  'memcached limit is 1M')
-                raise IOError('Failed to store data')
-        else:
-            if not self.mc.set(key.encode('ascii'), data, ttl_secs):
-                if len(data) >= 1024 * 1023:
-                    raise IOError('Failed to store data, probably too large. '\
-                                  'memcached limit is 1M')
-                raise IOError('Failed to store data')
+            ttl_secs = 0
 
+        if not self.mc.set(key.encode('ascii'), data, ttl_secs):
+            if len(data) >= 1024 * 1023:
+                raise IOError('Failed to store data, probably too large. '\
+                              'memcached limit is 1M')
+            raise IOError('Failed to store data')
         return key
 
     def _put_file(self, key, file, ttl_secs):
