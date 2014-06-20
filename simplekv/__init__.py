@@ -312,7 +312,6 @@ class UrlMixin(object):
         raise NotImplementedError
 
 
-FOREVER = -1
 NOT_SET = -2
 
 
@@ -325,7 +324,6 @@ class TimeToLiveMixin(object):
     Any value given for a time-to-live parameter must be one of the following:
 
     * A positive ``int``, representing seconds,
-    * :data:`simplekv.FOREVER`, meaning no expiration
     * :data:`simplekv.NOT_SET`, meaning that no TTL configuration will be
       done at all or
     * ``None`` representing the default (see
@@ -344,14 +342,14 @@ class TimeToLiveMixin(object):
         if ttl_secs is None:
             ttl_secs = self.default_ttl_secs
 
-        if ttl_secs in (FOREVER, NOT_SET):
+        if ttl_secs is NOT_SET:
             return ttl_secs
 
         if not isinstance(ttl_secs, int):
             raise ValueError('Not a valid ttl_secs value: %r' % ttl_secs)
 
-        if ttl_secs < 0:
-            raise ValueError('ttl_secs must not be negative: %r' % ttl_secs)
+        if ttl_secs <= 0:
+            raise ValueError('ttl_secs must be a positive integer: %r' % ttl_secs)
 
         return ttl_secs
 
