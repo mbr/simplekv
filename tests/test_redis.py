@@ -67,7 +67,7 @@ class TestRedisStore(BasicStore):
 
         assert store.redis.ttl(key) == -1
 
-    def test_put_set_default(self, store, key, value):
+    def test_put_file_set_default(self, store, key, value):
         ttl = 604800
         store.default_ttl_secs = ttl
         store.put_file(key, BytesIO(value))
