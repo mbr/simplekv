@@ -2,6 +2,7 @@
 
 from simplekv._compat import BytesIO, xrange
 import os
+import time
 import tempfile
 from tempdir import TempDir
 
@@ -208,3 +209,29 @@ class BasicStore(object):
         for i in xrange(a_lot):
             key = key + '_{}'.format(i)
             store.put(key, value)
+
+
+class TTLStore(object):
+    @pytest.fixture(params=[0.4])
+    def small_ttl(self, request):
+        return request.param
+
+    def test_put_with_ttl_argument(self, store, key, value, small_ttl):
+        store.put(key, value, small_ttl)
+
+        time.sleep(small_ttl)
+        assert key not in store
+
+    def test_put_set_default(self, store, key, value, small_ttl):
+        store.default_ttl_secs = small_ttl
+
+        store.put(key, value)
+
+        time.sleep(small_ttl)
+        assert key not in store
+
+    def test_put_file_with_ttl_argument(self, store, key, value, small_ttl):
+        store.put_file(key, BytesIO(value), small_ttl)
+
+        time.sleep(small_ttl)
+        assert key not in store
