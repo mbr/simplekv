@@ -312,8 +312,8 @@ class UrlMixin(object):
         raise NotImplementedError
 
 
-FOREVER = -1
-NOT_SET = -2
+FOREVER = 'forever'
+NOT_SET = 'not_set'
 
 
 class TimeToLiveMixin(object):
