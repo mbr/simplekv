@@ -3,10 +3,10 @@
 
 from io import BytesIO
 
-from .. import KeyValueStore
+from .. import KeyValueStore, TimeToLiveMixin, NOT_SET
 
 
-class MemcacheStore(KeyValueStore):
+class MemcacheStore(TimeToLiveMixin, KeyValueStore):
     def __contains__(self, key):
         try:
             return key in self.mc
@@ -33,16 +33,24 @@ class MemcacheStore(KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _put(self, key, data):
-        if not self.mc.set(key.encode('ascii'), data):
-            if len(data) >= 1024 * 1023:
-                raise IOError('Failed to store data, probably too large. '\
-                              'memcached limit is 1M')
-            raise IOError('Failed to store data')
+    def _put(self, key, data, ttl_secs):
+        if ttl_secs == NOT_SET or ttl_secs is None:
+            if not self.mc.set(key.encode('ascii'), data):
+                if len(data) >= 1024 * 1023:
+                    raise IOError('Failed to store data, probably too large. '\
+                                  'memcached limit is 1M')
+                raise IOError('Failed to store data')
+        else:
+            if not self.mc.set(key.encode('ascii'), data, ttl_secs):
+                if len(data) >= 1024 * 1023:
+                    raise IOError('Failed to store data, probably too large. '\
+                                  'memcached limit is 1M')
+                raise IOError('Failed to store data')
+
         return key
 
-    def _put_file(self, key, file):
-        return self._put(key, file.read())
+    def _put_file(self, key, file, ttl_secs):
+        return self._put(key, file.read(), ttl_secs)
 
     def keys(self):
         raise IOError('Memcache does not support listing keys.')

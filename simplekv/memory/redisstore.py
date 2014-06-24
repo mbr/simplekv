@@ -3,10 +3,10 @@
 
 from io import BytesIO
 
-from .. import KeyValueStore
+from .. import KeyValueStore, TimeToLiveMixin, NOT_SET
 
 
-class RedisStore(KeyValueStore):
+class RedisStore(TimeToLiveMixin, KeyValueStore):
     """Uses a redis-database as the backend.
 
     :param redis: An instance of :py:class:`redis.StrictRedis`.
@@ -40,10 +40,13 @@ class RedisStore(KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _put(self, key, value):
-        self.redis.set(key, value)
+    def _put(self, key, value, ttl_secs):
+        if ttl_secs == NOT_SET or ttl_secs is None:
+            self.redis.set(key, value)
+        else:
+            self.redis.setex(key, ttl_secs, value)
         return key
 
-    def _put_file(self, key, file):
-        self._put(key, file.read())
+    def _put_file(self, key, file, ttl_secs):
+        self._put(key, file.read(), ttl_secs)
         return key
