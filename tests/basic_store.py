@@ -211,6 +211,11 @@ class BasicStore(object):
             store.put(key, value)
 
 
+# small extra time added to account for variance when communicating with
+# redis (memcached seems to more a bit more consistently).
+TTL_MARGIN = 0.2
+
+
 class TTLStore(object):
     @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):
@@ -227,7 +232,7 @@ class TTLStore(object):
     def test_put_with_ttl_argument(self, store, key, value, small_ttl):
         store.put(key, value, small_ttl)
 
-        time.sleep(small_ttl)
+        time.sleep(small_ttl + TTL_MARGIN)
         with pytest.raises(KeyError):
             store.get(key)
 
@@ -236,14 +241,14 @@ class TTLStore(object):
 
         store.put(key, value)
 
-        time.sleep(small_ttl)
+        time.sleep(small_ttl + TTL_MARGIN)
         with pytest.raises(KeyError):
             store.get(key)
 
     def test_put_file_with_ttl_argument(self, store, key, value, small_ttl):
         store.put_file(key, BytesIO(value), small_ttl)
 
-        time.sleep(small_ttl)
+        time.sleep(small_ttl + TTL_MARGIN)
         with pytest.raises(KeyError):
             store.get(key)
 
@@ -252,6 +257,6 @@ class TTLStore(object):
 
         store.put_file(key, BytesIO(value))
 
-        time.sleep(small_ttl)
+        time.sleep(small_ttl + TTL_MARGIN)
         with pytest.raises(KeyError):
             store.get(key)
