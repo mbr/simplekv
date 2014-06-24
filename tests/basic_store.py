@@ -212,7 +212,7 @@ class BasicStore(object):
 
 
 class TTLStore(object):
-    @pytest.fixture(params=[0.4])
+    @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):
         return request.param
 
