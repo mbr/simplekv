@@ -3,7 +3,7 @@
 
 from io import BytesIO
 
-from .. import KeyValueStore, TimeToLiveMixin, NOT_SET
+from .. import KeyValueStore, TimeToLiveMixin, FOREVER, NOT_SET
 
 
 class MemcacheStore(TimeToLiveMixin, KeyValueStore):
@@ -34,18 +34,17 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put(self, key, data, ttl_secs):
-        if ttl_secs == NOT_SET or ttl_secs is None:
-            if not self.mc.set(key.encode('ascii'), data):
-                if len(data) >= 1024 * 1023:
-                    raise IOError('Failed to store data, probably too large. '\
-                                  'memcached limit is 1M')
-                raise IOError('Failed to store data')
-        else:
-            if not self.mc.set(key.encode('ascii'), data, ttl_secs):
-                if len(data) >= 1024 * 1023:
-                    raise IOError('Failed to store data, probably too large. '\
-                                  'memcached limit is 1M')
-                raise IOError('Failed to store data')
+        time = 0  # default is never expire, there is no explicit "not set"
+                  # in memcached. both, pylibmc and python-memcached use
+                  # 0 as the default value for an unset time
+        if ttl_secs not in (NOT_SET, FOREVER):
+            time = ttl_secs
+
+        if not self.mc.set(key.encode('ascii'), data, time=time):
+            if len(data) >= 1024 * 1023:
+                raise IOError('Failed to store data, probably too large. '\
+                              'memcached limit is 1M')
+            raise IOError('Failed to store data')
 
         return key
 
