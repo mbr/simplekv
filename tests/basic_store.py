@@ -228,7 +228,8 @@ class TTLStore(object):
         store.put(key, value, small_ttl)
 
         time.sleep(small_ttl)
-        assert key not in store
+        with pytest.raises(KeyError):
+            store.get(key)
 
     def test_put_set_default(self, store, key, value, small_ttl):
         store.default_ttl_secs = small_ttl
@@ -236,13 +237,15 @@ class TTLStore(object):
         store.put(key, value)
 
         time.sleep(small_ttl)
-        assert key not in store
+        with pytest.raises(KeyError):
+            store.get(key)
 
     def test_put_file_with_ttl_argument(self, store, key, value, small_ttl):
         store.put_file(key, BytesIO(value), small_ttl)
 
         time.sleep(small_ttl)
-        assert key not in store
+        with pytest.raises(KeyError):
+            store.get(key)
 
     def test_put_file_set_default(self, store, key, value, small_ttl):
         store.default_ttl_secs = small_ttl
@@ -250,4 +253,5 @@ class TTLStore(object):
         store.put_file(key, BytesIO(value))
 
         time.sleep(small_ttl)
-        assert key not in store
+        with pytest.raises(KeyError):
+            store.get(key)
