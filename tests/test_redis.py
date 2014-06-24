@@ -32,17 +32,6 @@ class TestRedisStore(BasicStore):
 
         assert ttl - 1 <= store.redis.ttl(key) <= ttl
 
-    def test_put_with_None_ttl_argument(self, store, key, value):
-        ttl = None
-        store.put(key, value, ttl)
-
-        assert store.redis.ttl(key) == -1
-
-    def test_put_with_no_ttl_argument(self, store, key, value):
-        store.put(key, value)
-
-        assert store.redis.ttl(key) == -1
-
     def test_put_set_default(self, store, key, value):
         ttl = 604800
         store.default_ttl_secs = ttl
@@ -56,13 +45,3 @@ class TestRedisStore(BasicStore):
 
         assert ttl - 1 <= store.redis.ttl(key) <= ttl
 
-    def test_put_file_with_None_ttl_argument(self, store, key, value):
-        ttl = None
-        store.put_file(key, BytesIO(value), ttl)
-
-        assert store.redis.ttl(key) == -1
-
-    def test_put_file_with_no_ttl_argument(self, store, key, value):
-        store.put_file(key, BytesIO(value))
-
-        assert store.redis.ttl(key) == -1
