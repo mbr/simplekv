@@ -347,7 +347,7 @@ class TimeToLiveMixin(object):
         if ttl_secs in (FOREVER, NOT_SET):
             return ttl_secs
 
-        if not isinstance(ttl_secs, int):
+        if not isinstance(ttl_secs, (int, float)):
             raise ValueError('Not a valid ttl_secs value: %r' % ttl_secs)
 
         if ttl_secs < 0:
