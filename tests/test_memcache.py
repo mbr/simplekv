@@ -28,6 +28,12 @@ class TestMemcacheStore(TTLStore, BasicStore):
     test_key_iterator = None
     test_keys = None
 
+    # memcache is weird
+    test_put_with_ttl_argument = None
+    test_put_set_default = None
+    test_put_file_with_ttl_argument = None
+    test_put_file_set_default = None
+
     def test_keys_throws_io_error(self, store):
         with pytest.raises(IOError):
             store.keys()
