@@ -243,3 +243,11 @@ class TTLStore(object):
 
         time.sleep(small_ttl)
         assert key not in store
+
+    def test_put_file_set_default(self, store, key, value, small_ttl):
+        store.default_ttl_secs = small_ttl
+
+        store.put_file(key, BytesIO(value))
+
+        time.sleep(small_ttl)
+        assert key not in store
