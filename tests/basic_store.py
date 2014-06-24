@@ -211,9 +211,8 @@ class BasicStore(object):
             store.put(key, value)
 
 
-# small extra time added to account for variance when communicating with
-# redis (memcached seems to more a bit more consistently).
-TTL_MARGIN = 0.2
+# small extra time added to account for variance
+TTL_MARGIN = 1
 
 
 class TTLStore(object):
