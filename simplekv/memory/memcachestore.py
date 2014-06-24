@@ -11,7 +11,7 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
         try:
             return key in self.mc
         except TypeError:
-            raise IOError('memcache implementation does not support '\
+            raise IOError('memcache implementation does not support '
                           '__contains__')
 
     def __init__(self, mc):
@@ -42,7 +42,7 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
 
         if not self.mc.set(key.encode('ascii'), data, time=time):
             if len(data) >= 1024 * 1023:
-                raise IOError('Failed to store data, probably too large. '\
+                raise IOError('Failed to store data, probably too large. '
                               'memcached limit is 1M')
             raise IOError('Failed to store data')
 
