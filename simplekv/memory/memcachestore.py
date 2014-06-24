@@ -38,7 +38,17 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
                   # in memcached. both, pylibmc and python-memcached use
                   # 0 as the default value for an unset time
         if ttl_secs not in (NOT_SET, FOREVER):
-            time = ttl_secs
+            if ttl_secs == 0:
+                # note that 0 in simplekv's terms means "expire after 0 secs",
+                # that is immediately. memcached understands this as "forever"
+                # a (slightly cringeworthy) workaround here is setting a
+                # short expiration time
+
+                # FIXME: figure out if this can be any shorter, for example
+                # 0.0001 or FLT_MIN
+                time = 1
+            else:
+                time = ttl_secs
 
         if not self.mc.set(key.encode('ascii'), data, time=time):
             if len(data) >= 1024 * 1023:
