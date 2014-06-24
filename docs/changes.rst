@@ -5,6 +5,9 @@ Changelog
 ===
 * Deprecated the :class:`~simplekv.UrlKeyValueStore`, replaced by flexible
   mixins like :class:`~simplekv.UrlMixin`.
+* Added :class:`~simplekv.TimeToLiveMixin` support (on
+  :class:`~simplekv.memory.redisstore.RedisStore` and
+  :class:`~simplekv.memory.memcachestore.MemcacheStore`).
 
 0.6
 ===
