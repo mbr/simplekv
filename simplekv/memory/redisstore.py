@@ -3,7 +3,7 @@
 
 from io import BytesIO
 
-from .. import KeyValueStore, TimeToLiveMixin, NOT_SET
+from .. import KeyValueStore, TimeToLiveMixin, NOT_SET, FOREVER
 
 
 class RedisStore(TimeToLiveMixin, KeyValueStore):
@@ -41,7 +41,11 @@ class RedisStore(TimeToLiveMixin, KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put(self, key, value, ttl_secs):
-        if ttl_secs == NOT_SET or ttl_secs is None:
+        if ttl_secs in (NOT_SET, FOREVER):
+            # if we do not care about ttl, just use set
+            # in redis, using SET will also clear the timeout
+            # note that this assumes that there is no way in redis
+            # to set a default timeout on keys
             self.redis.set(key, value)
         else:
             self.redis.setex(key, ttl_secs, value)
