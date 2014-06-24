@@ -216,6 +216,14 @@ class TTLStore(object):
     def small_ttl(self, request):
         return request.param
 
+    def test_put_with_negative_ttl_throws_error(self, store, key, value):
+        with pytest.raises(ValueError):
+            store.put(key, value, ttl_secs=-1)
+
+    def test_put_with_non_numeric_ttl_throws_error(self, store, key, value):
+        with pytest.raises(ValueError):
+            store.put(key, value, ttl_secs='badttl')
+
     def test_put_with_ttl_argument(self, store, key, value, small_ttl):
         store.put(key, value, small_ttl)
 
