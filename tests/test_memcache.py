@@ -3,14 +3,14 @@
 
 from simplekv.memory.memcachestore import MemcacheStore
 
-from basic_store import BasicStore
+from basic_store import BasicStore, TTLStore
 
 import pytest
 
 memcache = pytest.importorskip('memcache')
 
 
-class TestMemcacheStore(BasicStore):
+class TestMemcacheStore(TTLStore, BasicStore):
     @pytest.yield_fixture()
     def store(self):
         mc = memcache.Client(['localhost:11211'])
