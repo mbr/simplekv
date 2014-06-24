@@ -22,7 +22,7 @@ class TestMemcacheStore(TTLStore, BasicStore):
         yield MemcacheStore(mc)
         mc.flush_all()
 
-    # disabled tests (not fully API support for memcache)
+    # disabled tests (no full API support for memcache)
     test_has_key = None
     test_has_key_with_delete = None
     test_key_iterator = None
