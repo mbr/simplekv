@@ -173,6 +173,15 @@ exists and then try to retrieve it, it may have already been deleted in between
 (instead, retrieve and catch the exception).
 
 
+Python 3
+========
+
+All of the examples are written in Python 2. However, Python 3 is fully
+supported and tested. When using *simplekv* in a Python 3 environment, the
+only important thing to remember is that keys are always strings and values
+are always byte-objects.
+
+
 Indices and tables
 ==================
 
