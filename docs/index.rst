@@ -22,6 +22,7 @@ the likes of :class:`~simplekv.memory.redisstore.RedisStore` or
 
 Example
 =======
+
 Here's a simple example::
 
   from simplekv.fs import FilesystemStore
@@ -69,6 +70,7 @@ specializes in (even large!) blobs
 
 Table of contents
 =================
+
 .. toctree::
    :maxdepth: 3
 
@@ -87,6 +89,7 @@ Table of contents
 
 The core API
 ============
+
 .. autoclass:: simplekv.KeyValueStore
    :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
              open, put, put_file
@@ -120,8 +123,10 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
 
 .. _implement:
 
+
 Implementing a new backend
 ==========================
+
 Subclassing :class:`~simplekv.KeyValueStore` is the fastest way to implement a
 new backend. It suffices to override the
 :func:`~simplekv.KeyValueStore._delete`,
@@ -135,6 +140,7 @@ more specialized implementations to gain speed improvements.
 
 Default implementation
 ----------------------
+
 Classes derived from :class:`~simplekv.KeyValueStore` inherit a number of
 default implementations for the core API mehthods. Specifically, the
 :func:`~simplekv.KeyValueStore.delete`,
@@ -157,15 +163,19 @@ methods will each call the :func:`~simplekv.KeyValueStore._check_valid_key` meth
 .. automethod:: simplekv.KeyValueStore._put_file
 .. automethod:: simplekv.KeyValueStore._put_filename
 
+
 Atomicity
 =========
+
 Every call to a method on a KeyValueStore results in a single operation on the
 underlying backend. No guarantees are made above that, if you check if a key
 exists and then try to retrieve it, it may have already been deleted in between
 (instead, retrieve and catch the exception).
 
+
 Indices and tables
 ==================
+
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
