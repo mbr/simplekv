@@ -283,12 +283,12 @@ class TTLStore(object):
 
     def test_advertises_ttl_features(self, store):
         assert store.ttl_support is True
-        assert hasattr(store.ttl_support)
+        assert hasattr(store, 'ttl_support')
         assert getattr(store, 'ttl_support') is True
 
     def test_advertises_ttl_features_through_decorator(self, dstore):
         assert dstore.ttl_support is True
-        assert hasattr(dstore.ttl_support)
+        assert hasattr(dstore, 'ttl_support')
         assert getattr(dstore, 'ttl_support') is True
 
     def test_can_pass_ttl_through_decorator(self, dstore, key, value):
