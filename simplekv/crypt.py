@@ -157,12 +157,12 @@ class HMACDecorator(StoreDecorator):
         source = self._dstore.open(key)
         return _HMACFileReader(self.__new_hmac(key), source)
 
-    def put(self, key, value):
+    def put(self, key, value, *args, **kwargs):
         # just append hmac and put
         data = value + self.__new_hmac(key, value).digest()
-        return self._dstore.put(key, data)
+        return self._dstore.put(key, data, *args, **kwargs)
 
-    def put_file(self, key, file):
+    def put_file(self, key, file, *args, **kwargs):
         hm = self.__new_hmac(key)
         bufsize = 1024 * 1024
 
@@ -181,7 +181,7 @@ class HMACDecorator(StoreDecorator):
                 source.write(hm.digest())
 
             # after the file has been closed, hand it over
-            return self._dstore.put_file(key, file)
+            return self._dstore.put_file(key, file, *args, **kwargs)
         else:
             tmpfile = tempfile.NamedTemporaryFile(delete=False)
             try:
@@ -196,6 +196,8 @@ class HMACDecorator(StoreDecorator):
                 tmpfile.write(hm.digest())
                 tmpfile.close()
 
-                return self._dstore.put_file(key, tmpfile.name)
+                return self._dstore.put_file(
+                    key, tmpfile.name, *args, **kwargs
+                )
             finally:
                 os.unlink(tmpfile.name)

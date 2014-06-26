@@ -37,13 +37,13 @@ class HashDecorator(StoreDecorator):
         self._template = template
         super(HashDecorator, self).__init__(decorated_store)
 
-    def put(self, key, data):
+    def put(self, key, data, *args, **kwargs):
         if not key:
             key = self._template.format(self.hashfunc(data).hexdigest())
 
-        return self._dstore.put(key, data)
+        return self._dstore.put(key, data, *args, **kwargs)
 
-    def put_file(self, key, file):
+    def put_file(self, key, file, *args, **kwargs):
         bufsize = 1024 * 1024
         phash = self.hashfunc()
 
@@ -59,7 +59,7 @@ class HashDecorator(StoreDecorator):
 
                     return self._dstore.put_file(
                         self._template.format(phash.hexdigest()),
-                        file)
+                        file, *args, **kwargs)
             else:
                 tmpfile = tempfile.NamedTemporaryFile(delete=False)
                 try:
@@ -74,7 +74,7 @@ class HashDecorator(StoreDecorator):
                     tmpfile.close()
                     return self._dstore.put_file(
                         self._template.format(phash.hexdigest()),
-                        tmpfile.name
+                        tmpfile.name, *args, **kwargs
                     )
                 finally:
                     try:
@@ -84,7 +84,7 @@ class HashDecorator(StoreDecorator):
                             pass  # file already gone
                         else:
                             raise
-        return self._dstore.put_file(key, file)
+        return self._dstore.put_file(key, file, *args, **kwargs)
 
 
 class UUIDDecorator(StoreDecorator):
@@ -106,14 +106,18 @@ class UUIDDecorator(StoreDecorator):
         super(UUIDDecorator, self).__init__(store)
         self._template = template
 
-    def put(self, key, data):
+    def put(self, key, data, *args, **kwargs):
         if not key:
             key = str(getattr(uuid, self.uuidfunc)())
 
-        return self._dstore.put(self._template.format(key), data)
+        return self._dstore.put(
+            self._template.format(key), data, *args, **kwargs
+        )
 
-    def put_file(self, key, file):
+    def put_file(self, key, file, *args, **kwargs):
         if not key:
             key = str(getattr(uuid, self.uuidfunc)())
 
-        return self._dstore.put_file(self._template.format(key), file)
+        return self._dstore.put_file(
+            self._template.format(key), file, *args, **kwargs
+        )
