@@ -1,12 +1,14 @@
 # coding: utf8
 
-from simplekv._compat import BytesIO, xrange
 import os
 import time
 import tempfile
 from tempdir import TempDir
 
 import pytest
+from simplekv._compat import BytesIO, xrange
+from simplekv.crypt import HMACDecorator
+from simplekv.idgen import UUIDDecorator, HashDecorator
 
 
 class BasicStore(object):
@@ -216,6 +218,20 @@ TTL_MARGIN = 1
 
 
 class TTLStore(object):
+    @pytest.fixture
+    def ustore(self, store):
+        return UUIDDecorator(store)
+
+    @pytest.fixture(params=['hash', 'uuid', 'hmac'])
+    def dstore(self, request, store):
+        if request.param == 'hash':
+            return HashDecorator(store)
+        elif request.param == 'uuid':
+            return self.ustore(store)
+        elif request.param == 'hmac':
+            return HMACDecorator(request.getfuncargvalue('secret_key'),
+                                 store)
+
     @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):
         return request.param
@@ -259,3 +275,21 @@ class TTLStore(object):
         time.sleep(small_ttl + TTL_MARGIN)
         with pytest.raises(KeyError):
             store.get(key)
+
+    def test_uuid_decorator(self, ustore, value):
+        key = ustore.put(None, value)
+
+        assert key
+
+    def test_advertises_ttl_features(self, store):
+        assert store.ttl_support is True
+        assert hasattr(store.ttl_support)
+        assert getattr(store, 'ttl_support') is True
+
+    def test_advertises_ttl_features_through_decorator(self, dstore):
+        assert dstore.ttl_support is True
+        assert hasattr(dstore.ttl_support)
+        assert getattr(dstore, 'ttl_support') is True
+
+    def test_can_pass_ttl_through_decorator(self, dstore, key, value):
+        dstore.put(key, value, ttl_secs=10)
