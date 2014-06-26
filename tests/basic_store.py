@@ -223,13 +223,13 @@ class TTLStore(object):
         return UUIDDecorator(store)
 
     @pytest.fixture(params=['hash', 'uuid', 'hmac'])
-    def dstore(self, request, store):
+    def dstore(self, request, store, secret_key):
         if request.param == 'hash':
             return HashDecorator(store)
         elif request.param == 'uuid':
             return self.ustore(store)
         elif request.param == 'hmac':
-            return HMACDecorator('nothing', store)
+            return HMACDecorator(secret_key, store)
 
     @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):
