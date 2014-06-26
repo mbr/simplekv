@@ -229,8 +229,7 @@ class TTLStore(object):
         elif request.param == 'uuid':
             return self.ustore(store)
         elif request.param == 'hmac':
-            return HMACDecorator(request.getfuncargvalue('secret_key'),
-                                 store)
+            return HMACDecorator('nothing', store)
 
     @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):
