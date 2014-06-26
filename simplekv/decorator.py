@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding=utf8
 
+from functools import imap
+
 
 class StoreDecorator(object):
     """Base class for store decorators.
@@ -21,3 +23,50 @@ class StoreDecorator(object):
 
     def __iter__(self, *args, **kwargs):
         return self._dstore.__iter__(*args, **kwargs)
+
+
+class KeyTransformingDecorator(StoreDecorator):
+    # currently undocumented (== not advertised as a feature)
+    def _map_key(self, key):
+        return key
+
+    def _unmap_key(self, key):
+        return key
+
+    def __contains__(self, key):
+        return self._map_key(key) in self._dstore
+
+    def __iter__(self):
+        return imap(self._unmap_key, iter(self._dstore))
+
+    def delete(self, key):
+        return self._dstore.delete(self._map_key(key))
+
+    def get(self, key, *args, **kwargs):
+        return self._dstore.get(self._map_key(key), *args, **kwargs)
+
+    def get_file(self, key, *args, **kwargs):
+        return self._dstore.get_file(self._map_key(key), *args, **kwargs)
+
+    def iter_keys(self):
+        return imap(self._unmap_key, self._dstore.iter_keys())
+
+    def keys(self):
+        return map(self._unmap_key, self._dstore.keys())
+
+    def open(self, key):
+        return self._dstore.open(self._map_key(key))
+
+    def put(self, key, *args, **kwargs):
+        return self._unmap_key(
+            self._dstore.put(self._map_key(key), *args, **kwargs)
+        )
+
+    def put_file(self, key, *args, **kwargs):
+        return self._unmap_key(
+            self._dstore.put_file(self._map_key(key), *args, **kwargs)
+        )
+
+    # support for UrlMixin
+    def url_for(self, key, *args, **kwargs):
+        return self._dstore.url_for(self._map_key(key), *args, **kwargs)
