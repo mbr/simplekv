@@ -117,6 +117,8 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
       Passing ``None`` for any time-to-live parameter will cause this value to
       be used.
 
+   .. autoattribute:: simplekv.TimeToLiveMixin.ttl_support
+
 .. autodata:: simplekv.VALID_KEY_REGEXP
 
 .. autodata:: simplekv.VALID_KEY_RE

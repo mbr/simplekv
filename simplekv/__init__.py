@@ -337,6 +337,13 @@ class TimeToLiveMixin(object):
        ``ttl_secs`` argument. For more information on how to implement
        backends, see :ref:`implement`.
     """
+    ttl_support = True
+    """Indicates that a key-value store supports time-to-live features. This
+    allows users of stores to test for support using::
+
+      getattr(store, 'ttl_support', False)
+
+    """
 
     default_ttl_secs = NOT_SET
 
