@@ -17,7 +17,7 @@ class _HMACFileReader(object):
         # "preload" buffer
         self.buffer = source.read(self.hm.digest_size)
         if not len(self.buffer) == self.hm.digest_size:
-            raise VerificationException('Source does not contain HMAC hash '\
+            raise VerificationException('Source does not contain HMAC hash '
                                         '(too small)')
 
     def read(self, n=None):
