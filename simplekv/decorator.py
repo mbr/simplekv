@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from functools import imap
+from itertools import imap
 
 
 class StoreDecorator(object):
