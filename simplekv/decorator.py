@@ -73,6 +73,12 @@ class KeyTransformingDecorator(StoreDecorator):
 
 
 class PrefixDecorator(KeyTransformingDecorator):
+    """Prefixes any key with a string before passing it on the decorated
+    store. Automatically strips the prefix upon key retrieval.
+
+    :param store: The store to pass keys on to.
+    :param prefix: Prefix to add.
+    """
     def __init__(self, store, prefix):
         super(PrefixDecorator, self).__init__(store)
         self.prefix = prefix
