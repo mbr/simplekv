@@ -70,3 +70,18 @@ class KeyTransformingDecorator(StoreDecorator):
     # support for UrlMixin
     def url_for(self, key, *args, **kwargs):
         return self._dstore.url_for(self._map_key(key), *args, **kwargs)
+
+
+class PrefixDecorator(KeyTransformingDecorator):
+    def __init__(self, store, prefix):
+        super(PrefixDecorator, self).__init__(store)
+        self.prefix = prefix
+
+    def _map_key(self, key):
+        self._check_valid_key(key)
+        return self.prefix + key
+
+    def _unmap_key(self, key):
+        assert key.startswith(self.prefix)
+
+        return key[len(self.prefix):]
