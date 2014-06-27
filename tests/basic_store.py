@@ -232,7 +232,7 @@ class TTLStore(object):
         elif request.param == 'hmac':
             return HMACDecorator(secret_key, store)
         elif request.param == 'prefix':
-            return PrefixDecorator(store, 'SaMpLe_PrEfIX')
+            return PrefixDecorator('SaMpLe_PrEfIX', store)
 
     @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):

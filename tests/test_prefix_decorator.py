@@ -18,7 +18,7 @@ class TestPrefixDecorator(BasicStore):
 
     @pytest.fixture
     def store(self, prefix):
-        return PrefixDecorator(DictStore(), prefix)
+        return PrefixDecorator(prefix, DictStore())
 
     def test_put_returns_correct_key(self, store, prefix, key, value):
         assert key == store.put(key, value)
