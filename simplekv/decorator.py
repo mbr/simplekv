@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from itertools import imap
+from six.moves import map
 
 
 class StoreDecorator(object):
@@ -37,7 +37,7 @@ class KeyTransformingDecorator(StoreDecorator):
         return self._map_key(key) in self._dstore
 
     def __iter__(self):
-        return imap(self._unmap_key, iter(self._dstore))
+        return map(self._unmap_key, iter(self._dstore))
 
     def delete(self, key):
         return self._dstore.delete(self._map_key(key))
@@ -49,10 +49,10 @@ class KeyTransformingDecorator(StoreDecorator):
         return self._dstore.get_file(self._map_key(key), *args, **kwargs)
 
     def iter_keys(self):
-        return imap(self._unmap_key, self._dstore.iter_keys())
+        return map(self._unmap_key, self._dstore.iter_keys())
 
     def keys(self):
-        return map(self._unmap_key, self._dstore.keys())
+        return list(map(self._unmap_key, self._dstore.keys()))
 
     def open(self, key):
         return self._dstore.open(self._map_key(key))
