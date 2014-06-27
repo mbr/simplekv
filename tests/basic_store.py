@@ -7,6 +7,7 @@ from tempdir import TempDir
 
 import pytest
 from simplekv._compat import BytesIO, xrange
+from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
 
@@ -222,7 +223,7 @@ class TTLStore(object):
     def ustore(self, store):
         return UUIDDecorator(store)
 
-    @pytest.fixture(params=['hash', 'uuid', 'hmac'])
+    @pytest.fixture(params=['hash', 'uuid', 'hmac', 'prefix'])
     def dstore(self, request, store, secret_key):
         if request.param == 'hash':
             return HashDecorator(store)
@@ -230,6 +231,8 @@ class TTLStore(object):
             return self.ustore(store)
         elif request.param == 'hmac':
             return HMACDecorator(secret_key, store)
+        elif request.param == 'prefix':
+            return PrefixDecorator(store, 'SaMpLe_PrEfIX')
 
     @pytest.fixture(params=[0.4, 1])
     def small_ttl(self, request):
