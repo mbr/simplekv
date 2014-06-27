@@ -1,6 +1,10 @@
 Changelog
 *********
 
+0.9.2
+=====
+* Added :class:`~simplekv.decorator.PrefixDecorator`.
+
 0.9
 ===
 * Deprecated the :class:`~simplekv.UrlKeyValueStore`, replaced by flexible

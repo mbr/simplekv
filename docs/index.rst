@@ -79,6 +79,7 @@ Table of contents
    gae
    memory
    db
+   decorators
    idgen
    crypt
    cache
