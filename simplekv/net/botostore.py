@@ -44,19 +44,19 @@ class BotoStore(KeyValueStore, UrlMixin):
             prefix_len = len(self.prefix)
             return imap(lambda k: k.name[prefix_len:],
                         self.bucket.list(self.prefix))
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _has_key(self, key):
         try:
             return bool(self.bucket.get_key(self.prefix + key))
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _delete(self, key):
         try:
             self.bucket.delete_key(self.prefix + key)
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             if e.code != 'NoSuchKey':
                 raise IOError(str(e))
 
@@ -64,33 +64,33 @@ class BotoStore(KeyValueStore, UrlMixin):
         k = self.__new_key(key)
         try:
             return k.get_contents_as_string()
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
             raise IOError(str(e))
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _get_file(self, key, file):
         k = self.__new_key(key)
         try:
             return k.get_contents_to_file(file)
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
             raise IOError(str(e))
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _get_filename(self, key, filename):
         k = self.__new_key(key)
         try:
             return k.get_contents_to_filename(filename)
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
             raise IOError(str(e))
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _open(self, key):
@@ -98,11 +98,11 @@ class BotoStore(KeyValueStore, UrlMixin):
         try:
             k.open_read()
             return k
-        except StorageResponseError, e:
+        except StorageResponseError as e:
             if e.code == 'NoSuchKey':
                 raise KeyError(key)
             raise IOError(str(e))
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _put(self, key, data):
@@ -112,7 +112,7 @@ class BotoStore(KeyValueStore, UrlMixin):
                 data, **self.__upload_args()
             )
             return key
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _put_file(self, key, file):
@@ -122,7 +122,7 @@ class BotoStore(KeyValueStore, UrlMixin):
                 file, **self.__upload_args()
             )
             return key
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _put_filename(self, key, filename):
@@ -132,7 +132,7 @@ class BotoStore(KeyValueStore, UrlMixin):
                 filename, **self.__upload_args()
             )
             return key
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))
 
     def _url_for(self, key):
@@ -140,5 +140,5 @@ class BotoStore(KeyValueStore, UrlMixin):
         try:
             return k.generate_url(expires_in=self.url_valid_time,
                                   query_auth=False)
-        except (BotoClientError, BotoServerError), e:
+        except (BotoClientError, BotoServerError) as e:
             raise IOError(str(e))

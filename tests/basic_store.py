@@ -162,8 +162,7 @@ class BasicStore(object):
         store.put(key, value)
         store.put(key2, value2)
 
-        l = store.keys()
-        l.sort()
+        l = sorted(store.keys())
 
         assert l == sorted([key, key2])
 
