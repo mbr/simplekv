@@ -7,7 +7,7 @@ from .._compat import imap
 from .. import KeyValueStore
 
 from sqlalchemy import MetaData, Table, Column, String, LargeBinary, select,\
-                       delete, insert, update
+                       delete, insert, update, exists
 
 
 class SQLAlchemyStore(KeyValueStore):
@@ -22,9 +22,9 @@ class SQLAlchemyStore(KeyValueStore):
         )
 
     def _has_key(self, key):
-        return None != self.bind.execute(
-            select([self.table.c.key], self.table.c.key == key).limit(1)
-        ).first()
+        return self.bind.execute(
+            select([exists().where(self.table.c.key == key)])
+        ).scalar()
 
     def _delete(self, key):
         self.bind.execute(
