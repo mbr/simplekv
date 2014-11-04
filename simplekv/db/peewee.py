@@ -42,7 +42,8 @@ class PeeweeStore(KeyValueStore):
 
     def _delete(self, key):
         try:
-            self.model.get(key=key).delete_instance()
+            with self._db.transaction():
+                self.model.get(key=key).delete_instance()
         except self.model.DoesNotExist:
             pass
 
@@ -58,9 +59,10 @@ class PeeweeStore(KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put(self, key, data):
-        obj = self.model.get_or_create(key=key)
-        obj.value = data
-        obj.save()
+        with self._db.transaction():
+            obj = self.model.get_or_create(key=key)
+            obj.value = data
+            obj.save()
         return obj.key
 
     def _put_file(self, key, file):
