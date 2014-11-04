@@ -40,17 +40,18 @@ class PeeweeStore(KeyValueStore):
             self.model.key == key
         ).exists()
 
-    def _get_obj(self, key):
+    def _delete(self, key):
         try:
-            return self.model.get(key=key)
+            self.model.get(key=key).delete_instance()
+        except self.model.DoesNotExist:
+            pass
+
+    def _get(self, key):
+        try:
+            return self.model.get(key=key).value
         except self.model.DoesNotExist:
             raise KeyError(key)
 
-    def _delete(self, key):
-        obj = self._get_obj(key)
-        obj.delete_instance()
-
-    def _get(self, key):
         return self._get_obj(key).value
 
     def _open(self, key):
