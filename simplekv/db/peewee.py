@@ -1,12 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import sys
 from io import BytesIO
+
+from peewee import Model, BlobField, CharField
 
 from .._compat import imap
 from .. import KeyValueStore
 
-from peewee import Model, BlobField, CharField
+
+if sys.version_info[0] == 2:
+    def _clean_value(value):
+        if isinstance(value, buffer):
+            return str(value)
+        else:
+            return value
+
+elif sys.version_info[0] == 3:
+    _clean_value = lambda x: x
+else:
+    raise RuntimeError('Unsupported python version.')
 
 
 class PeeweeStore(KeyValueStore):
@@ -43,13 +57,15 @@ class PeeweeStore(KeyValueStore):
     def _delete(self, key):
         try:
             with self._db.transaction():
-                self.model.get(key=key).delete_instance()
+                obj = self.model.get(key=key)
+                obj.delete_instance()
         except self.model.DoesNotExist:
             pass
 
     def _get(self, key):
         try:
-            return self.model.get(key=key).value
+            obj = self.model.get(key=key)
+            return _clean_value(obj.value)
         except self.model.DoesNotExist:
             raise KeyError(key)
 
