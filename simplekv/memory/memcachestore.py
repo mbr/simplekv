@@ -44,11 +44,10 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
                 # a (slightly cringeworthy) workaround here is setting a
                 # short expiration time
 
-                # FIXME: figure out if this can be any shorter, for example
-                # 0.0001 or FLT_MIN
                 time = 1
             else:
-                time = ttl_secs
+                # memcached only supports integer ttl in its protocol
+                time = int(ttl_secs)
 
         if not self.mc.set(key.encode('ascii'), data, time=time):
             if len(data) >= 1024 * 1023:
