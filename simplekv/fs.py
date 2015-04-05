@@ -51,7 +51,7 @@ class FilesystemStore(KeyValueStore, UrlMixin):
         os.umask(current_umask)
 
         perm = self.perm
-        if None == self.perm:
+        if self.perm is None:
             perm = 0o666 & (0o777 ^ current_umask)
 
         os.chmod(filename, perm)
@@ -83,7 +83,7 @@ class FilesystemStore(KeyValueStore, UrlMixin):
 
         # when using umask, correct permissions are automatically applied
         # only chmod is necessary
-        if None != self.perm:
+        if self.perm is not None:
             self._fix_permissions(target)
 
         return key
