@@ -48,7 +48,7 @@ class RedisStore(TimeToLiveMixin, KeyValueStore):
             # to set a default timeout on keys
             self.redis.set(key, value)
         else:
-            self.redis.psetex(key, int(ttl_secs * 1000), value)
+            self.redis.setex(key, int(ttl_secs), value)
         return key
 
     def _put_file(self, key, file, ttl_secs):
