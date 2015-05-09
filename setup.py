@@ -21,4 +21,8 @@ setup(name='simplekv',
       license='MIT',
       packages=find_packages(exclude=['test']),
       install_requires=['six'],
+      classifiers=[
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 3',
+      ],
       )
