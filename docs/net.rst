@@ -70,7 +70,7 @@ If a section is not present, the tests for that backend will be skipped.
       :param prefix: A string that will transparently prefixed to all handled
                      keys.
       :param url_valid_time=0: When using
-                     :meth:`~simplekv.UrlKeyValueStore.url_for`, URLs should be
+                     :meth:`~.UrlMixin.url_for`, URLs should be
                      valid for this many seconds at most.
       :param reduced_redundancy: Use reduced redundancy storage for
                                        storing keys.
