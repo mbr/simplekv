@@ -14,8 +14,8 @@ class FilesystemStore(KeyValueStore, UrlMixin):
     The *FilesystemStore* stores every value as its own file on the filesystem,
     all under a common directory.
 
-    Any call to :func:`url_for` will result in a `file://`-URL pointing towards
-    the internal storage to be generated.
+    Any call to :meth:`.url_for` will result in a `file://`-URL pointing
+    towards the internal storage to be generated.
     """
     def __init__(self, root, perm=None, **kwargs):
         """Initialize new FilesystemStore

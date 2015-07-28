@@ -10,14 +10,14 @@ a `session backend for the Flask framework
 
 Built upon the solid foundation are a few optional bells and whistles, such as
 automatic ID generation/hashing (in :mod:`simplekv.idgen`). A number of
-backends are available, ranging from :class:`~simplekv.fs.FilesystemStore` to
+backends are available, ranging from :class:`~.FilesystemStore` to
 support for `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
 Storage <http://code.google.com/apis/storage/>`_ through
-:class:`~simplekv.net.botostore.BotoStore`.
+:class:`~.BotoStore`.
 
 Faster in-memory stores suitable for session management are supported through
-the likes of :class:`~simplekv.memory.redisstore.RedisStore` or
-:class:`~simplekv.memory.memcachestore.MemcacheStore`.
+the likes of :class:`~.RedisStore` or
+:class:`~.MemcacheStore`.
 
 
 Example

@@ -43,7 +43,7 @@ based store is available:
 
    .. method:: __init__(bind, metadata, tablename)
 
-      Generates a new :meth:`~sqlalchemy.schema.Table` for use as a
+      Generates a new :class:`~sqlalchemy.schema.Table` for use as a
       backend (see :attr:`~simplekv.db.sql.SQLAlchemyStore.table`) on the
       supplied metadata.
 

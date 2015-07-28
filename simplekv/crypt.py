@@ -64,23 +64,26 @@ class VerificationException(Exception):
 class HMACDecorator(StoreDecorator):
     """HMAC authentication and integrity check decorator.
 
-    This decorator overrides the :meth:`get`, :meth:`get_file`, :meth:`open`,
-    :meth:`put` and :meth:`put_file` methods and alters the data that is store
-    in the follow way:
+    This decorator overrides the :meth:`.KeyValueStore.get`,
+    :meth:`.KeyValueStore.get_file`, :meth:`.KeyValueStore.open`,
+    :meth:`.KeyValueStore.put` and :meth:`.KeyValueStore.put_file` methods and
+    alters the data that is store in the follow way:
 
     First, the original data is stored while being fed to an hmac instance. The
     resulting hash is appended to the data as a binary string, every value
     stored therefore takes up an additional
-    :prop:`HMACDecorator.hmac_digestsize` bytes.
+    :prop:`.hmac_digestsize` bytes.
 
-    Upon retrieval using any of :meth:`get`, :meth:`get_file` or :meth:`open`
-    methods, the data is checked as soon as the hash is readable. Since hashes
-    are stored at the end, almost no extra memory is used when using streaming
-    methods. However, :meth:`get_file` and :meth:`open` will only check the
-    hash value once it is read, that is, at the end of the retrieval.
+    Upon retrieval using any of :meth:`.KeyValueStore.get`,
+    :meth:`.KeyValueStore.get_file` or :meth:`.KeyValueStore.open` methods, the
+    data is checked as soon as the hash is readable. Since hashes are stored at
+    the end, almost no extra memory is used when using streaming methods.
+    However, :meth:`.KeyValueStore.get_file` and :meth:`.KeyValueStore.open`
+    will only check the hash value once it is read, that is, at the end of the
+    retrieval.
 
     The decorator will protect against any modification of the stored data and
-    ensures that only those with knowledge of the :attr:`__secret_key`
+    ensures that only those with knowledge of the ``__secret_key``
     can alter any data. The key used to store data is also used to extend the
     HMAC secret key, making it impossible to copy a valid message over to a
     different key.

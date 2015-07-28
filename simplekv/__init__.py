@@ -29,8 +29,8 @@ class KeyValueStore(object):
 
         :param key: The key whose existence should be verified.
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If there was an error accessing the store.
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If there was an error accessing the store.
 
         :returns: True if the key exists, False otherwise.
         """
@@ -41,7 +41,7 @@ class KeyValueStore(object):
     def __iter__(self):
         """Iterate over keys
 
-        :raises IOError: If there was an error accessing the store.
+        :raises exceptions.IOError: If there was an error accessing the store.
         """
         return self.iter_keys()
 
@@ -50,8 +50,8 @@ class KeyValueStore(object):
 
         If the key does not exist, no error is reported.
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If there was an error deleting.
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If there was an error deleting.
         """
         self._check_valid_key(key)
         return self._delete(key)
@@ -61,9 +61,9 @@ class KeyValueStore(object):
 
         :param key: Key to get
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If the file could not be read.
-        :raises KeyError: If the key was not found.
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If the file could not be read.
+        :raises exceptions.KeyError: If the key was not found.
         """
         self._check_valid_key(key)
         return self._get(key)
@@ -71,8 +71,9 @@ class KeyValueStore(object):
     def get_file(self, key, file):
         """Write contents of key to file
 
-        Like :func:`put_file`, this method allows backends to implement a
-        specialized function if data needs to be written to disk or streamed.
+        Like :meth:`.KeyValueStore.put_file`, this method allows backends to
+        implement a specialized function if data needs to be written to disk or
+        streamed.
 
         If *file* is a string, contents of *key* are written to a newly
         created file with the filename *file*. Otherwise, the data will be
@@ -81,9 +82,10 @@ class KeyValueStore(object):
         :param key: The key to be read
         :param file: Output filename or an object with a *write* method.
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If there was a problem reading or writing data.
-        :raises KeyError: If the key was not found.
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If there was a problem reading or writing
+                                    data.
+        :raises exceptions.KeyError: If the key was not found.
         """
         self._check_valid_key(key)
         if isinstance(file, str):
@@ -95,14 +97,14 @@ class KeyValueStore(object):
         """Return an Iterator over all keys currently in the store, in any
         order.
 
-        :raises IOError: If there was an error accessing the store.
+        :raises exceptions.IOError: If there was an error accessing the store.
         """
         raise NotImplementedError
 
     def keys(self):
         """Return a list of keys currently in store, in any order
 
-        :raises IOError: If there was an error accessing the store.
+        :raises exceptions.IOError: If there was an error accessing the store.
         """
         return list(self.iter_keys())
 
@@ -113,9 +115,9 @@ class KeyValueStore(object):
 
         :param key: Key to open
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If the file could not be read.
-        :raises KeyError: If the key was not found.
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If the file could not be read.
+        :raises exceptions.KeyError: If the key was not found.
         """
         self._check_valid_key(key)
         return self._open(key)
@@ -130,8 +132,9 @@ class KeyValueStore(object):
 
         :returns: The key under which data was stored
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If storing failed or the file could not be read
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If storing failed or the file could not
+                                    be read
         """
         self._check_valid_key(key)
         return self._put(key, data)
@@ -156,8 +159,8 @@ class KeyValueStore(object):
 
         :returns: The key under which data was stored
 
-        :raises ValueError: If the key is not valid.
-        :raises IOError: If there was a problem moving the file in.
+        :raises exceptions.ValueError: If the key is not valid.
+        :raises exceptions.IOError: If there was a problem moving the file in.
         """
         # FIXME: shouldn't we call self._check_valid_key here?
         if isinstance(file, str):
@@ -179,7 +182,7 @@ class KeyValueStore(object):
     def _delete(self, key):
         """Implementation for :meth:`~simplekv.KeyValueStore.delete`. The
         default implementation will simply raise a
-        :py:exc:`NotImplementedError`.
+        :py:exc:`~exceptions.NotImplementedError`.
         """
         raise NotImplementedError
 
@@ -245,7 +248,7 @@ class KeyValueStore(object):
 
     def _open(self, key):
         """Open key for reading. Default implementation simply raises a
-        :exc:`NotImplementedError`.
+        :py:exc:`~exceptions.NotImplementedError`.
 
         :param key: Key to open
         """
@@ -268,7 +271,7 @@ class KeyValueStore(object):
         not accept strings.
 
         The default implementation will simply raise a
-        :exc:`NotImplementedError`.
+        :py:exc:`~exceptions.NotImplementedError`.
 
         :param key: Key under which data should be stored
         :param file: File-like object to store data from
@@ -293,6 +296,7 @@ class KeyValueStore(object):
 
 class UrlMixin(object):
     """Supports getting a download URL for keys."""
+
     def url_for(self, key):
         """Returns a full external URL that can be used to retrieve *key*.
 
@@ -301,7 +305,7 @@ class UrlMixin(object):
 
         :param key: The key for which the url is to be generated
 
-        :raises ValueError: If the key is not valid.
+        :raises exceptions.ValueError: If the key is not valid.
 
         :return: A string containing a URL to access key
         """
@@ -325,11 +329,11 @@ class TimeToLiveMixin(object):
     Any value given for a time-to-live parameter must be one of the following:
 
     * A positive ``int``, representing seconds,
-    * :data:`simplekv.FOREVER`, meaning no expiration
-    * :data:`simplekv.NOT_SET`, meaning that no TTL configuration will be
+    * ``simplekv.FOREVER``, meaning no expiration
+    * ``simplekv.NOT_SET``, meaning that no TTL configuration will be
       done at all or
     * ``None`` representing the default (see
-      :attr:`~simplekv.TimeToLiveMixin.default_ttl_secs``).
+      :class:`.TimeToLiveMixin`'s ``default_ttl_secs``).
 
     .. note:: When deriving from :class:`~simplekv.TimeToLiveMixin`, the same
        default implementations for ``_put``, ``_put_file`` and
@@ -363,23 +367,23 @@ class TimeToLiveMixin(object):
         return ttl_secs
 
     def put(self, key, data, ttl_secs=None):
-        """Like :func:`~simplekv.KeyValueStore.put`, but with an additional
+        """Like :meth:`~simplekv.KeyValueStore.put`, but with an additional
            parameter:
 
            :param ttl_secs: Number of seconds until the key expires. See above
                             for valid values.
-           :raises ValueError: If ``ttl_secs`` is invalid.
+           :raises exceptions.ValueError: If ``ttl_secs`` is invalid.
         """
         self._check_valid_key(key)
         return self._put(key, data, self._valid_ttl(ttl_secs))
 
     def put_file(self, key, file, ttl_secs=None):
-        """Like :func:`~simplekv.KeyValueStore.put_file`, but with an
+        """Like :meth:`~simplekv.KeyValueStore.put_file`, but with an
            additional parameter:
 
            :param ttl_secs: Number of seconds until the key expires. See above
                             for valid values.
-           :raises ValueError: If ``ttl_secs`` is invalid.
+           :raises exceptions.ValueError: If ``ttl_secs`` is invalid.
         """
         if ttl_secs is None:
             ttl_secs = self.default_ttl_secs
@@ -406,6 +410,6 @@ class TimeToLiveMixin(object):
 class UrlKeyValueStore(UrlMixin, KeyValueStore):
     """
     .. deprecated:: 0.9
-       Use the :class:`UrlMixin` instead.
+       Use the :class:`.UrlMixin` instead.
     """
     pass

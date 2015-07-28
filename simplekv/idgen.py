@@ -27,10 +27,9 @@ from .decorator import StoreDecorator
 class HashDecorator(StoreDecorator):
     """Hash function decorator
 
-    Overrides :func:`put` and :func:`put_file`. If a key of *None* is passed,
-    the data/file is hashed using :attr:`hashfunc`, which defaults to
-    *hashlib.sha1*.
-    """
+    Overrides :meth:`.KeyValueStore.put` and :meth:`.KeyValueStore.put_file`.
+    If a key of *None* is passed, the data/file is hashed using
+    ``hashfunc``, which defaults to *hashlib.sha1*. """
 
     def __init__(self, decorated_store, hashfunc=hashlib.sha1, template='{}'):
         self.hashfunc = hashfunc
@@ -90,9 +89,10 @@ class HashDecorator(StoreDecorator):
 class UUIDDecorator(StoreDecorator):
     """UUID generating decorator
 
-    Overrides :func:`put` and :func:`put_file`. If a key of *None* is passed,
-    a new UUID will be generated as the key. The attribute `uuidfunc`
-    determines which UUID-function to use and defaults to 'uuid1'.
+    Overrides :meth:`.KeyValueStore.put` and :meth:`.KeyValueStore.put_file`.
+    If a key of *None* is passed, a new UUID will be generated as the key. The
+    attribute `uuidfunc` determines which UUID-function to use and defaults to
+    'uuid1'.
 
     .. note::
        There seems to be a bug in the uuid module that prevents initializing
