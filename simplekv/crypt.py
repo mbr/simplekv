@@ -71,8 +71,7 @@ class HMACDecorator(StoreDecorator):
 
     First, the original data is stored while being fed to an hmac instance. The
     resulting hash is appended to the data as a binary string, every value
-    stored therefore takes up an additional
-    :prop:`.hmac_digestsize` bytes.
+    stored therefore takes up an additional ``hmac_digestsize`` bytes.
 
     Upon retrieval using any of :meth:`.KeyValueStore.get`,
     :meth:`.KeyValueStore.get_file` or :meth:`.KeyValueStore.open` methods, the
