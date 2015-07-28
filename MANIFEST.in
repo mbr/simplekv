@@ -1,3 +1,4 @@
 include README.rst
+include LICENSE
 global-exclude *.swp
 exclude boto_credentials.ini
