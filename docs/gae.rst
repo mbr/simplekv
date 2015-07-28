@@ -14,9 +14,8 @@ blobs [1]_.
 
    .. method:: __init__(obj_class):
 
-      :param obj_class: An instance of a `Model
-      <https://developers.google.com/appengine/docs/python/ndb/modelclass>`_
-      object.
+      :param obj_class: An instance of a `Model <https://developers.google.com/
+                        appengine/docs/python/ndb/modelclass>`_ object.
 
 Here is a minimal example:
 
