@@ -18,10 +18,10 @@ can be installed through `pip <http://pypi.python.org/pypi/pip>`_::
 
 Documentation
 -------------
-The documentation for *simplekv* is available at
+The documentation for simplekv is available at
 http://pythonhosted.org/simplekv.
 
 License
 -------
-*simplekv* is `MIT licensed
+simplekv is `MIT licensed
 <http://www.opensource.org/licenses/mit-license.php>`_.
