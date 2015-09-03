@@ -1,3 +1,5 @@
+import codecs
+import os
 from simplekv._compat import BytesIO
 from simplekv.memory import DictStore
 from simplekv.decorator import PrefixDecorator
@@ -18,7 +20,15 @@ class TestPrefixDecorator(BasicStore):
 
     @pytest.fixture
     def store(self, prefix):
-        return PrefixDecorator(prefix, DictStore())
+        def randstring():
+            return codecs.encode(os.urandom(8), 'hex')
+
+        base_store = DictStore()
+        base_store.put(randstring(), randstring())
+        base_store.put(randstring(), randstring())
+        base_store.put(randstring(), randstring())
+
+        return PrefixDecorator(prefix, base_store)
 
     def test_put_returns_correct_key(self, store, prefix, key, value):
         assert key == store.put(key, value)
