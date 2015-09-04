@@ -12,6 +12,7 @@ class StoreDecorator(object):
     :attr:`_dstore`. It will also pass through the :attr:`__getattr__` and
     :attr:`__contains__` python special methods.
     """
+
     def __init__(self, store):
         self._dstore = store
 
@@ -33,11 +34,14 @@ class KeyTransformingDecorator(StoreDecorator):
     def _unmap_key(self, key):
         return key
 
+    def _filter(self, key):
+        return True
+
     def __contains__(self, key):
         return self._map_key(key) in self._dstore
 
     def __iter__(self):
-        return map(self._unmap_key, iter(self._dstore))
+        return map(self._unmap_key, filter(self._filter, iter(self._dstore)))
 
     def delete(self, key):
         return self._dstore.delete(self._map_key(key))
@@ -49,23 +53,26 @@ class KeyTransformingDecorator(StoreDecorator):
         return self._dstore.get_file(self._map_key(key), *args, **kwargs)
 
     def iter_keys(self):
-        return map(self._unmap_key, self._dstore.iter_keys())
+        return map(self._unmap_key, filter(self._filter,
+                                           self._dstore.iter_keys()))
 
     def keys(self):
-        return list(map(self._unmap_key, self._dstore.keys()))
+        """Return a list of keys currently in store, in any order
+
+        :raises IOError: If there was an error accessing the store.
+        """
+        return list(self.iter_keys())
 
     def open(self, key):
         return self._dstore.open(self._map_key(key))
 
     def put(self, key, *args, **kwargs):
         return self._unmap_key(
-            self._dstore.put(self._map_key(key), *args, **kwargs)
-        )
+            self._dstore.put(self._map_key(key), *args, **kwargs))
 
     def put_file(self, key, *args, **kwargs):
         return self._unmap_key(
-            self._dstore.put_file(self._map_key(key), *args, **kwargs)
-        )
+            self._dstore.put_file(self._map_key(key), *args, **kwargs))
 
     # support for UrlMixin
     def url_for(self, key, *args, **kwargs):
@@ -79,9 +86,13 @@ class PrefixDecorator(KeyTransformingDecorator):
     :param store: The store to pass keys on to.
     :param prefix: Prefix to add.
     """
+
     def __init__(self, prefix, store):
         super(PrefixDecorator, self).__init__(store)
         self.prefix = prefix
+
+    def _filter(self, key):
+        return key.startswith(self.prefix)
 
     def _map_key(self, key):
         self._check_valid_key(key)
