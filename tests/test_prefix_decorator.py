@@ -58,9 +58,12 @@ class TestPrefixDecorator(BasicStore):
         base_store = store._dstore
         store2 = PrefixDecorator(prefix2, base_store)
 
+        pv = value + prefix.encode('ascii')
+        pv2 = value + prefix2.encode('ascii')
+
         # put in with each prefix
-        store.put(key, value + prefix)
-        store2.put(key, value + prefix2)
+        store.put(key, pv)
+        store2.put(key, pv2)
 
         assert key in store
         assert key in store2
@@ -71,5 +74,5 @@ class TestPrefixDecorator(BasicStore):
         assert len(store.keys()) == 1
         assert len(store2.keys()) == 1
 
-        assert store.get(key) == value + prefix
-        assert store2.get(key) == value + prefix2
+        assert store.get(key) == pv
+        assert store2.get(key) == pv2
