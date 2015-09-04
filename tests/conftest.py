@@ -1,8 +1,6 @@
 # coding: utf8
 import hashlib
 
-from six import b
-
 import pytest
 
 
@@ -17,17 +15,17 @@ def secret_key(request):
 
 
 # values are short payloads to store
-@pytest.fixture(params=[b('a_short_value'), b('another_short_value')])
+@pytest.fixture(params=[b'a_short_value', b'another_short_value'])
 def value(request):
     return request.param
 
 
-@pytest.fixture(params=[b('the_other_value'), b('other_value_2')])
+@pytest.fixture(params=[b'the_other_value', b'other_value_2'])
 def value2(request):
     return request.param
 
 
-@pytest.fixture(params=[b('a_long_value') * 4 * 1024])
+@pytest.fixture(params=[b'a_long_value' * 4 * 1024])
 def long_value(request):
     return request.param
 
