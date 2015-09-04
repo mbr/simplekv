@@ -16,9 +16,24 @@ class TestPrefixDecorator(BasicStore):
     def prefix(self, request):
         return request.param
 
-    @pytest.fixture
-    def store(self, prefix):
-        return PrefixDecorator(prefix, DictStore())
+    @pytest.fixture(params=['prefix2_', 'zz', ])
+    def prefix2(self, request):
+        # these are used when multiple prefixes in a single store
+        # are requested
+        return request.param
+
+    @pytest.fixture(params=[True, False])
+    def store(self, request, prefix):
+        base_store = DictStore()
+
+        # do we add extra keys to the underlying store?
+        if request.param:
+            base_store.put('some_other_value', 'data1')
+            base_store.put('ends_with_short_', 'data2')
+            base_store.put('xx', 'data3')
+            base_store.put('test', 'data4')
+
+        return PrefixDecorator(prefix, base_store)
 
     def test_put_returns_correct_key(self, store, prefix, key, value):
         assert key == store.put(key, value)
@@ -37,3 +52,24 @@ class TestPrefixDecorator(BasicStore):
         key == store.put_file(key, BytesIO(value))
 
         assert store._dstore.get(full_key) == value
+
+    def test_multiple_prefixes_one_store(self, store, prefix, prefix2, key,
+                                         value):
+        base_store = store._dstore
+        store2 = PrefixDecorator(prefix2, base_store)
+
+        # put in with each prefix
+        store.put(key, value + prefix)
+        store2.put(key, value + prefix2)
+
+        assert key in store
+        assert key in store2
+
+        assert prefix + key in base_store
+        assert prefix2 + key in base_store
+
+        assert len(store.keys()) == 1
+        assert len(store2.keys()) == 1
+
+        assert store.get(key) == value + prefix
+        assert store2.get(key) == value + prefix2
