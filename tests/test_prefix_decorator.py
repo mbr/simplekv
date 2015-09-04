@@ -28,10 +28,10 @@ class TestPrefixDecorator(BasicStore):
 
         # do we add extra keys to the underlying store?
         if request.param:
-            base_store.put('some_other_value', 'data1')
-            base_store.put('ends_with_short_', 'data2')
-            base_store.put('xx', 'data3')
-            base_store.put('test', 'data4')
+            base_store.put('some_other_value', b'data1')
+            base_store.put('ends_with_short_', b'data2')
+            base_store.put('xx', b'data3')
+            base_store.put('test', b'data4')
 
         return PrefixDecorator(prefix, base_store)
 
