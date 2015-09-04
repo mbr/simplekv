@@ -1,6 +1,12 @@
 Changelog
 *********
 
+0.9.4
+=====
+* simplekv no longer depends on ``six``.
+* The :class:`~simplekv.decorator.PrefixDecorator` works more as expected.
+
+
 0.9.2
 =====
 * Added :class:`~simplekv.decorator.PrefixDecorator`.
