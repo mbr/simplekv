@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from six.moves import map
-
 
 class StoreDecorator(object):
     """Base class for store decorators.
@@ -41,7 +39,7 @@ class KeyTransformingDecorator(StoreDecorator):
         return self._map_key(key) in self._dstore
 
     def __iter__(self):
-        return map(self._unmap_key, filter(self._filter, iter(self._dstore)))
+        return self.iter_keys()
 
     def delete(self, key):
         return self._dstore.delete(self._map_key(key))
@@ -53,8 +51,8 @@ class KeyTransformingDecorator(StoreDecorator):
         return self._dstore.get_file(self._map_key(key), *args, **kwargs)
 
     def iter_keys(self):
-        return map(self._unmap_key, filter(self._filter,
-                                           self._dstore.iter_keys()))
+        return (self._unmap_key(k) for k in self._dstore.iter_keys()
+                if self._filter(k))
 
     def keys(self):
         """Return a list of keys currently in store, in any order
