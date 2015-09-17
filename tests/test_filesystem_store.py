@@ -140,6 +140,7 @@ class TestWebFileStore(TestBaseFilesystemStore):
 
         mock_callable.assert_called_with(store, key)
 
+
 # test handling of directory entries in the file system
 class TestFilesystemStoreDirs(TestBaseFilesystemStore):
     @pytest.fixture
@@ -156,6 +157,6 @@ class TestFilesystemStoreDirs(TestBaseFilesystemStore):
 
         src = BytesIO()
 
-        key = store.put_file('test123', src)
+        store.put_file('test123', src)
 
         assert store.keys() == ['test123']
