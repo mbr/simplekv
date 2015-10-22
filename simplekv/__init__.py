@@ -4,6 +4,7 @@
 import re
 from io import BytesIO
 
+__version__ = '0.9.4.dev1'
 
 VALID_NON_NUM = r"""\`\!"#$%&'()+,-.<=>?@[]^_{}~"""
 VALID_KEY_REGEXP = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM)
