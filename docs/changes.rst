@@ -1,8 +1,8 @@
 Changelog
 *********
 
-0.9.4
-=====
+0.10.0
+======
 * simplekv no longer depends on ``six``.
 * The :class:`~simplekv.decorator.PrefixDecorator` works more as expected.
 * An experimental git-based store has been added in
