@@ -5,10 +5,15 @@ from tempdir import TempDir
 import pytest
 
 from simplekv.git import GitCommitStore
-# FIXME: test subdir support, branches
+
+# FIXME: test subdir support
 
 
 class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
+    @pytest.fixture(params=['master', 'not-master', 'other-branch'])
+    def branch(self, request):
+        return request.param
+
     @pytest.yield_fixture
     def repo_path(self):
         with TempDir() as tmpdir:
@@ -16,5 +21,5 @@ class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
             yield tmpdir
 
     @pytest.fixture
-    def store(self, repo_path):
-        return GitCommitStore(repo_path)
+    def store(self, repo_path, branch):
+        return GitCommitStore(repo_path, branch=branch)
