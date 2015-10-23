@@ -14,7 +14,8 @@ def on_tree(repo, tree, components, obj):
     :param tree: Tree object to mount on.
     :param components: A list of strings of subpaths (i.e. ['foo', 'bar'] is
                        equivalent to '/foo/bar')
-    :param obj: Object to mount.
+    :param obj: Object to mount. If None, removes the object found at path
+                and prunes the tree downwards.
     :return: A list of new entities that need to be added to the object store,
              where the last one is the new tree.
     """
@@ -25,10 +26,17 @@ def on_tree(repo, tree, components, obj):
             mode = 0o100644
         elif isinstance(obj, Tree):
             mode = 0o040000
+        elif obj is None:
+            mode = None
         else:
             raise TypeError('Can only mount Blobs or Trees')
         name = components[0]
-        tree[name] = mode, obj.id
+
+        if mode is not None:
+            tree[name] = mode, obj.id
+            return [tree]
+        if name in tree:
+            del tree[name]
         return [tree]
     elif len(components) > 1:
         a, bc = components[0], components[1:]
@@ -39,8 +47,16 @@ def on_tree(repo, tree, components, obj):
         else:
             a_tree = Tree()
         res = on_tree(repo, a_tree, bc, obj)
-        tree[a] = 0o040000, res[-1].id
-        return res + [tree]
+        a_tree_new = res[-1]
+
+        if a_tree_new.items():
+            tree[a] = 0o040000, a_tree_new.id
+            return res + [tree]
+
+        # tree is empty
+        if a in tree:
+            del tree[a]
+        return [tree]
     else:
         raise ValueError('Components can\'t be empty.')
 
@@ -83,27 +99,20 @@ class GitCommitStore(KeyValueStore):
         try:
             commit = self.repo[self._refname]
             tree = self.repo[commit.tree]
-            subtree = tree
-
-            if self.subdir:
-                subtree = self.repo[tree.lookup_path(self.repo.__getitem__,
-                                                     self.subdir)[1]]
-                if not isinstance(subtree, Tree):
-                    return  # subdir found, but it is not a directory
-            del subtree[key.encode('ascii')]
         except KeyError:
             return  # not-found key errors are ignored
 
         commit = self._create_top_commit()
         objects_to_add = []
 
+        components = [key.encode('ascii')]
         if self.subdir:
-            # remount altered subtree
-            res = on_tree(self.repo, tree, self.subdir.split('/'), subtree)
-            objects_to_add.extend(res)
-            tree = res[-1]
+            components = self.subdir.split('/') + components
 
-        objects_to_add.append(tree)
+        res = on_tree(self.repo, tree, components, None)
+        objects_to_add.extend(res)
+        tree = res[-1]
+
         commit.tree = tree.id
         commit.message = ('Deleted key {!r}'.format(self.subdir + '/' + key)
                           ).encode('utf8')
@@ -132,6 +141,10 @@ class GitCommitStore(KeyValueStore):
         try:
             commit = self.repo[self._refname]
             tree = self.repo[commit.tree]
+
+            if self.subdir:
+                tree = self.repo[tree.lookup_path(self.repo.__getitem__,
+                                                  self.subdir)[1]]
         except KeyError:
             pass
         else:
