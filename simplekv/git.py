@@ -155,6 +155,8 @@ class GitCommitStore(KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put_file(self, key, file):
+        # FIXME: it may be worth to try to move large files directly into the
+        #        store here
         return self._put(key, file.read())
 
     def _put(self, key, data):
