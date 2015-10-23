@@ -155,17 +155,14 @@ class GitCommitStore(KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put_file(self, key, file):
+        return self._put(key, file.read())
+
+    def _put(self, key, data):
         commit = self._create_top_commit()
         commit.message = ('Updated key {!r}'.format(self.subdir + '/' + key)
                           ).encode('utf8')
 
-        # prepare blob
-        if hasattr(file, 'read'):
-            buf = file.read()
-        else:
-            with open(file, 'rb') as fp:
-                buf = fp.read()
-        blob = Blob.from_string(buf)
+        blob = Blob.from_string(data)
 
         try:
             parent_commit = self.repo[self._refname]
