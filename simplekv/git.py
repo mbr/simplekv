@@ -71,7 +71,11 @@ class GitCommitStore(KeyValueStore):
 
         # cleans up subdir, to a form of 'a/b/c' (no duplicate, leading or
         # trailing slashes)
-        self.subdir = re.sub('#/+#', '/', subdir.strip('/'))
+        self.subdir = re.sub('#/+#', '/', subdir.decode('ascii').strip('/'))
+
+    @property
+    def _subdir_components(self):
+        return [c.encode('ascii') for c in self.subdir.split('/')]
 
     @property
     def _refname(self):
@@ -107,15 +111,15 @@ class GitCommitStore(KeyValueStore):
 
         components = [key.encode('ascii')]
         if self.subdir:
-            components = self.subdir.split('/') + components
+            components = self._subdir_components + components
 
         res = _on_tree(self.repo, tree, components, None)
         objects_to_add.extend(res)
         tree = res[-1]
 
         commit.tree = tree.id
-        commit.message = ('Deleted key {!r}'.format(self.subdir + '/' + key)
-                          ).encode('utf8')
+        commit.message = (
+            'Deleted key {}'.format(self.subdir + '/' + key)).encode('utf8')
 
         objects_to_add.append(commit)
 
@@ -129,8 +133,9 @@ class GitCommitStore(KeyValueStore):
         try:
             commit = self.repo[self._refname]
             tree = self.repo[commit.tree]
-            fn = self.subdir + '/' + key.encode('ascii')
-            _, blob_id = tree.lookup_path(self.repo.__getitem__, fn)
+            fn = self.subdir + '/' + key
+            _, blob_id = tree.lookup_path(self.repo.__getitem__,
+                                          fn.encode('ascii'))
             blob = self.repo[blob_id]
         except KeyError:
             raise KeyError(key)
@@ -143,8 +148,8 @@ class GitCommitStore(KeyValueStore):
             tree = self.repo[commit.tree]
 
             if self.subdir:
-                tree = self.repo[tree.lookup_path(self.repo.__getitem__,
-                                                  self.subdir)[1]]
+                tree = self.repo[tree.lookup_path(
+                    self.repo.__getitem__, self.subdir.encode('ascii'))[1]]
         except KeyError:
             pass
         else:
@@ -161,8 +166,8 @@ class GitCommitStore(KeyValueStore):
 
     def _put(self, key, data):
         commit = self._create_top_commit()
-        commit.message = ('Updated key {!r}'.format(self.subdir + '/' + key)
-                          ).encode('utf8')
+        commit.message = (
+            'Updated key {}'.format(self.subdir + '/' + key)).encode('utf8')
 
         blob = Blob.from_string(data)
 
@@ -180,7 +185,7 @@ class GitCommitStore(KeyValueStore):
         # no subdirs in filename, add directly to tree
         components = [key.encode('ascii')]
         if self.subdir:
-            components = self.subdir.split('/') + components
+            components = self._subdir_components + components
         res = _on_tree(self.repo, tree, components, blob)
         objects_to_add.extend(res)
 

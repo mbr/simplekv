@@ -21,5 +21,7 @@ copies are not touched.
     repository, possibly in a subdirectory.
 
     :param repo_path: Path to the git repository.
-    :param branch: The branch to commit to.
-    :param subdir: Prefixed to every key committed.
+    :param branch: The branch to commit to. Must be an ascii-encoded binary
+                   string.
+    :param subdir: Prefixed to every key committed. Must be an ascii-encoded
+                   binary string.
