@@ -8,7 +8,7 @@ from dulwich.objects import Commit, Tree, Blob
 from . import KeyValueStore, __version__
 
 
-def on_tree(repo, tree, components, obj):
+def _on_tree(repo, tree, components, obj):
     """Mounts an object on a tree, using the given path components.
 
     :param tree: Tree object to mount on.
@@ -46,7 +46,7 @@ def on_tree(repo, tree, components, obj):
                 a_tree = Tree()
         else:
             a_tree = Tree()
-        res = on_tree(repo, a_tree, bc, obj)
+        res = _on_tree(repo, a_tree, bc, obj)
         a_tree_new = res[-1]
 
         if a_tree_new.items():
@@ -109,7 +109,7 @@ class GitCommitStore(KeyValueStore):
         if self.subdir:
             components = self.subdir.split('/') + components
 
-        res = on_tree(self.repo, tree, components, None)
+        res = _on_tree(self.repo, tree, components, None)
         objects_to_add.extend(res)
         tree = res[-1]
 
@@ -181,7 +181,7 @@ class GitCommitStore(KeyValueStore):
         components = [key.encode('ascii')]
         if self.subdir:
             components = self.subdir.split('/') + components
-        res = on_tree(self.repo, tree, components, blob)
+        res = _on_tree(self.repo, tree, components, blob)
         objects_to_add.extend(res)
 
         commit.tree = res[-1].id
