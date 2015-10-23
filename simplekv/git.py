@@ -83,16 +83,35 @@ class GitCommitStore(KeyValueStore):
         try:
             commit = self.repo[self._refname]
             tree = self.repo[commit.tree]
-            del tree[key.encode('ascii')]
+            subtree = tree
+
+            if self.subdir:
+                subtree = self.repo[tree.lookup_path(self.repo.__getitem__,
+                                                     self.subdir)[1]]
+                if not isinstance(subtree, Tree):
+                    return  # subdir found, but it is not a directory
+            del subtree[key.encode('ascii')]
         except KeyError:
             return  # not-found key errors are ignored
 
         commit = self._create_top_commit()
-        commit.tree = tree.id
-        commit.message = ('Deleted key {!r}'.format(key)).encode('utf8')
+        objects_to_add = []
 
-        self.repo.object_store.add_object(tree)
-        self.repo.object_store.add_object(commit)
+        if self.subdir:
+            # remount altered subtree
+            res = on_tree(self.repo, tree, self.subdir.split('/'), subtree)
+            objects_to_add.extend(res)
+            tree = res[-1]
+
+        objects_to_add.append(tree)
+        commit.tree = tree.id
+        commit.message = ('Deleted key {!r}'.format(self.subdir + '/' + key)
+                          ).encode('utf8')
+
+        objects_to_add.append(commit)
+
+        for obj in objects_to_add:
+            self.repo.object_store.add_object(obj)
 
         self.repo.refs[self._refname] = commit.id
 
