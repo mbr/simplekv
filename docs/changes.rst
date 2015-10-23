@@ -5,6 +5,8 @@ Changelog
 =====
 * simplekv no longer depends on ``six``.
 * The :class:`~simplekv.decorator.PrefixDecorator` works more as expected.
+* An experimental git-based store has been added in
+  :class:`~simplekv.git.GitCommitStore`.
 
 
 0.9.2
