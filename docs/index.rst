@@ -79,6 +79,7 @@ Table of contents
    gae
    memory
    db
+   git
    decorators
    idgen
    crypt
