@@ -18,7 +18,8 @@ class SQLAlchemyStore(KeyValueStore):
             # 250 characters is the maximum key length that we guarantee can be
             # handled by any kind of backend
             Column('key', String(250), primary_key=True),
-            Column('value', LargeBinary, nullable=False)
+            Column('value', LargeBinary, nullable=False),
+            extend_existing=True
         )
 
     def _has_key(self, key):
