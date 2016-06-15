@@ -25,6 +25,7 @@ class KeyValueStore(object):
     The regular expression for what constitutes a valid key is available as
     :data:`simplekv.VALID_KEY_REGEXP`.
     """
+
     def __contains__(self, key):
         """Checks if a key is present
 
@@ -58,9 +59,9 @@ class KeyValueStore(object):
         return self._delete(key)
 
     def get(self, key):
-        """Returns the key data as a string.
+        """Returns the key data as a bytestring.
 
-        :param key: Key to get
+        :param key: Value associated with the key, as a `bytes` object
 
         :raises exceptions.ValueError: If the key is not valid.
         :raises exceptions.IOError: If the file could not be read.
@@ -126,10 +127,10 @@ class KeyValueStore(object):
     def put(self, key, data):
         """Store into key from file
 
-        Stores string *data* in *key*.
+        Stores bytestring *data* in *key*.
 
         :param key: The key under which the data is to be stored
-        :param data: Data to be stored into key
+        :param data: Data to be stored into key, must be `bytes`.
 
         :returns: The key under which data was stored
 
@@ -192,7 +193,7 @@ class KeyValueStore(object):
         implementation will create a :class:`io.BytesIO`-buffer and then call
         :meth:`~simplekv.KeyValueStore._get_file`.
 
-        :param key: Key to be retrieved
+        :param key: Key of value to be retrieved
         """
         buf = BytesIO()
 
