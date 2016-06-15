@@ -24,6 +24,9 @@ class KeyValueStore(object):
 
     The regular expression for what constitutes a valid key is available as
     :data:`simplekv.VALID_KEY_REGEXP`.
+
+    Values are raw bytes. If you need to store strings, make sure to encode
+    them upon storage and decode them upon retrieval.
     """
 
     def __contains__(self, key):
