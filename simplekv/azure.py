@@ -10,8 +10,8 @@ from azure.storage._error import AzureHttpException
 import io
 
 class AzureBlockBlobStorage(KeyValueStore):
-    def __init__(self, block_blob_service, container, public=False, prefix=''):
-        self.block_blob_service = block_blob_service
+    def __init__(self, account, container, public=False, prefix=''):
+        self.block_blob_service = account.create_block_blob_service()
         self.container = container
         self.public = public
         self.prefix = prefix
