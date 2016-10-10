@@ -1,0 +1,4 @@
+.tox
+.cache
+__pycache__
+simplekv.egg-info
