@@ -26,7 +26,7 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _delete(self, key):
         try:
-            self.block_blob_service.delete_blob(container, self.__generate_key(key))
+            self.block_blob_service.delete_blob(self.container, self.__generate_key(key))
         except AzureHttpError as ex:
             raise IOError(str(ex))
         except AzureException as ex:
@@ -34,7 +34,7 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _get(self, key):
         try:
-            return self.get_blob_to_text(container,  self.__generate_key(key))
+            return self.get_blob_to_text(self.container,  self.__generate_key(key))
         except AzureHttpError as ex:
             raise IOError(str(ex))
         except AzureException as ex:
@@ -42,13 +42,13 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _has_key(self, key):
         try:
-            return self.block_blob_service.exists(container,  self.__generate_key(key))
+            return self.block_blob_service.exists(self.container,  self.__generate_key(key))
         except AzureHttpError as ex:
             raise IOError(str(ex))
 
     def iter_keys(self):
         try:
-            return self.block_blob_service.list_blobs(container)
+            return self.block_blob_service.list_blobs(self.container)
         except AzureHttpError as ex:
             raise IOError(str(ex))
 
@@ -56,21 +56,21 @@ class AzureBlockBlobStorage(KeyValueStore):
     def _open(self, key):
         try:
             output_stream = io.BytesIO()
-            self.block_blob_service.get_blob_to_stream(container,  self.__generate_key(key), output_stream)
+            self.block_blob_service.get_blob_to_stream(self.container,  self.__generate_key(key), output_stream)
             return output_stream
         except AzureHttpError as ex:
             raise IOError(str(ex))
 
     def _put(self, key, data):
         try:
-            self.block_blob_service.create_blob_from_text(container,  self.__generate_key(key), data)
+            self.block_blob_service.create_blob_from_text(self.container,  self.__generate_key(key), data)
             return key
         except AzureHttpError as ex:
             raise IOError(str(ex))
 
     def _put_file(self, key, file):
         try:
-            self.block_blob_service.create_blob_from_path(container,  self.__generate_key(key), file)
+            self.block_blob_service.create_blob_from_path(self.container,  self.__generate_key(key), file)
             return key
         except AzureHttpError as ex:
             raise IOError(str(ex))
