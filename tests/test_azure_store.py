@@ -1,10 +1,12 @@
-from simplekv._compat import ConfigParser
 from azure.storage import CloudStorageAccount
 from uuid import uuid4 as uuid
-
 import pytest
 
-from .. import AzureBlockBlobStorage
+from simplekv._compat import ConfigParser
+from simplekv.azure import AzureBlockBlobStorage
+
+from basic_store import BasicStore
+from url_store import UrlStore
 
 def load_azure_credentials():
     # loaded from the same place as tox.ini. here's a sample
@@ -31,7 +33,7 @@ def load_azure_credentials():
 
 azure_credentials = list(load_azure_credentials())
 
-def create_azure_account(credentials)
+def create_azure_account(credentials):
     account_name = config.STORAGE_ACCOUNT_NAME
     account_key = config.STORAGE_ACCOUNT_KEY
     return CloudStorageAccount(account_name=account_name, account_key=account_key) 
@@ -61,4 +63,4 @@ class TestAzureStorage(BasicStore, UrlStore):
     @pytest.fixture
     def store(self, container, prefix):
         account = create_azure_account(credentials)
-        return AzureBlockBlobStorage(account, container, public=false, prefix)
+        return AzureBlockBlobStorage(account, container, prefix=prefix, public=False)
