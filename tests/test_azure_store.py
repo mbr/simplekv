@@ -31,7 +31,7 @@ def create_azure_account(credentials):
     account_key = credentials['account_key']
     return CloudStorageAccount(account_name=account_name, account_key=account_key) 
 
-class TestAzureStorage(BasicStore, UrlStore):
+class TestAzureStorage(BasicStore):
     @pytest.fixture(params=['', '/test-prefix'])
     def prefix(self, request):
         return request.param

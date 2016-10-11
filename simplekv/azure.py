@@ -34,7 +34,7 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _get(self, key):
         try:
-            return self.get_blob_to_text(self.container,  self.__generate_key(key))
+            return self.block_blob_service.get_blob_to_text(self.container,  self.__generate_key(key)).content
         except AzureHttpError as ex:
             raise IOError(str(ex))
         except AzureException as ex:
