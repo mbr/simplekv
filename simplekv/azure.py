@@ -70,7 +70,30 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _put_file(self, key, file):
         try:
-            self.block_blob_service.create_blob_from_path(self.container,  self.__generate_key(key), file)
+            self.block_blob_service.create_blob_from_stream(self.container, self.__generate_key(key), file)
+            return key
+        except AzureHttpError as ex:
+            raise IOError(str(ex))
+
+    def _get_file(self, key, file):
+        try:
+            self.block_blob_service.get_blob_to_stream(self.container, self.__generate_key(key), file)
+        except AzureHttpError as ex:
+            raise IOError(str(ex))
+        except AzureException as ex:
+            raise KeyError(key) 
+
+    def _get_filename(self, key, filename):
+        try:
+            self.block_blob_service.get_blob_to_path(self.container, self.__generate_key(key), filename)
+        except AzureHttpError as ex:
+            raise IOError(str(ex))
+        except AzureException as ex:
+            raise KeyError(key)
+
+    def _put_filename(self, key, filename):
+        try:
+            self.block_blob_service.create_blob_from_path(self.container, self.__generate_key(key), filename)
             return key
         except AzureHttpError as ex:
             raise IOError(str(ex))
