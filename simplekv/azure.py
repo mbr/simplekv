@@ -34,7 +34,11 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _get(self, key):
         try:
-            return self.block_blob_service.get_blob_to_text(self.container,  self.__generate_key(key)).content
+            blob = self.block_blob_service.get_blob_to_stream(self.container, self.__generate_key(key), io.BytesIO())
+            if 'type' in blob.metadata and blob.metadata['type'] == 'str':
+                return self.block_blob_service.get_blob_to_text(self.container,  self.__generate_key(key)).content
+            else:
+                return self.block_blob_service.get_blob_to_bytes(self.container,  self.__generate_key(key)).content
         except AzureHttpError as ex:
             raise IOError(str(ex))
         except AzureException as ex:
@@ -63,7 +67,12 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _put(self, key, data):
         try:
-            self.block_blob_service.create_blob_from_text(self.container,  self.__generate_key(key), data)
+            if isinstance(data, str):
+                self.block_blob_service.create_blob_from_text(self.container,  self.__generate_key(key), data, metadata={'type': 'str'})
+            elif isinstance(data, bytes):
+                self.block_blob_service.create_blob_from_bytes(self.container,  self.__generate_key(key), data)
+            else:
+                raise TypeError('Wrong type, expecting str or bytes.')
             return key
         except AzureHttpError as ex:
             raise IOError(str(ex))
