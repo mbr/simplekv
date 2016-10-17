@@ -34,8 +34,8 @@ class AzureBlockBlobStorage(KeyValueStore):
 
     def _get(self, key):
         try:
-            blob = self.block_blob_service.get_blob_to_stream(self.container, self.__generate_key(key), io.BytesIO())
-            if 'type' in blob.metadata and blob.metadata['type'] == 'str':
+            metadata = self.block_blob_service.get_blob_metadata(self.container, self.__generate_key(key))
+            if 'type' in metadata and metadata['type'] == 'str':
                 return self.block_blob_service.get_blob_to_text(self.container,  self.__generate_key(key)).content
             else:
                 return self.block_blob_service.get_blob_to_bytes(self.container,  self.__generate_key(key)).content
