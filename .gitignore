@@ -1,0 +1,6 @@
+.tox
+.cache
+__pycache__
+simplekv.egg-info
+boto_credentials.ini
+azure_credentials.ini
