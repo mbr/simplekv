@@ -61,7 +61,8 @@ class AzureBlockBlobStorage(KeyValueStore):
         try:
             output_stream = io.BytesIO()
             self.block_blob_service.get_blob_to_stream(self.container,  self.__generate_key(key), output_stream)
-            return output_stream
+            dummy = type('Dummy', (object,), { "read": lambda n=0: output_stream.getvalue() if n == 0 else output_stream.getvalue()[:n]})
+            return dummy
         except AzureHttpError as ex:
             raise IOError(str(ex))
 
