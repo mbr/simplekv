@@ -139,3 +139,23 @@ class TestWebFileStore(TestBaseFilesystemStore):
         assert store.url_for(key) == expected
 
         mock_callable.assert_called_with(store, key)
+
+# test handling of directory entries in the file system
+class TestFilesystemStoreDirs(TestBaseFilesystemStore):
+    @pytest.fixture
+    def store(self, tmpdir):
+        os.mkdir(os.path.join(tmpdir, 'subdir1'))
+        os.mkdir(os.path.join(tmpdir, 'subdir2'))
+        fname = os.path.join(tmpdir, 'subdir2', 'testfile')
+        with open(fname, 'a'):
+            os.utime(fname, None)
+        return FilesystemStore(tmpdir)
+
+    def test_listing_keys_ignores_subdirs(self, store):
+        assert store.keys() == []
+
+        src = BytesIO()
+
+        key = store.put_file('test123', src)
+
+        assert store.keys() == ['test123']
