@@ -4,6 +4,7 @@
 from io import BytesIO
 
 from .. import KeyValueStore, TimeToLiveMixin, FOREVER, NOT_SET
+from .._compat import PY2
 
 
 class MemcacheStore(TimeToLiveMixin, KeyValueStore):
@@ -25,7 +26,11 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
         rv = self.mc.get(key.encode('ascii'))
         if None == rv:
             raise KeyError(key)
-        return rv
+        if not PY2:
+            # in Python 3, python-memcached UTF8-decodes all strings before returning them
+            return rv.encode('utf8')
+        else:
+            return rv
 
     def _get_file(self, key, file):
         file.write(self._get(key))
