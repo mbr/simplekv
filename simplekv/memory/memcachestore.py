@@ -18,7 +18,7 @@ class MemcacheStore(TimeToLiveMixin, KeyValueStore):
         self.mc = mc
 
     def _delete(self, key):
-        if not self.mc.delete(key.encode('ascii')):
+        if self.mc.delete(key.encode('ascii')) is 0:  # pylibmc's False is not an error
             raise IOError('Error deleting key')
 
     def _get(self, key):
