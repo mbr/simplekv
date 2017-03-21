@@ -7,7 +7,7 @@ from basic_store import BasicStore, TTLStore
 
 import pytest
 
-memcache = pytest.importorskip('memcache')
+memcache = pytest.importorskip('pylibmc')
 
 
 class TestMemcacheStore(TTLStore, BasicStore):
