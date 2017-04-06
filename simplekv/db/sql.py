@@ -50,7 +50,7 @@ class SQLAlchemyStore(KeyValueStore):
         with con.begin():
             # delete the potential existing previous key
             con.execute(self.table.delete(self.table.c.key == dest))
-            con.execute(self.table.update().values(key=dest).where(self.table.key == source))
+            con.execute(self.table.update().values(key=dest).where(self.table.c.key == source))
 
         con.close()
         return dest
