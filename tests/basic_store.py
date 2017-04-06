@@ -54,6 +54,24 @@ class BasicStore(object):
         assert store.get(key) == value
         assert store.get(key2) == value
 
+    def test_store_and_rename_overwite(self, store, key, key2, value, value2):
+        store.put(key, value)
+        store.put(key2, value2)
+        assert store.get(key) == value
+        assert store.get(key2) == value2
+        store.rename(key, key2)
+        assert key not in store
+        assert store.get(key2) == value
+
+    def test_store_and_copy_overwrite(self, store, key, key2, value, value2):
+        store.put(key, value)
+        store.put(key2, value2)
+        assert store.get(key) == value
+        assert store.get(key2) == value2
+        store.copy(key, key2)
+        assert store.get(key) == value
+        assert store.get(key2) == value
+
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))
         ok = store.open(key)
