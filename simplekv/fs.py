@@ -71,7 +71,11 @@ class FilesystemStore(KeyValueStore, UrlMixin):
 
     def _copy(self, source, dest):
         try:
-            shutil.copy(source, dest)
+            source_file_name = self._build_filename(source)
+            dest_file_name = self._build_filename(dest)
+
+            shutil.copy(source_file_name, dest_file_name)
+            self._fix_permissions(dest_file_name)
             return dest
         except IOError as e:
             if 2 == e.errno:
@@ -81,7 +85,10 @@ class FilesystemStore(KeyValueStore, UrlMixin):
 
     def _rename(self, source, dest):
         try:
-            shutil.move(source, dest)
+            source_file_name = self._build_filename(source)
+            dest_file_name = self._build_filename(dest)
+            shutil.move(source_file_name, dest_file_name)
+            self._fix_permissions(dest_file_name)
             return dest
         except IOError as e:
             if 2 == e.errno:
