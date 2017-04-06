@@ -177,7 +177,7 @@ class BasicStore(object):
         store.put(key2, value)
 
         l = []
-        for k in store.iter_keys():
+        for k in store.iter_keys(prefix):
             l.append(k)
         l.sort()
 
