@@ -66,6 +66,6 @@ class SQLAlchemyStore(KeyValueStore):
     def iter_keys(self, prefix=""):
         query = select([self.table.c.key])
         if prefix != "":
-            query = query.filter(self.table.c.key.like(prefix + '%'))
+            query = query.where(self.table.c.key.like(prefix + '%'))
         return imap(lambda v: text_type(v[0]),
                     self.bind.execute(query))
