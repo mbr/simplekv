@@ -69,6 +69,26 @@ class FilesystemStore(KeyValueStore, UrlMixin):
             else:
                 raise
 
+    def _copy(self, source, dest):
+        try:
+            shutil.copy(source, dest)
+            return dest
+        except IOError as e:
+            if 2 == e.errno:
+                raise KeyError(source)
+            else:
+                raise
+
+    def _rename(self, source, dest):
+        try:
+            shutil.move(source, dest)
+            return dest
+        except IOError as e:
+            if 2 == e.errno:
+                raise KeyError(source)
+            else:
+                raise
+
     def _put_file(self, key, file):
         bufsize = self.bufsize
 

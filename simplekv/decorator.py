@@ -67,6 +67,12 @@ class KeyTransformingDecorator(StoreDecorator):
     def open(self, key):
         return self._dstore.open(self._map_key(key))
 
+    def copy(self, source, dest):
+        return self._dstore.copy(self._map_key(source), self._map_key(dest))
+
+    def rename(self, source, dest):
+        return self._dstore.rename(self._map_key(source), self._map_key(dest))
+
     def put(self, key, *args, **kwargs):
         return self._unmap_key(
             self._dstore.put(self._map_key(key), *args, **kwargs))

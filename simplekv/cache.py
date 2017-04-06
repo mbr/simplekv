@@ -110,6 +110,26 @@ class CacheDecorator(StoreDecorator):
             # cache error, ignore completely and return from backend
             return self._dstore.open(key)
 
+    def copy(self, source, dest):
+        """Implementation of :meth:`~simplekv.KeyValueStore.copy`.
+        
+        Copies the data in the backing store and removes the destination key from the cache,
+         in case it was already populated.
+         """
+        k = self._dstore.copy(source, dest)
+        self.cache.delete(dest)
+        return k
+
+    def rename(self, source, dest):
+        """Implementation of :meth:`~simplekv.KeyValueStore.rename`.
+        
+        Renames the data in the backing store and removes both the source and destination key from the cache.
+        """
+        k= self._dstore.rename(source, dest)
+        self.cache.delete(source)
+        self.cache.delete(dest)
+        return k
+
     def put(self, key, data):
         """Implementation of :meth:`~simplekv.KeyValueStore.put`.
 

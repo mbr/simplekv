@@ -43,6 +43,18 @@ class SQLAlchemyStore(KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
+    def _rename(self, source, dest):
+        if not self._has_key(source):
+            raise KeyError(source)
+        con = self.bind.connect()
+        with con.begin():
+            # delete the potential existing previous key
+            con.execute(self.table.delete(self.table.c.key == dest))
+            con.execute(self.table.update().values(key=dest).where(self.table.key == source))
+
+        con.close()
+        return dest
+
     def _put(self, key, data):
         con = self.bind.connect()
         with con.begin():
