@@ -42,17 +42,17 @@ class BasicStore(object):
 
     def test_store_and_rename(self, store, key, key2, value):
         store.put(key, value)
-        assert store.get(key, value)
+        assert store.get(key) == value
         store.rename(key, key2)
         assert key not in store
-        assert store.get(key2, value)
+        assert store.get(key2) == value
 
     def test_store_and_copy(self, store, key, key2, value):
         store.put(key, value)
-        assert store.get(key, value)
+        assert store.get(key) == value
         store.copy(key, key2)
-        assert store.get(key, value)
-        assert store.get(key2, value)
+        assert store.get(key) == value
+        assert store.get(key2) == value
 
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))
