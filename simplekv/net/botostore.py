@@ -53,11 +53,11 @@ class BotoStore(KeyValueStore, UrlMixin):
 
         return d
 
-    def iter_keys(self):
+    def iter_keys(self, prefix=""):
         with map_boto_exceptions():
             prefix_len = len(self.prefix)
             return imap(lambda k: k.name[prefix_len:],
-                        self.bucket.list(self.prefix))
+                        self.bucket.list(self.prefix + prefix))
 
     def _has_key(self, key):
         with map_boto_exceptions(key=key):

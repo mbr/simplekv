@@ -99,20 +99,22 @@ class KeyValueStore(object):
         else:
             return self._get_file(key, file)
 
-    def iter_keys(self):
+    def iter_keys(self, prefix=""):
         """Return an Iterator over all keys currently in the store, in any
         order.
+        If prefix is not the empty string, iterates only over all keys starting with prefix.
 
         :raises exceptions.IOError: If there was an error accessing the store.
         """
         raise NotImplementedError
 
-    def keys(self):
+    def keys(self, prefix=""):
         """Return a list of keys currently in store, in any order
+        If prefix is not the empty string, iterates only over all keys starting with prefix.
 
         :raises exceptions.IOError: If there was an error accessing the store.
         """
-        return list(self.iter_keys())
+        return list(self.iter_keys(prefix))
 
     def open(self, key):
         """Open key for reading.

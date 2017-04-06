@@ -168,6 +168,27 @@ class BasicStore(object):
 
         assert l == sorted([key, key2])
 
+    def test_key_iterator_with_prefix(self, store, key, key2, value):
+        prefix = key
+        key_prefix_1 = prefix + '_key1'
+        key_prefix_2 = prefix + '_key2'
+        store.put(key_prefix_1, value)
+        store.put(key_prefix_2, value)
+        store.put(key2, value)
+
+        l = []
+        for k in store.iter_keys():
+            l.append(k)
+        l.sort()
+
+        assert l == sorted([key_prefix_1, key_prefix_2, key2])
+
+        l = []
+        for k in store.iter_keys(prefix):
+            l.append(k)
+        l.sort()
+        assert l == sorted([key_prefix_1, key_prefix_2])
+
     def test_keys(self, store, key, key2, value, value2):
         store.put(key, value)
         store.put(key2, value2)
@@ -177,6 +198,20 @@ class BasicStore(object):
             assert isinstance(k, text_type)
 
         assert l == sorted([key, key2])
+
+    def test_keys_with_prefix(self, store, key, key2, value):
+        prefix = key
+        key_prefix_1 = prefix + '_key1'
+        key_prefix_2 = prefix + '_key2'
+        store.put(key_prefix_1, value)
+        store.put(key_prefix_2, value)
+        store.put(key2, value)
+
+        l = sorted(store.keys())
+        assert l == sorted([key_prefix_1, key_prefix_2, key2])
+
+        l = sorted(store.keys(prefix))
+        assert l == sorted([key_prefix_1, key_prefix_2])
 
     def test_has_key(self, store, key, key2, value):
         store.put(key, value)

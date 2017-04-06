@@ -23,8 +23,11 @@ else:
 
 if not PY2:
     imap = map
+    ifilter = filter
 else:
     from itertools import imap
+    from itertools import ifilter
+
 
 if not PY2:
     from io import BytesIO
