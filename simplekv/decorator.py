@@ -67,12 +67,6 @@ class KeyTransformingDecorator(StoreDecorator):
     def open(self, key):
         return self._dstore.open(self._map_key(key))
 
-    def copy(self, source, dest):
-        return self._dstore.copy(self._map_key(source), self._map_key(dest))
-
-    def rename(self, source, dest):
-        return self._dstore.rename(self._map_key(source), self._map_key(dest))
-
     def put(self, key, *args, **kwargs):
         return self._unmap_key(
             self._dstore.put(self._map_key(key), *args, **kwargs))
@@ -84,6 +78,13 @@ class KeyTransformingDecorator(StoreDecorator):
     # support for UrlMixin
     def url_for(self, key, *args, **kwargs):
         return self._dstore.url_for(self._map_key(key), *args, **kwargs)
+
+    # support for CopyRenameDecorator
+    def _copy(self, source, dest):
+        return self._dstore._copy(self._map_key(source), self._map_key(dest))
+
+    def _rename(self, source, dest):
+        return self._dstore._rename(self._map_key(source), self._map_key(dest))
 
 
 class PrefixDecorator(KeyTransformingDecorator):
@@ -112,3 +113,39 @@ class PrefixDecorator(KeyTransformingDecorator):
         assert key.startswith(self.prefix)
 
         return key[len(self.prefix):]
+
+
+class CopyRenameDecorator(StoreDecorator):
+    """Exposes a copy and rename API. This API is either backed by corresponding backend operations, if available,
+    or emulated using get/put/delete.
+    
+    Warning: This makes the operations potentially not atomic"""
+    def copy(self, source, dest):
+        """Copies a key. The destination is overwritten if does exist.
+
+        In case there is no native backend method available to do so, uses get and put to emulate the copy.
+        :param source: The source key to copy
+        :param dest: The destination for the copy
+
+        :returns The destination key
+
+        :raises exceptions.ValueError: If the source or target key are not valid
+        :raises exceptions.KeyError: If the source key was not found"""
+        self._check_valid_key(source)
+        self._check_valid_key(dest)
+        return self._copy(source, dest)
+
+    def rename(self, source, dest):
+        """Renames a key. The destination is overwritten if does exist.
+
+        In case there is no native backend method available to do so, uses copy and delete to emulate the rename.
+        :param source: The source key to rename
+        :param dest: The new name of the key
+
+        :returns The destination key
+
+        :raises exceptions.ValueError: If the source or dest key are not valid
+        :raises exceptions.KeyError: If the source key was not found"""
+        self._check_valid_key(source)
+        self._check_valid_key(dest)
+        return self._rename(source, dest)

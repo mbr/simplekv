@@ -40,37 +40,37 @@ class BasicStore(object):
         store.put_file(key, BytesIO(value))
         assert store.open(key).read() == value
 
-    def test_store_and_rename(self, store, key, key2, value):
-        store.put(key, value)
-        assert store.get(key) == value
-        store.rename(key, key2)
-        assert key not in store
-        assert store.get(key2) == value
+    def test_store_and_rename(self, copy_rename_store, key, key2, value):
+        copy_rename_store.put(key, value)
+        assert copy_rename_store.get(key) == value
+        copy_rename_store.rename(key, key2)
+        assert key not in copy_rename_store
+        assert copy_rename_store.get(key2) == value
 
-    def test_store_and_copy(self, store, key, key2, value):
-        store.put(key, value)
-        assert store.get(key) == value
-        store.copy(key, key2)
-        assert store.get(key) == value
-        assert store.get(key2) == value
+    def test_store_and_copy(self, copy_rename_store, key, key2, value):
+        copy_rename_store.put(key, value)
+        assert copy_rename_store.get(key) == value
+        copy_rename_store.copy(key, key2)
+        assert copy_rename_store.get(key) == value
+        assert copy_rename_store.get(key2) == value
 
-    def test_store_and_rename_overwite(self, store, key, key2, value, value2):
-        store.put(key, value)
-        store.put(key2, value2)
-        assert store.get(key) == value
-        assert store.get(key2) == value2
-        store.rename(key, key2)
-        assert key not in store
-        assert store.get(key2) == value
+    def test_store_and_rename_overwite(self, copy_rename_store, key, key2, value, value2):
+        copy_rename_store.put(key, value)
+        copy_rename_store.put(key2, value2)
+        assert copy_rename_store.get(key) == value
+        assert copy_rename_store.get(key2) == value2
+        copy_rename_store.rename(key, key2)
+        assert key not in copy_rename_store
+        assert copy_rename_store.get(key2) == value
 
-    def test_store_and_copy_overwrite(self, store, key, key2, value, value2):
-        store.put(key, value)
-        store.put(key2, value2)
-        assert store.get(key) == value
-        assert store.get(key2) == value2
-        store.copy(key, key2)
-        assert store.get(key) == value
-        assert store.get(key2) == value
+    def test_store_and_copy_overwrite(self, copy_rename_store, key, key2, value, value2):
+        copy_rename_store.put(key, value)
+        copy_rename_store.put(key2, value2)
+        assert copy_rename_store.get(key) == value
+        assert copy_rename_store.get(key2) == value2
+        copy_rename_store.copy(key, key2)
+        assert copy_rename_store.get(key) == value
+        assert copy_rename_store.get(key2) == value
 
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))

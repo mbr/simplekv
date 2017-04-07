@@ -2,6 +2,7 @@
 import hashlib
 
 import pytest
+from simplekv.decorator import CopyRenameDecorator
 
 
 @pytest.fixture(params=['sha1', 'sha256', 'md5'])
@@ -63,3 +64,8 @@ def bytestring_key(request):
 @pytest.fixture(params=[u'a' * 250, u'b' * 250])
 def max_key(request):
     return request.param
+
+
+@pytest.fixture()
+def copy_rename_store(store):
+    return CopyRenameDecorator(store)
