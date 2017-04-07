@@ -143,6 +143,8 @@ class KeyValueStore(object):
                                     be read
         """
         self._check_valid_key(key)
+        if not isinstance(data, bytes):
+            raise IOError("Provided data is not of type bytes")
         return self._put(key, data)
 
     def put_file(self, key, file):

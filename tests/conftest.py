@@ -25,6 +25,11 @@ def value2(request):
     return request.param
 
 
+@pytest.fixture(params=[u'the_other_value', u'othäöü_valਊਏਐਓਔਕਖਗue_2'])
+def unicode_value(request):
+    return request.param
+
+
 @pytest.fixture(params=[b'a_long_value' * 4 * 1024])
 def long_value(request):
     return request.param

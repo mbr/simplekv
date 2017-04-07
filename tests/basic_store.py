@@ -17,6 +17,10 @@ class BasicStore(object):
         key = store.put(key, value)
         assert isinstance(key, text_type)
 
+    def test_unicode_store(self, store, key, unicode_value):
+        with pytest.raises(IOError):
+            store.put(key, unicode_value)
+
     def test_store_and_retrieve(self, store, key, value):
         store.put(key, value)
         assert store.get(key) == value
