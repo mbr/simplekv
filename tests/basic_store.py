@@ -10,6 +10,12 @@ from simplekv._compat import BytesIO, xrange, text_type
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
+from simplekv.decorator import CopyRenameDecorator
+
+
+@pytest.fixture()
+def copy_rename_store(store):
+    return CopyRenameDecorator(store)
 
 
 class BasicStore(object):
