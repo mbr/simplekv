@@ -13,12 +13,11 @@ from simplekv.idgen import UUIDDecorator, HashDecorator
 from simplekv.decorator import CopyRenameDecorator
 
 
-@pytest.fixture()
-def copy_rename_store(store):
-    return CopyRenameDecorator(store)
-
-
 class BasicStore(object):
+    @pytest.fixture()
+    def copy_rename_store(self, store):
+        return CopyRenameDecorator(store)
+
     def test_store(self, store, key, value):
         key = store.put(key, value)
         assert isinstance(key, text_type)
