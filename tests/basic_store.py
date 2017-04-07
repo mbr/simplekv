@@ -59,7 +59,8 @@ class BasicStore(object):
         assert copy_rename_store.get(key) == value
         assert copy_rename_store.get(key2) == value
 
-    def test_store_and_rename_overwite(self, copy_rename_store, key, key2, value, value2):
+    def test_store_and_rename_overwite(self, copy_rename_store, key, key2,
+                                       value, value2):
         copy_rename_store.put(key, value)
         copy_rename_store.put(key2, value2)
         assert copy_rename_store.get(key) == value
@@ -68,7 +69,8 @@ class BasicStore(object):
         assert key not in copy_rename_store
         assert copy_rename_store.get(key2) == value
 
-    def test_store_and_copy_overwrite(self, copy_rename_store, key, key2, value, value2):
+    def test_store_and_copy_overwrite(self, copy_rename_store, key, key2,
+                                      value, value2):
         copy_rename_store.put(key, value)
         copy_rename_store.put(key2, value2)
         assert copy_rename_store.get(key) == value

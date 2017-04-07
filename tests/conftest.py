@@ -63,4 +63,3 @@ def bytestring_key(request):
 @pytest.fixture(params=[u'a' * 250, u'b' * 250])
 def max_key(request):
     return request.param
-
