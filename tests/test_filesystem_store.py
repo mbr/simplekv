@@ -41,7 +41,7 @@ class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
             tmpfile.write(value)
             tmpfile.close()
 
-            key = store.put_file('testkey', tmpfile.name)
+            key = store.put_file(u'testkey', tmpfile.name)
             url = store.url_for(key)
 
             assert url.startswith('file://')
@@ -73,7 +73,7 @@ class TestFilesystemStoreUmask(TestBaseFilesystemStore):
     ):
         src = BytesIO(value)
 
-        key = store.put_file('test123', src)
+        key = store.put_file(u'test123', src)
 
         parts = urlparse(store.url_for(key))
         path = parts.path

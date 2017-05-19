@@ -6,6 +6,7 @@ import tempfile
 from tempdir import TempDir
 
 import pytest
+import six
 from simplekv._compat import BytesIO, xrange
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
@@ -41,6 +42,10 @@ class BasicStore(object):
         assert long_value[:3] == ok.read(3)
         assert long_value[3:5] == ok.read(2)
         assert long_value[5:8] == ok.read(3)
+
+    def test_bytestring_key_store(self, store, bytestring_key, value):
+        with pytest.raises(ValueError):
+            store.put(bytestring_key, value)
 
     def test_key_error_on_nonexistant_get(self, store, key):
         with pytest.raises(KeyError):
@@ -152,6 +157,7 @@ class BasicStore(object):
 
         l = []
         for k in store.iter_keys():
+            assert isinstance(k, six.text_type)
             l.append(k)
 
         l.sort()
@@ -163,6 +169,8 @@ class BasicStore(object):
         store.put(key2, value2)
 
         l = sorted(store.keys())
+        for k in l:
+            assert isinstance(k, six.text_type)
 
         assert l == sorted([key, key2])
 

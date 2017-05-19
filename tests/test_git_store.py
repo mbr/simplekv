@@ -29,7 +29,7 @@ class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
 
     def test_uses_subdir(self, repo_path, store, subdir_name, branch):
         # add a key
-        store.put('foo', b'bar')
+        store.put(u'foo', b'bar')
 
         sdir = subdir_name.decode('ascii').strip('/')
 
@@ -46,7 +46,7 @@ class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
         assert repo[blob_id].data == b'bar'
 
         # add a second key, resulting in a new commit and two keys available
-        store.put('foo2', b'bar2')
+        store.put(u'foo2', b'bar2')
 
         fn = 'foo'
         if sdir:
