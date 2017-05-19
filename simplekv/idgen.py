@@ -20,6 +20,7 @@ import hashlib
 import os
 import tempfile
 import uuid
+import six
 
 from .decorator import StoreDecorator
 
@@ -31,7 +32,7 @@ class HashDecorator(StoreDecorator):
     If a key of *None* is passed, the data/file is hashed using
     ``hashfunc``, which defaults to *hashlib.sha1*. """
 
-    def __init__(self, decorated_store, hashfunc=hashlib.sha1, template='{}'):
+    def __init__(self, decorated_store, hashfunc=hashlib.sha1, template=u'{}'):
         self.hashfunc = hashfunc
         self._template = template
         super(HashDecorator, self).__init__(decorated_store)
@@ -102,13 +103,13 @@ class UUIDDecorator(StoreDecorator):
     # for strange reasons, this needs to be looked up as late as possible
     uuidfunc = 'uuid1'
 
-    def __init__(self, store, template='{}'):
+    def __init__(self, store, template=u'{}'):
         super(UUIDDecorator, self).__init__(store)
         self._template = template
 
     def put(self, key, data, *args, **kwargs):
         if not key:
-            key = str(getattr(uuid, self.uuidfunc)())
+            key = six.text_type(getattr(uuid, self.uuidfunc)())
 
         return self._dstore.put(
             self._template.format(key), data, *args, **kwargs
@@ -116,7 +117,7 @@ class UUIDDecorator(StoreDecorator):
 
     def put_file(self, key, file, *args, **kwargs):
         if not key:
-            key = str(getattr(uuid, self.uuidfunc)())
+            key = six.text_type(getattr(uuid, self.uuidfunc)())
 
         return self._dstore.put_file(
             self._template.format(key), file, *args, **kwargs

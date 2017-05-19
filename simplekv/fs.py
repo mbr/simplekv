@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import six
 
 from . import KeyValueStore, UrlMixin
 from ._compat import url_quote
@@ -32,7 +33,7 @@ class FilesystemStore(KeyValueStore, UrlMixin):
         :param perm: the permissions for files in the filesystem store
         """
         super(FilesystemStore, self).__init__(**kwargs)
-        self.root = root
+        self.root = six.text_type(root)
         self.perm = perm
         self.bufsize = 1024 * 1024  # 1m
 
@@ -118,7 +119,7 @@ class WebFilesystemStore(FilesystemStore):
     >>> webserver_url_prefix = 'https://some.domain.invalid/files/'
     >>> webserver_root = '/var/www/some.domain.invalid/www-data/files/'
     >>> store = WebFilesystemStore(webserver_root, webserver_url_prefix)
-    >>> print(store.url_for('some_key'))
+    >>> print(store.url_for(u'some_key'))
     https://some.domain.invalid/files/some_key
 
     Note that the prefix is simply prepended to the relative URL for the key.
@@ -132,7 +133,7 @@ class WebFilesystemStore(FilesystemStore):
     >>> webserver_root = '/var/www/some.domain.invalid/www-data/files/'
     >>> prefix_func = lambda store, key: webserver_url_prefix
     >>> store = WebFilesystemStore(webserver_root, prefix_func)
-    >>> print(store.url_for('some_key'))
+    >>> print(store.url_for(u'some_key'))
     https://some.domain.invalid/files/some_key
     """
     def __init__(self, root, url_prefix, **kwargs):
