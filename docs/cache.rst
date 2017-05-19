@@ -24,10 +24,10 @@ kind. A typical example is a store that uses a
   )
 
   # will store the value in the FilesystemStore
-  store.put('some_value', '123')
+  store.put(u'some_value', '123')
 
   # fetches from the FilesystemStore, but caches the result
-  print store.get('some_value')
+  print store.get(u'some_value')
 
   # any further calls to store.get('some_value') will be served from the
   # MemcacheStore now

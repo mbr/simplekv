@@ -28,9 +28,9 @@ based store is available:
   # also possible: store.table.create()
 
   # use store normally
-  store.put('my_key', 'some value')
+  store.put(u'my_key', 'some value')
 
-  print store.get('my_key')
+  print store.get(u'my_key')
 
 .. class:: simplekv.db.sql.SQLAlchemyStore
 
