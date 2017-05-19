@@ -15,7 +15,8 @@ from simplekv.idgen import UUIDDecorator, HashDecorator
 
 class BasicStore(object):
     def test_store(self, store, key, value):
-        store.put(key, value)
+        key = store.put(key, value)
+        assert isinstance(key, six.text_type)
 
     def test_store_and_retrieve(self, store, key, value):
         store.put(key, value)
