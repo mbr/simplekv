@@ -29,13 +29,13 @@ Here's a simple example::
 
   store = FilesystemStore('./data')
 
-  store.put('key1', 'hello')
+  store.put(u'key1', 'hello')
 
   # will print "hello"
-  print store.get('key1')
+  print store.get(u'key1')
 
   # move the contents of a file to "key2" as efficiently as possible
-  store.put_file('key2', '/path/to/data')
+  store.put_file(u'key2', '/path/to/data')
 
 Note that by changing the first two lines to::
 

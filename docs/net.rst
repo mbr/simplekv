@@ -27,11 +27,11 @@ Here is a short example:
    store = BotoStore(bucket)
 
    # at this point, we can use the store like any other
-   store.put('some-key', 'Hello, World!')
+   store.put(u'some-key', 'Hello, World!')
 
    # print out what's behind some-key. you should be able to see it
    # in the bucket now as well
-   print store.get('some-key')
+   print store.get(u'some-key')
 
 
 Unit testing
