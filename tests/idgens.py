@@ -2,6 +2,7 @@ import os
 import re
 import tempfile
 import uuid
+import six
 
 from simplekv.idgen import UUIDDecorator, HashDecorator
 
@@ -15,11 +16,11 @@ UUID_REGEXP = re.compile(
 
 class IDGen(object):
     @pytest.fixture(params=[
-        'constant',
-        'foo{}bar',
-        '{}.jpeg',
-        'prefix-{}.hello',
-        'justprefix{}',
+        u'constant',
+        u'foo{}bar',
+        u'{}.jpeg',
+        u'prefix-{}.hello',
+        u'justprefix{}',
     ])
     def idgen_template(self, request):
         return request.param
@@ -113,6 +114,7 @@ class HashGen(IDGen):
         key = hashstore.put(None, value)
 
         assert value_hash == key
+        assert isinstance(key, six.text_type)
 
     def test_put_file_generates_correct_hash(
         self, hashstore, value_hash, value

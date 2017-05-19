@@ -32,7 +32,7 @@ def long_value(request):
 
 # keys are always strings. only ascii chars are allowed
 @pytest.fixture(params=[u'short_key', u'different_key',
-                        """'!"`#$%&'()+,-.<=>?@[]^_{}~'"""])
+                        u"""'!"`#$%&'()+,-.<=>?@[]^_{}~'"""])
 def key(request):
     return request.param
 
@@ -45,6 +45,12 @@ def key2(request):
 @pytest.fixture(params=[u'ä', u'/', u'\x00', u'*', u'',
                         u'no whitespace allowed'])
 def invalid_key(request):
+    return request.param
+
+
+@pytest.fixture(params=[b'short_key', b'different_key',
+                        b"""'!"`#$%&'()+,-.<=>?@[]^_{}~'"""])
+def bytestring_key(request):
     return request.param
 
 

@@ -3,6 +3,7 @@
 
 import re
 from io import BytesIO
+import six
 
 __version__ = '0.10.1.dev1'
 
@@ -181,6 +182,8 @@ class KeyValueStore(object):
 
         :param key: The key to be checked
         """
+        if not isinstance(key, six.text_type) and key is not None:
+            raise ValueError('%r is not a unicode string' % key)
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
 
