@@ -1,6 +1,12 @@
 Changelog
 *********
 
+0.11.0
+======
+* simplekv again depends on ``six``
+* The memcached backend has been removed
+* Keys have to be provided as unicode strings
+
 0.10.0
 ======
 * simplekv no longer depends on ``six``.
