@@ -24,6 +24,7 @@ import uuid
 from .decorator import StoreDecorator
 from ._compat import text_type
 
+
 class HashDecorator(StoreDecorator):
     """Hash function decorator
 
