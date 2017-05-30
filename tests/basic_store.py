@@ -55,7 +55,7 @@ class BasicStore(object):
         assert copy_move_store.get(key2) == value
 
     def test_store_and_move_overwite(self, copy_move_store, key, key2,
-                                        value, value2):
+                                     value, value2):
         copy_move_store.put(key, value)
         copy_move_store.put(key2, value2)
         assert copy_move_store.get(key) == value
