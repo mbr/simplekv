@@ -40,3 +40,12 @@ else:
         import pickle
 
 xrange = range if not PY2 else xrange
+
+if not PY2:
+    text_type = str
+    unichr = chr
+    binary_type = bytes
+else:
+    text_type = unicode
+    unichr = unichr
+    binary_type = str

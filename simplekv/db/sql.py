@@ -2,8 +2,8 @@
 # coding=utf8
 
 from io import BytesIO
-import six
 
+from .._compat import text_type
 from .._compat import imap
 from .. import KeyValueStore
 
@@ -66,5 +66,5 @@ class SQLAlchemyStore(KeyValueStore):
         return self._put(key, file.read())
 
     def iter_keys(self):
-        return imap(lambda v: six.text_type(v[0]),
+        return imap(lambda v: text_type(v[0]),
                    self.bind.execute(select([self.table.c.key])))
