@@ -6,8 +6,7 @@ import tempfile
 from tempdir import TempDir
 
 import pytest
-import six
-from simplekv._compat import BytesIO, xrange
+from simplekv._compat import BytesIO, xrange, text_type
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
@@ -16,7 +15,7 @@ from simplekv.idgen import UUIDDecorator, HashDecorator
 class BasicStore(object):
     def test_store(self, store, key, value):
         key = store.put(key, value)
-        assert isinstance(key, six.text_type)
+        assert isinstance(key, text_type)
 
     def test_store_and_retrieve(self, store, key, value):
         store.put(key, value)
@@ -158,7 +157,7 @@ class BasicStore(object):
 
         l = []
         for k in store.iter_keys():
-            assert isinstance(k, six.text_type)
+            assert isinstance(k, text_type)
             l.append(k)
 
         l.sort()
@@ -171,7 +170,7 @@ class BasicStore(object):
 
         l = sorted(store.keys())
         for k in l:
-            assert isinstance(k, six.text_type)
+            assert isinstance(k, text_type)
 
         assert l == sorted([key, key2])
 

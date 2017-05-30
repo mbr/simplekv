@@ -20,10 +20,9 @@ import hashlib
 import os
 import tempfile
 import uuid
-import six
 
 from .decorator import StoreDecorator
-
+from ._compat import text_type
 
 class HashDecorator(StoreDecorator):
     """Hash function decorator
@@ -109,7 +108,7 @@ class UUIDDecorator(StoreDecorator):
 
     def put(self, key, data, *args, **kwargs):
         if not key:
-            key = six.text_type(getattr(uuid, self.uuidfunc)())
+            key = text_type(getattr(uuid, self.uuidfunc)())
 
         return self._dstore.put(
             self._template.format(key), data, *args, **kwargs
@@ -117,7 +116,7 @@ class UUIDDecorator(StoreDecorator):
 
     def put_file(self, key, file, *args, **kwargs):
         if not key:
-            key = six.text_type(getattr(uuid, self.uuidfunc)())
+            key = text_type(getattr(uuid, self.uuidfunc)())
 
         return self._dstore.put_file(
             self._template.format(key), file, *args, **kwargs

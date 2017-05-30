@@ -2,9 +2,9 @@ import os
 import re
 import tempfile
 import uuid
-import six
 
 from simplekv.idgen import UUIDDecorator, HashDecorator
+from simplekv._compat import text_type
 
 import pytest
 
@@ -114,7 +114,7 @@ class HashGen(IDGen):
         key = hashstore.put(None, value)
 
         assert value_hash == key
-        assert isinstance(key, six.text_type)
+        assert isinstance(key, text_type)
 
     def test_put_file_generates_correct_hash(
         self, hashstore, value_hash, value
