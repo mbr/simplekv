@@ -32,8 +32,6 @@ class TestBaseFilesystemStore(BasicStore, UrlStore, UUIDGen, HashGen):
     def copy_move_store(self, tmpdir):
         class CopyMoveStore(FilesystemStore, CopyMoveMixin):
             pass
-        print "ACHTUNG"
-        print tmpdir
         return CopyMoveStore(tmpdir)
 
 
