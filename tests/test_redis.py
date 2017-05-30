@@ -25,6 +25,7 @@ class TestRedisStore(TTLStore, BasicStore):
         yield RedisStore(r)
         r.flushdb()
 
+    @pytest.yield_fixture()
     def copy_move_store(self):
         from simplekv.memory.redisstore import RedisStore
 
