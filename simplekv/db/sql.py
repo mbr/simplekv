@@ -43,7 +43,7 @@ class SQLAlchemyStore(KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _rename(self, source, dest):
+    def _move(self, source, dest):
         if not self._has_key(source):
             raise KeyError(source)
         con = self.bind.connect()

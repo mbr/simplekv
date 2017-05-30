@@ -111,7 +111,7 @@ class CacheDecorator(StoreDecorator):
             return self._dstore.open(key)
 
     def _copy(self, source, dest):
-        """Implementation of :meth:`~simplekv.CopyRenameDecorator.copy`.
+        """Implementation of :meth:`~simplekv.CopyMoveMixin.copy`.
         
         Copies the data in the backing store and removes the destination key from the cache,
          in case it was already populated.
@@ -120,12 +120,12 @@ class CacheDecorator(StoreDecorator):
         self.cache.delete(dest)
         return k
 
-    def _rename(self, source, dest):
-        """Implementation of :meth:`~simplekv.CopyRenameDecorator.rename`.
+    def _move(self, source, dest):
+        """Implementation of :meth:`~simplekv.CopyMoveMixin.move`.
         
-        Renames the data in the backing store and removes both the source and destination key from the cache.
+        Moves the data in the backing store and removes both the source and destination key from the cache.
         """
-        k = self._dstore._rename(source, dest)
+        k = self._dstore._move(source, dest)
         self.cache.delete(source)
         self.cache.delete(dest)
         return k

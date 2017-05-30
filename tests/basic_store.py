@@ -10,14 +10,9 @@ from simplekv._compat import BytesIO, xrange, text_type
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
-from simplekv.decorator import CopyRenameDecorator
 
 
 class BasicStore(object):
-    @pytest.fixture()
-    def copy_rename_store(self, store):
-        return CopyRenameDecorator(store)
-
     def test_store(self, store, key, value):
         key = store.put(key, value)
         assert isinstance(key, text_type)
@@ -45,39 +40,39 @@ class BasicStore(object):
         store.put_file(key, BytesIO(value))
         assert store.open(key).read() == value
 
-    def test_store_and_rename(self, copy_rename_store, key, key2, value):
-        copy_rename_store.put(key, value)
-        assert copy_rename_store.get(key) == value
-        copy_rename_store.rename(key, key2)
-        assert key not in copy_rename_store
-        assert copy_rename_store.get(key2) == value
+    def test_store_and_move(self, copy_move_store, key, key2, value):
+        copy_move_store.put(key, value)
+        assert copy_move_store.get(key) == value
+        copy_move_store.move(key, key2)
+        assert key not in copy_move_store
+        assert copy_move_store.get(key2) == value
 
-    def test_store_and_copy(self, copy_rename_store, key, key2, value):
-        copy_rename_store.put(key, value)
-        assert copy_rename_store.get(key) == value
-        copy_rename_store.copy(key, key2)
-        assert copy_rename_store.get(key) == value
-        assert copy_rename_store.get(key2) == value
+    def test_store_and_copy(self, copy_move_store, key, key2, value):
+        copy_move_store.put(key, value)
+        assert copy_move_store.get(key) == value
+        copy_move_store.copy(key, key2)
+        assert copy_move_store.get(key) == value
+        assert copy_move_store.get(key2) == value
 
-    def test_store_and_rename_overwite(self, copy_rename_store, key, key2,
-                                       value, value2):
-        copy_rename_store.put(key, value)
-        copy_rename_store.put(key2, value2)
-        assert copy_rename_store.get(key) == value
-        assert copy_rename_store.get(key2) == value2
-        copy_rename_store.rename(key, key2)
-        assert key not in copy_rename_store
-        assert copy_rename_store.get(key2) == value
+    def test_store_and_move_overwite(self, copy_move_store, key, key2,
+                                        value, value2):
+        copy_move_store.put(key, value)
+        copy_move_store.put(key2, value2)
+        assert copy_move_store.get(key) == value
+        assert copy_move_store.get(key2) == value2
+        copy_move_store.move(key, key2)
+        assert key not in copy_move_store
+        assert copy_move_store.get(key2) == value
 
-    def test_store_and_copy_overwrite(self, copy_rename_store, key, key2,
+    def test_store_and_copy_overwrite(self, copy_move_store, key, key2,
                                       value, value2):
-        copy_rename_store.put(key, value)
-        copy_rename_store.put(key2, value2)
-        assert copy_rename_store.get(key) == value
-        assert copy_rename_store.get(key2) == value2
-        copy_rename_store.copy(key, key2)
-        assert copy_rename_store.get(key) == value
-        assert copy_rename_store.get(key2) == value
+        copy_move_store.put(key, value)
+        copy_move_store.put(key2, value2)
+        assert copy_move_store.get(key) == value
+        assert copy_move_store.get(key2) == value2
+        copy_move_store.copy(key, key2)
+        assert copy_move_store.get(key) == value
+        assert copy_move_store.get(key2) == value
 
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))

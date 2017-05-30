@@ -83,7 +83,7 @@ class FilesystemStore(KeyValueStore, UrlMixin):
             else:
                 raise
 
-    def _rename(self, source, dest):
+    def _move(self, source, dest):
         try:
             source_file_name = self._build_filename(source)
             dest_file_name = self._build_filename(dest)
