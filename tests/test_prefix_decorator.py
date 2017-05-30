@@ -36,8 +36,7 @@ class TestPrefixDecorator(BasicStore):
 
         return PrefixDecorator(prefix, base_store)
 
-
-    @pytest.fixture()
+    @pytest.fixture(params=[True, False])
     def copy_move_store(self, request, prefix):
         class CopyMoveStore(PrefixDecorator, CopyMoveMixin):
             pass
