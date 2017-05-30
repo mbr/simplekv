@@ -3,10 +3,9 @@
 
 import os
 import shutil
-import six
 
 from . import KeyValueStore, UrlMixin
-from ._compat import url_quote
+from ._compat import url_quote, text_type
 
 
 class FilesystemStore(KeyValueStore, UrlMixin):
@@ -33,7 +32,7 @@ class FilesystemStore(KeyValueStore, UrlMixin):
         :param perm: the permissions for files in the filesystem store
         """
         super(FilesystemStore, self).__init__(**kwargs)
-        self.root = six.text_type(root)
+        self.root = text_type(root)
         self.perm = perm
         self.bufsize = 1024 * 1024  # 1m
 
