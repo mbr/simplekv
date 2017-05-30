@@ -36,12 +36,25 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
         self.perm = perm
         self.bufsize = 1024 * 1024  # 1m
 
+    def _remove_empty_parents(self, path):
+        parents = os.path.relpath(path, os.path.abspath(self.root))
+        while len(parents) > 0:
+            absparent = os.path.join(self.root, parents)
+            if os.path.isdir(absparent):
+                if len(os.listdir(absparent)) == 0:
+                    os.rmdir(absparent)
+                else:
+                    break
+            parents = os.path.dirname(parents)
+
     def _build_filename(self, key):
         return os.path.abspath(os.path.join(self.root, key))
 
     def _delete(self, key):
         try:
-            os.unlink(self._build_filename(key))
+            targetname = self._build_filename(key)
+            os.unlink(targetname)
+            self._remove_empty_parents(targetname)
         except OSError as e:
             if not e.errno == 2:
                 raise
@@ -83,10 +96,15 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
             else:
                 raise
 
+    def _ensure_dir_exists(self, path):
+        if not os.path.isdir(path):
+            os.makedirs(path)
+
     def _put_file(self, key, file):
         bufsize = self.bufsize
 
         target = self._build_filename(key)
+        self._ensure_dir_exists(os.path.dirname(target))
 
         with open(target, 'wb') as f:
             while True:
@@ -104,6 +122,7 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
 
     def _put_filename(self, key, filename):
         target = self._build_filename(key)
+        self._ensure_dir_exists(os.path.dirname(target))
         shutil.move(filename, target)
 
         # we do not know the permissions of the source file, rectify
@@ -117,7 +136,9 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
         return 'file://' + location
 
     def keys(self, prefix=u""):
-        return filter(lambda p: p.startswith(prefix), os.listdir(self.root))
+        root = os.path.abspath(self.root)
+        return filter(lambda p: p.startswith(prefix), [os.path.join(dp, f)[len(root)+1:]
+                for dp, dn, fn in os.walk(root) for f in fn])
 
     def iter_keys(self, prefix=u""):
         return iter(self.keys(prefix))
