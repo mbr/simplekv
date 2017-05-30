@@ -48,6 +48,7 @@ class TestSQLAlchemyStore(BasicStore):
 
         metadata.drop_all()
 
+    @pytest.yield_fixture()
     def copy_move_store(self, engine):
         class CopyMoveStore(SQLAlchemyStore, CopyMoveMixin):
             pass
