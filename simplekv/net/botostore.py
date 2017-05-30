@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from itertools import imap
+from .._compat import imap
 
 from boto.exception import BotoClientError, BotoServerError,\
                            StorageResponseError
