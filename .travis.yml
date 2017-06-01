@@ -2,6 +2,9 @@ language: python
 env:
 - TOXENV=py27
 - TOXENV=py33
+go:
+- 1.7.5
+
 install: pip install tox
 script: tox
 services:
@@ -9,5 +12,6 @@ services:
   - memcached
   - mongodb
 before_script:
+  - source ./.travis/start_minio.sh
   - psql -c 'create database simplekv_test;' -U postgres
   - mysql -e 'create database simplekv_test;'
