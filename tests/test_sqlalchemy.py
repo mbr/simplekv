@@ -47,7 +47,8 @@ class TestSQLAlchemyStore(BasicStore):
         metadata.drop_all()
 
 
-class TestExtendedKeyspaceDictStore(TestSQLAlchemyStore, ExtendedKeyspaceTests):
+class TestExtendedKeyspaceSQLAlchemyStore(TestSQLAlchemyStore,
+                                          ExtendedKeyspaceTests):
     @pytest.fixture
     def store(self, engine):
         class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, SQLAlchemyStore):
