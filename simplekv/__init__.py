@@ -438,6 +438,7 @@ class UrlKeyValueStore(UrlMixin, KeyValueStore):
     """
     pass
 
+
 class CopyMixin(object):
     """Exposes a copy operation, if the backend supports it."""
 
@@ -455,7 +456,14 @@ class CopyMixin(object):
         self._check_valid_key(dest)
         return self._copy(source, dest)
 
+
 class ExtendedKeyspaceMixin(object):
+    """A mixin to extend the keyspace to allow slashes and spaces in keynames.
+    
+    Attention: A single / is NOT allowed.
+    Use it by extending first from ` :class:`~simplekv.ExtendedKeyspaceMixin`
+    and then by the desired store.
+    """
     def _check_valid_key(self, key):
         """Checks if a key is valid and raises a ValueError if its not.
 
@@ -464,5 +472,7 @@ class ExtendedKeyspaceMixin(object):
 
         :param key: The key to be checked
         """
-        if not VALID_KEY_RE_EXTENDED.match(key):
+        if not isinstance(key, text_type) and key is not None:
+            raise ValueError('%r is not a unicode string' % key)
+        if not VALID_KEY_RE_EXTENDED.match(key) or key == u'/':
             raise ValueError('%r contains illegal characters' % key)
