@@ -12,6 +12,8 @@ from simplekv._compat import BytesIO
 from basic_store import BasicStore
 from url_store import UrlStore
 from bucket_manager import boto_credentials, boto_bucket
+from conftest import ExtendedKeyspaceTests
+from simplekv import ExtendedKeyspaceMixin
 
 
 @pytest.fixture(params=boto_credentials,
@@ -81,3 +83,12 @@ class TestBotoStorage(BasicStore, UrlStore):
         if storage_class != 'STANDARD':
             pytest.xfail('boto does not support checking the storage class?')
         assert bucket.lookup(keyname).storage_class == storage_class
+
+
+class TestExtendedKeyspaceBotoStore(TestBotoStorage, ExtendedKeyspaceTests):
+    @pytest.fixture
+    def store(self, bucket, prefix, reduced_redundancy):
+        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, BotoStore):
+            pass
+        return ExtendedKeyspaceStore(bucket, prefix,
+                                     reduced_redundancy=reduced_redundancy)

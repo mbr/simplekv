@@ -6,13 +6,16 @@ import pytest
 
 from simplekv.git import GitCommitStore
 
+from conftest import ExtendedKeyspaceTests
+from simplekv import ExtendedKeyspaceMixin
+
 
 class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
-    @pytest.fixture(params=[b'master', b'not-master', b'other-branch'])
+    @pytest.fixture(params=[b'master', b'not-master'])
     def branch(self, request):
         return request.param
 
-    @pytest.fixture(params=[b'', b'/', b'subdir', b'subdir/', b'sub/subdir/',
+    @pytest.fixture(params=[b'', b'/', b'subdir', b'sub/subdir/',
                             b'/sub/subdir', b'/sub/subdir/'])
     def subdir_name(self, request):
         return request.param
@@ -63,3 +66,13 @@ class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
             fn2 = sdir + '/' + fn2
         _, blob_id = tree.lookup_path(repo.__getitem__, fn2.encode('ascii'))
         assert repo[blob_id].data == b'bar2'
+
+
+class TestExtendedKeyspaceGitStore(TestGitCommitStore,
+                                   ExtendedKeyspaceTests):
+    @pytest.fixture
+    def store(self, repo_path, branch, subdir_name):
+        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, GitCommitStore):
+            pass
+        return ExtendedKeyspaceStore(repo_path, branch=branch,
+                                     subdir=subdir_name)

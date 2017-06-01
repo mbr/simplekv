@@ -10,6 +10,8 @@ from sqlalchemy.exc import OperationalError
 from simplekv.db.sql import SQLAlchemyStore
 
 from basic_store import BasicStore
+from conftest import ExtendedKeyspaceTests
+from simplekv import ExtendedKeyspaceMixin
 
 
 # FIXME: for local testing, this needs configurable dsns
@@ -39,10 +41,20 @@ class TestSQLAlchemyStore(BasicStore):
     def store(self, engine):
         metadata = MetaData(bind=engine)
         store = SQLAlchemyStore(engine, metadata, 'simplekv_test')
-
         # create table
         store.table.create()
-
         yield store
+        metadata.drop_all()
 
+
+class TestExtendedKeyspaceDictStore(TestSQLAlchemyStore, ExtendedKeyspaceTests):
+    @pytest.fixture
+    def store(self, engine):
+        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, SQLAlchemyStore):
+            pass
+        metadata = MetaData(bind=engine)
+        store = ExtendedKeyspaceStore(engine, metadata, 'simplekv_test')
+        # create table
+        store.table.create()
+        yield store
         metadata.drop_all()
