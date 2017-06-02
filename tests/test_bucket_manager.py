@@ -26,25 +26,3 @@ def test_simple(bucket):
 def test_simple_with_contents(bucket):
     k = bucket.new_key('i_will_prevent_deletion')
     k.set_contents_from_string('meh')
-
-
-def test_context_manager_deletes_bucket(credentials):
-    with boto_bucket(access_key=credentials['access_key'],
-                     secret_key=credentials['secret_key'],
-                     connect_func=credentials['connect_func']) as bucket:
-        k = Key(bucket)
-        k.key = 'test_key'
-        k.set_contents_from_string('asdf')
-        bucket_name = bucket.name
-
-    # check if the bucket was deleted
-    conn = getattr(boto, credentials['connect_func'])(
-        credentials['access_key'], credentials['secret_key']
-    )
-
-    try:
-        conn.get_bucket(bucket_name)
-    except StorageResponseError as e:
-        assert e.code == 'NoSuchBucket'
-    else:
-        assert False, 'bucket not deleted'
