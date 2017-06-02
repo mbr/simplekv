@@ -20,7 +20,8 @@ def boto_bucket(access_key, secret_key, host,
                                            (),
                                            port=port, is_secure=is_secure)
     else:
-        conn = getattr(boto, connect_func)(access_key, secret_key, host=host)
+        conn = getattr(boto, connect_func)(access_key, secret_key, host=host,
+                                           port=port, is_secure=is_secure)
 
     name = bucket_name or 'testrun-bucket-{}'.format(uuid())
     bucket = conn.create_bucket(name)
