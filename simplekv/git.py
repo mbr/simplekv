@@ -162,7 +162,7 @@ class GitCommitStore(KeyValueStore):
                     .iter_tree_contents(tree.sha().hexdigest()):
                 print(o.path)
                 if o.path.startswith(prefix):
-                    yield text_type(o.path)
+                    yield text_type(o.path.decode('ascii'))
 
     def _open(self, key):
         return BytesIO(self._get(key))
