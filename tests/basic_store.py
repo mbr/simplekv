@@ -10,6 +10,9 @@ from simplekv._compat import BytesIO, xrange
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class BasicStore(object):
