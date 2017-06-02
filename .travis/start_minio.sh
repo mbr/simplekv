@@ -3,9 +3,9 @@
 set -e
 set -x
 
-mkdir gobin
-export GOPATH=~/gobin
-export PATH=~/gobin:$PATH
+mkdir -p gopath/bin
+export GOPATH=~/gopath
+export PATH=~/gopath/bin:$PATH
 
 go get -u github.com/minio/minio
 
