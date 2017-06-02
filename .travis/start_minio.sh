@@ -9,8 +9,8 @@ export PATH=~/gopath/bin:$PATH
 
 go get -u github.com/minio/minio
 
-export MINIO_ACCESS_KEY=fjeiowgjepgmeovsdvdasda
-export MINIO_SECRET_KEY=fasduiqwrzqwoitghdnvdfjknbvylkmdiofjkw
+export MINIO_ACCESS_KEY=minio
+export MINIO_SECRET_KEY=miniostorage
 
 mkdir -p ~/s3
 minio server ~/s3 &
