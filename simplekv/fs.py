@@ -107,7 +107,12 @@ class FilesystemStore(KeyValueStore, UrlMixin):
 
     def iter_keys(self):
         return iter(self.keys())
-
+        
+    def size(self, key):
+    	self._check_valid_key(key)
+		if not key in self:
+			raise KeyError(key)
+		return os.stat(self._build_filename(key)).st_size
 
 class WebFilesystemStore(FilesystemStore):
     """FilesystemStore that supports generating URLs suitable for web
