@@ -15,9 +15,8 @@ support for `Amazon S3 <http://aws.amazon.com/s3/>`_ and `Google
 Storage <http://code.google.com/apis/storage/>`_ through
 :class:`~.BotoStore`.
 
-Faster in-memory stores suitable for session management are supported through
-the likes of :class:`~.RedisStore` or
-:class:`~.MemcacheStore`.
+A faster in-memory store suitable for session management and caching is
+supported through :class:`~.RedisStore`
 
 
 Example

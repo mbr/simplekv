@@ -3,23 +3,23 @@ kv-caches
 
 Caches speed up access to stores greatly, if used right. Usually, these require
 combining two :class:`~simplekv.KeyValueStore` instances of the same or different
-kind. A typical example is a store that uses a
-:class:`~simplekv.memory.memcachestore.MemcacheStore` in front of a
+kind. A simple example without error-handling0 is a store that uses a
+:class:`~simplekv.memory.redisstore.RedisStore` in front of a
 :class:`~simplekv.fs.FilesystemStore`:
 
 ::
 
-  from simplekv.memory.memcachestore import MemcacheStore
+  from simplekv.memory.redisstore import RedisStore
   from simplekv.fs import FilesystemStore
   from simplekv.cache import CacheDecorator
 
-  import memcache
+  from redis import StrictRedis
 
-  # initialize memcache instance
-  mc = memcache.Client(['localhost:11211'])
+  # initialize redis instance
+  r = StrictRedis()
 
   store = CacheDecorator(
-    cache=MemcacheStore(mc),
+    cache=RedisStore(r),
     store=FilesystemStore('.')
   )
 
@@ -30,7 +30,7 @@ kind. A typical example is a store that uses a
   print store.get(u'some_value')
 
   # any further calls to store.get('some_value') will be served from the
-  # MemcacheStore now
+  # RedisStore now
 
 .. automodule:: simplekv.cache
    :members:
