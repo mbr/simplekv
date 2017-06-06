@@ -25,7 +25,7 @@ Changelog
   mixins like :class:`~simplekv.UrlMixin`.
 * Added :class:`~simplekv.TimeToLiveMixin` support (on
   :class:`~simplekv.memory.redisstore.RedisStore` and
-  :class:`~simplekv.memory.memcachestore.MemcacheStore`).
+  simplekv.memory.memcachestore.MemcacheStore).
 
 
 0.6
@@ -40,7 +40,7 @@ Changelog
 * Maximum key length that needs to be supported by all backends is 250
   characters (was 256 before).
 * Added `memcached <http://memcached.org>`_ backend:
-  :class:`~simplekv.memory.memcachestore.MemcacheStore`
+  simplekv.memory.memcachestore.MemcacheStore
 * Added `SQLAlchemy <http://sqlalchemy.org>`_ support:
   :class:`~simplekv.db.sql.SQLAlchemyStore`
 * Added :mod:`simplekv.cache` module.
