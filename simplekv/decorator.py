@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding=utf8
+from ._compat import quote_plus, unquote_plus, text_type, binary_type
 
 
 class StoreDecorator(object):
@@ -110,3 +111,39 @@ class PrefixDecorator(KeyTransformingDecorator):
         assert key.startswith(self.prefix)
 
         return key[len(self.prefix):]
+
+
+class URLEncodeKeys(KeyTransformingDecorator):
+    """URL-encodes keys before passing them on to the underlying store."""
+    def _map_key(self, key):
+        if not isinstance(key, text_type):
+            raise ValueError('%r is not a unicode string' % key)
+        quoted = quote_plus(key.encode('utf-8'))
+        if isinstance(quoted, binary_type):
+            quoted = quoted.decode('utf-8')
+        return quoted
+
+    def _unmap_key(self, key):
+        return unquote_plus(key)
+
+
+class ReadOnlyStore(StoreDecorator):
+    """
+    A read-only view of an underlying simplekv store
+
+    Provides only access to the following methods/attributes of the
+    underlying store: get, iter_keys, keys, open, get_file.
+    It also forwards __contains__.
+    Accessing any other method will raise AttributeError.
+
+    Note that the original store for r/w can still be accessed,
+    so using this class as a wrapper only provides protection
+    against bugs and other kinds of unintentional writes;
+    it is not meant to be a real security measure.
+    """
+
+    def __getattr__(self, attr):
+        if attr in ('get', 'iter_keys', 'keys', 'open', 'get_file'):
+            return super(ReadOnlyStore, self).__getattr__(attr)
+        else:
+            raise AttributeError

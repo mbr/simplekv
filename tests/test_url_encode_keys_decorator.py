@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+# coding=utf8
+
+from simplekv.decorator import URLEncodeKeys
+from simplekv.memory import DictStore
+import pytest
+
+from basic_store import BasicStore
+
+
+class TestURLEncodeKeysDecorator(BasicStore):
+    @pytest.fixture()
+    def store(self):
+        base_store = DictStore()
+        return URLEncodeKeys(base_store)
+
+    def test_urlencode(self, store):
+        store.put(u'key special:-🍺', b'val1')
+        assert store.get(u'key special:-🍺') == b'val1'
+
+    # The invalid key is replaced by a valid one after encoding through
+    # the decorator...
+    test_exception_on_invalid_key_delete = None
+    test_exception_on_invalid_key_get_file = None
+    test_exception_on_invalid_key_get = None

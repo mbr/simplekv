@@ -12,9 +12,12 @@ else:
 
 if not PY2:
     from urllib.parse import quote as url_quote, unquote as url_unquote
+    from urllib.parse import quote_plus, unquote_plus
+
 else:
     from urllib import quote as url_quote
     from urllib import unquote as url_unquote
+    from urllib import quote_plus, unquote_plus
 
 if not PY2:
     from urllib.parse import urlparse
