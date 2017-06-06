@@ -133,6 +133,28 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
 
 .. _implement:
 
+
+Using slashes and spaces in key names
+=====================================
+Sometimes, the need arises for using slashes or spaces in key names, which is
+forbidden in simplekv as-is.
+To allow this use case, the :class:`~simplekv.ExtendedKeyspaceMixin` is provided.
+
+Use it like this (note that you have to derive from the mixin first!):
+::
+
+   class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, FilesystemStore):
+      pass
+   store = ExtendedKeyspaceStore(u'.')
+   store.put(u'/hi/this is a key', value)
+
+.. autoclass:: simplekv.ExtendedKeyspaceMixin
+
+.. autodata:: simplekv.VALID_KEY_REGEXP_EXTENDED
+
+.. autodata:: simplekv.VALID_KEY_RE_EXTENDED
+
+
 Implementing a new backend
 ==========================
 
