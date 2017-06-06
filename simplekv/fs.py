@@ -57,7 +57,7 @@ class FilesystemStore(KeyValueStore, UrlMixin):
         os.chmod(filename, perm)
 
     def _has_key(self, key):
-        return os.path.exists(self._build_filename(key))
+        return os.path.isfile(self._build_filename(key))
 
     def _open(self, key):
         try:
@@ -103,7 +103,8 @@ class FilesystemStore(KeyValueStore, UrlMixin):
         return 'file://' + location
 
     def keys(self):
-        return os.listdir(self.root)
+        return [item for item in os.listdir(self.root)
+                if not os.path.isdir(os.path.join(self.root, item))]
 
     def iter_keys(self):
         return iter(self.keys())
