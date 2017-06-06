@@ -450,19 +450,20 @@ class CopyMoveMixin(object):
     """Exposes a copy and move API. This API is either backed by corresponding backend operations, if available,
     or emulated using get/put/delete.
 
-    Warning: This makes the operations potentially not atomic"""
+    Warning: This makes the operations potentially not atomic!"""
 
     def copy(self, source, dest):
         """Copies a key. The destination is overwritten if does exist.
 
         In case there is no native backend method available to do so, uses get and put to emulate the copy.
+        
         :param source: The source key to copy
         :param dest: The destination for the copy
 
-        :returns The destination key
+        :returns: The destination key
 
-        :raises exceptions.ValueError: If the source or target key are not valid
-        :raises exceptions.KeyError: If the source key was not found"""
+        :raises: exceptions.ValueError: If the source or target key are not valid
+        :raises: exceptions.KeyError: If the source key was not found"""
         self._check_valid_key(source)
         self._check_valid_key(dest)
         return self._copy(source, dest)
@@ -471,10 +472,11 @@ class CopyMoveMixin(object):
         """Moves a key. The destination is overwritten if does exist.
 
         In case there is no native backend method available to do so, uses copy and delete to emulate the move.
+        
         :param source: The source key to move
         :param dest: The new name of the key
 
-        :returns The destination key
+        :returns: The destination key
 
         :raises exceptions.ValueError: If the source or dest key are not valid
         :raises exceptions.KeyError: If the source key was not found"""

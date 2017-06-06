@@ -126,6 +126,27 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
 
 .. _implement:
 
+Copy and Move operations
+========================
+Some backends support an efficient copy and/or move operation.
+To access it, the :class:`~simplekv.CopyMoveMixin` has to be used as follows:
+::
+
+   class CopyMoveStore(FilesystemStore, CopyMoveMixin):
+      pass
+
+   store = CopyMoveStore(u".")
+
+   store.put(key, value)
+   store.copy(key, key2)
+
+If the backend does not support a native copy or move operation, it is emulated
+by the mixin by doing appropriate get/put/delete operations.
+Note that this does violate the atomicity guarantee given for the core API!
+
+.. autoclass:: simplekv.CopyMoveMixin
+   :members:
+
 
 Implementing a new backend
 ==========================

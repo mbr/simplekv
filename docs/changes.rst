@@ -7,6 +7,8 @@ Changelog
 * Keys have to be provided as unicode strings
 * Values have to be provided as bytes (python 2) or as str (python 3)
 * keys() and iter_keys() provide a parameter to iterate just over all keys with a given prefix
+* Added :class:`simplekv.CopyMoveMixin` to allow access to copy and move operations
+
 
 0.10.0
 ======
