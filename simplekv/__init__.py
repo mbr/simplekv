@@ -110,7 +110,7 @@ class KeyValueStore(object):
 
     def keys(self, prefix=""):
         """Return a list of keys currently in store, in any order
-        If prefix is not the empty string, iterates only over all keys starting with prefix.
+        If prefix is not the empty string, returns only all keys starting with prefix.
 
         :raises exceptions.IOError: If there was an error accessing the store.
         """
