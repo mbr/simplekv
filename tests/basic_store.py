@@ -6,7 +6,7 @@ import tempfile
 from tempdir import TempDir
 
 import pytest
-from simplekv._compat import BytesIO, xrange, text_type, pickle
+from simplekv._compat import BytesIO, xrange, text_type
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
@@ -219,13 +219,6 @@ class BasicStore(object):
         for i in xrange(a_lot):
             key = key + '_{}'.format(i)
             store.put(key, value)
-
-    def test_pickle_unpickle_store(self, store, key, value):
-        store.put(key, value)
-        buf = pickle.dumps(store, protocol=2)
-        store = pickle.loads(buf)
-
-        assert store.get(key) == value
 
 
 # small extra time added to account for variance
