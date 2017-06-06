@@ -145,7 +145,7 @@ Default implementation
 ----------------------
 
 Classes derived from :class:`~simplekv.KeyValueStore` inherit a number of
-default implementations for the core API mehthods. Specifically, the
+default implementations for the core API methods. Specifically, the
 :func:`~simplekv.KeyValueStore.delete`,
 :func:`~simplekv.KeyValueStore.get`,
 :func:`~simplekv.KeyValueStore.get_file`,
