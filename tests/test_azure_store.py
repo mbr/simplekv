@@ -1,12 +1,11 @@
 from uuid import uuid4 as uuid
-import pytest
-
-azure_storage = pytest.importorskip('azure-storage')
-
 from azure.storage.blob import BlockBlobService
 from simplekv._compat import ConfigParser, pickle
 from simplekv.net.azurestore import AzureBlockBlobStore
 from basic_store import BasicStore
+import pytest
+
+pytest.importorskip('azure-storage')
 
 
 def load_azure_credentials():
