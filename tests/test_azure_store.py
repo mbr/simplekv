@@ -1,5 +1,4 @@
 from uuid import uuid4 as uuid
-from azure.storage.blob import BlockBlobService
 from simplekv._compat import ConfigParser, pickle
 from simplekv.net.azurestore import AzureBlockBlobStore
 from basic_store import BasicStore
@@ -37,6 +36,8 @@ def create_azure_conn_string(credentials):
 class TestAzureStorage(BasicStore):
     @pytest.fixture
     def store(self):
+        from azure.storage.blob import BlockBlobService
+
         container = uuid()
         conn_string = create_azure_conn_string(load_azure_credentials())
         s = BlockBlobService(connection_string=conn_string)
@@ -47,6 +48,7 @@ class TestAzureStorage(BasicStore):
 
 
 def test_azure_setgetstate():
+    from azure.storage.blob import BlockBlobService
     container = uuid()
     conn_string = create_azure_conn_string(load_azure_credentials())
     s = BlockBlobService(connection_string=conn_string)
