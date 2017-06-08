@@ -16,7 +16,16 @@ VALID_KEY_RE = re.compile(VALID_KEY_REGEXP)
 """A compiled version of :data:`~simplekv.VALID_KEY_REGEXP`."""
 
 
-class KeyValueStore(object):
+class KeyValueStoreBase(object):
+    """Base class for everything that fulfills the KeyValueStore API
+
+    Actual stores have to be subclassed from either :class:`KeyValueStore` or
+    :class:`StoreDecorator`. This class serves as a common ancestor, but contains
+    no implementation or interface definition.
+    """
+
+
+class KeyValueStore(KeyValueStoreBase):
     """The smallest API supported by all backends.
 
     Keys are ascii-strings with certain restrictions, guaranteed to be properly

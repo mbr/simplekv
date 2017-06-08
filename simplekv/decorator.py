@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding=utf8
 from ._compat import quote_plus, unquote_plus, text_type, binary_type
+from . import KeyValueStoreBase
 
 
-class StoreDecorator(object):
+class StoreDecorator(KeyValueStoreBase):
     """Base class for store decorators.
 
     The default implementation will use :func:`getattr` to pass through all
