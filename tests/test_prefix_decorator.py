@@ -41,7 +41,11 @@ class TestPrefixDecorator(BasicStore):
         class CopyMoveStore(PrefixDecorator, CopyMoveMixin):
             pass
 
-        base_store = DictStore()
+        class BaseCopyMoveStore(DictStore, CopyMoveMixin):
+            pass
+
+        # we need CopyMoveMixin here so we can use copy/move on the backend
+        base_store = BaseCopyMoveStore()
 
         # do we add extra keys to the underlying store?
         if request.param:
