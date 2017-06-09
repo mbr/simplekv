@@ -266,20 +266,6 @@ class KeyValueStore(object):
         """
         raise NotImplementedError
 
-    def _copy(self, source, dest):
-        """Implementation for :meth:`~simplekv.CopyMoveMixin.copy`. The default
-        implementation will simply get the data from source and put it under the new key.
-        """
-        return self.put(dest, self.get(source))
-
-    def _move(self, source, dest):
-        """Implementation for :meth:`~simplekv.CopyMoveMixin.move`. The default
-        implementation will copy the data from source to dest and then delete the source key.
-        """
-        k = self._copy(source, dest)
-        self.delete(source)
-        return k
-
     def _put(self, key, data):
         """Implementation for :meth:`~simplekv.KeyValueStore.put`. The default
         implementation will create a :class:`io.BytesIO`-buffer and then call
@@ -448,9 +434,9 @@ class UrlKeyValueStore(UrlMixin, KeyValueStore):
 
 class CopyMoveMixin(object):
     """Exposes a copy and move API. This API is either backed by corresponding backend operations, if available,
-    or emulated using get/put/delete.
+    or emulated using get/put/delete/copy.
 
-    Warning: This makes the operations potentially not atomic!"""
+    Note: Copy and move operations are not guaranteed to be atomic"""
 
     def copy(self, source, dest):
         """Copies a key. The destination is overwritten if does exist.
@@ -466,7 +452,9 @@ class CopyMoveMixin(object):
         :raises: exceptions.KeyError: If the source key was not found"""
         self._check_valid_key(source)
         self._check_valid_key(dest)
-        return self._copy(source, dest)
+        # try using _copy from the backend, falling back to the default if it is not available
+        _copy = getattr(super(CopyMoveMixin, self), '_copy', self._copy)
+        return _copy(source, dest)
 
     def move(self, source, dest):
         """Moves a key. The destination is overwritten if does exist.
@@ -482,4 +470,20 @@ class CopyMoveMixin(object):
         :raises exceptions.KeyError: If the source key was not found"""
         self._check_valid_key(source)
         self._check_valid_key(dest)
-        return self._move(source, dest)
+        # try using _move from the backend, falling back to the default if it is not available
+        _move = getattr(super(CopyMoveMixin, self), '_move', self._move)
+        return _move(source, dest)
+
+    def _copy(self, source, dest):
+        """Implementation for :meth:`~simplekv.CopyMoveMixin.copy`. The default
+        implementation will simply get the data from source and put it under the new key.
+        """
+        return self.put(dest, self.get(source))
+
+    def _move(self, source, dest):
+        """Implementation for :meth:`~simplekv.CopyMoveMixin.move`. The default
+        implementation will copy the data from source to dest and then delete the source key.
+        """
+        k = self._copy(source, dest)
+        self.delete(source)
+        return k
