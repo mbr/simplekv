@@ -116,8 +116,10 @@ class CacheDecorator(StoreDecorator):
         Copies the data in the backing store and removes the destination key from the cache,
          in case it was already populated.
          """
-        k = self._dstore._copy(source, dest)
-        self.cache.delete(dest)
+        try:
+            k = self._dstore._copy(source, dest)
+        finally:
+            self.cache.delete(dest)
         return k
 
     def _move(self, source, dest):
@@ -125,9 +127,13 @@ class CacheDecorator(StoreDecorator):
         
         Moves the data in the backing store and removes both the source and destination key from the cache.
         """
-        k = self._dstore._move(source, dest)
-        self.cache.delete(source)
-        self.cache.delete(dest)
+        try:
+            k = self._dstore._move(source, dest)
+        finally:
+            try:
+                self.cache.delete(source)
+            finally:
+                self.cache.delete(dest)
         return k
 
     def put(self, key, data):
