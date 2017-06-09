@@ -15,7 +15,10 @@ class TestCache(BasicStore):
 
     @pytest.fixture
     def backing_store(self):
-        return DictStore()
+        # the backing store needs the CopyMoveMixin, so we can test that later
+        class BackingCopyMoveStore(DictStore, CopyMoveMixin):
+            pass
+        return BackingCopyMoveStore()
 
     @pytest.fixture
     def store(self, front_store, backing_store):
