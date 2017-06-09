@@ -140,9 +140,11 @@ To access it, the :class:`~simplekv.CopyMoveMixin` has to be used as follows:
    store.put(key, value)
    store.copy(key, key2)
 
-If the backend does not support a native copy or move operation, it is emulated
-by the mixin by doing appropriate get/put/delete operations.
-Note that this does violate the atomicity guarantee given for the core API!
+If a backend does not implement the copy or move operation, the mixin will
+provide its own implementation by performing a sequence of
+get/put/delete/copy operations. Note that this sequence of operations is not
+guaranteed to be atomic, and might leave the source and destination keys in an
+undesired state if it is interrupted.
 
 .. autoclass:: simplekv.CopyMoveMixin
    :members:
