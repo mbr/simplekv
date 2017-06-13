@@ -2,13 +2,13 @@
 # coding=utf8
 
 from simplekv.decorator import ReadOnlyStore
-from simplekv.fs import FilesystemStore
+from simplekv.memory import DictStore
 import pytest
 
 
 class TestReadOnlyStoreDecorator(object):
-    def test_readonly(self, tmpdir):
-        store0 = FilesystemStore(tmpdir)
+    def test_readonly(self):
+        store0 = DictStore()
         store0.put(u"file1", b"content")
 
         store = ReadOnlyStore(store0)
