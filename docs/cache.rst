@@ -3,7 +3,7 @@ kv-caches
 
 Caches speed up access to stores greatly, if used right. Usually, these require
 combining two :class:`~simplekv.KeyValueStore` instances of the same or different
-kind. A simple example without error-handling0 is a store that uses a
+kind. A simple example without error-handling is a store that uses a
 :class:`~simplekv.memory.redisstore.RedisStore` in front of a
 :class:`~simplekv.fs.FilesystemStore`:
 
