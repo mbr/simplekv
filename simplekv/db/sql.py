@@ -44,15 +44,20 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
         return BytesIO(self._get(key))
 
     def _copy(self, source, dest):
-        raise NotImplementedError
-        if not self._has_key(source):
-            raise KeyError(source)
         con = self.bind.connect()
         with con.begin():
+            data = self.bind.execute(
+                select([self.table.c.value], self.table.c.key == source).limit(1)
+            ).scalar()
+            if not data:
+                raise KeyError(source)
+
             # delete the potential existing previous key
             con.execute(self.table.delete(self.table.c.key == dest))
-            con.execute(self.table.update().values(key=dest).where(self.table.c.key == source))
-
+            con.execute(self.table.insert({
+                'key': dest,
+                'value': data,
+            }))
         con.close()
         return dest
 
