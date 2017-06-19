@@ -62,6 +62,12 @@ class BasicStore(object):
         assert store.get(key) == value
         assert store.get(key2) == value
 
+    def test_store_copy_nonexistant(self, store, key, key2):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        with pytest.raises(KeyError):
+            store.copy(key, key2)
+
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))
         ok = store.open(key)
