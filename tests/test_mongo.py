@@ -9,7 +9,7 @@ pymongo = pytest.importorskip('pymongo')
 from simplekv.db.mongo import MongoStore
 from basic_store import BasicStore
 from conftest import ExtendedKeyspaceTests
-from simplekv import ExtendedKeyspaceMixin
+from simplekv.contrib import ExtendedKeyspaceMixin
 
 
 class TestMongoDB(BasicStore):

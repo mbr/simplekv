@@ -13,7 +13,7 @@ from basic_store import BasicStore
 from url_store import UrlStore
 from bucket_manager import boto_credentials, boto_bucket
 from conftest import ExtendedKeyspaceTests
-from simplekv import ExtendedKeyspaceMixin
+from simplekv.contrib import ExtendedKeyspaceMixin
 
 
 @pytest.fixture(params=boto_credentials,

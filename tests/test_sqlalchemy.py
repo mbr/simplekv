@@ -11,7 +11,7 @@ from simplekv.db.sql import SQLAlchemyStore
 
 from basic_store import BasicStore
 from conftest import ExtendedKeyspaceTests
-from simplekv import ExtendedKeyspaceMixin
+from simplekv.contrib import ExtendedKeyspaceMixin
 
 
 # FIXME: for local testing, this needs configurable dsns

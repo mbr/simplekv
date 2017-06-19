@@ -14,7 +14,7 @@ from url_store import UrlStore
 from idgens import UUIDGen, HashGen
 
 from conftest import ExtendedKeyspaceTests
-from simplekv import ExtendedKeyspaceMixin
+from simplekv.contrib import ExtendedKeyspaceMixin
 
 from mock import Mock
 import pytest

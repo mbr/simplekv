@@ -7,7 +7,7 @@ from test_hmac import HMACDec
 
 import pytest
 from conftest import ExtendedKeyspaceTests
-from simplekv import ExtendedKeyspaceMixin
+from simplekv.contrib import ExtendedKeyspaceMixin
 
 
 class TestDictStore(BasicStore, UUIDGen, HashGen, HMACDec):

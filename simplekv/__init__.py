@@ -8,20 +8,13 @@ from ._compat import text_type
 __version__ = '0.11.0.dev1'
 
 VALID_NON_NUM = r"""\`\!"#$%&'()+,-.<=>?@[]^_{}~"""
-VALID_NON_NUM_EXTENDED = VALID_NON_NUM + r"/ "
 VALID_KEY_REGEXP = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM)
 """This regular expression tests if a key is valid. Allowed are all
 alphanumeric characters, as well as ``!"`#$%&'()+,-.<=>?@[]^_{}~``."""
 
-VALID_KEY_REGEXP_EXTENDED = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM_EXTENDED)
-"""This regular expression tests if a key is valid when the extended keyspace mixin is used. Allowed are all
-alphanumeric characters, as well as ``!"`#$%&'()+,-.<=>?@[]^_{}~/``. and spaces"""
-
-
 VALID_KEY_RE = re.compile(VALID_KEY_REGEXP)
 """A compiled version of :data:`~simplekv.VALID_KEY_REGEXP`."""
-VALID_KEY_RE_EXTENDED = re.compile(VALID_KEY_REGEXP_EXTENDED)
-"""A compiled version of :data:`~simplekv.VALID_KEY_REGEXP_EXTENDED`."""
+
 
 class KeyValueStore(object):
     """The smallest API supported by all backends.
@@ -455,24 +448,3 @@ class CopyMixin(object):
         self._check_valid_key(source)
         self._check_valid_key(dest)
         return self._copy(source, dest)
-
-
-class ExtendedKeyspaceMixin(object):
-    """A mixin to extend the keyspace to allow slashes and spaces in keynames.
-    
-    Attention: A single / is NOT allowed.
-    Use it by extending first from ` :class:`~simplekv.ExtendedKeyspaceMixin`
-    and then by the desired store.
-    """
-    def _check_valid_key(self, key):
-        """Checks if a key is valid and raises a ValueError if its not.
-
-        When in need of checking a key for validity, always use this
-        method if possible.
-
-        :param key: The key to be checked
-        """
-        if not isinstance(key, text_type) and key is not None:
-            raise ValueError('%r is not a unicode string' % key)
-        if not VALID_KEY_RE_EXTENDED.match(key) or key == u'/':
-            raise ValueError('%r contains illegal characters' % key)

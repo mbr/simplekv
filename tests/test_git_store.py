@@ -7,7 +7,7 @@ import pytest
 from simplekv.git import GitCommitStore
 
 from conftest import ExtendedKeyspaceTests
-from simplekv import ExtendedKeyspaceMixin
+from simplekv.contrib import ExtendedKeyspaceMixin
 
 
 class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
