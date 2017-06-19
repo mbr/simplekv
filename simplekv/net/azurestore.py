@@ -46,6 +46,9 @@ class AzureBlockBlobStore(KeyValueStore):
         self.public = public
         self.create_if_missing = create_if_missing
 
+    # This allows recreating the block_blob_service instance when needed.
+    # Together with the copyreg-registration at the bottom of this file,
+    # allows the store object to be pickled and unpickled.
     @lazy_property
     def block_blob_service(self):
         from azure.storage.blob import BlockBlobService, PublicAccess
