@@ -40,9 +40,6 @@ class RedisStore(TimeToLiveMixin, KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _move(self, source, dest):
-        self.redis.rename(source, dest)
-
     def _put(self, key, value, ttl_secs):
         if ttl_secs in (NOT_SET, FOREVER):
             # if we do not care about ttl, just use set

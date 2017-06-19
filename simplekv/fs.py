@@ -4,11 +4,11 @@
 import os
 import shutil
 
-from . import KeyValueStore, UrlMixin
+from . import KeyValueStore, UrlMixin, CopyMixin
 from ._compat import url_quote, text_type
 
 
-class FilesystemStore(KeyValueStore, UrlMixin):
+class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
     """Store data in files on the filesystem.
 
     The *FilesystemStore* stores every value as its own file on the filesystem,
@@ -75,19 +75,6 @@ class FilesystemStore(KeyValueStore, UrlMixin):
             dest_file_name = self._build_filename(dest)
 
             shutil.copy(source_file_name, dest_file_name)
-            self._fix_permissions(dest_file_name)
-            return dest
-        except IOError as e:
-            if 2 == e.errno:
-                raise KeyError(source)
-            else:
-                raise
-
-    def _move(self, source, dest):
-        try:
-            source_file_name = self._build_filename(source)
-            dest_file_name = self._build_filename(dest)
-            shutil.move(source_file_name, dest_file_name)
             self._fix_permissions(dest_file_name)
             return dest
         except IOError as e:

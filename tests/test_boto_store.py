@@ -8,7 +8,6 @@ import pytest
 boto = pytest.importorskip('boto')
 from simplekv.net.botostore import BotoStore
 from simplekv._compat import BytesIO
-from simplekv import CopyMoveMixin
 
 from basic_store import BasicStore
 from url_store import UrlStore
@@ -43,13 +42,6 @@ class TestBotoStorage(BasicStore, UrlStore):
     @pytest.fixture
     def store(self, bucket, prefix, reduced_redundancy):
         return BotoStore(bucket, prefix, reduced_redundancy=reduced_redundancy)
-
-    @pytest.fixture()
-    def copy_move_store(self, bucket, prefix, reduced_redundancy):
-        class CopyMoveStore(BotoStore, CopyMoveMixin):
-            pass
-        return CopyMoveStore(bucket, prefix,
-                             reduced_redundancy=reduced_redundancy)
 
     # Disable max key length test as it leads to problems with minio
     test_max_key_length = None

@@ -432,17 +432,12 @@ class UrlKeyValueStore(UrlMixin, KeyValueStore):
     pass
 
 
-class CopyMoveMixin(object):
-    """Exposes a copy and move API. This API is either backed by corresponding backend operations, if available,
-    or emulated using get/put/delete/copy.
-
-    Note: Copy and move operations are not guaranteed to be atomic"""
+class CopyMixin(object):
+    """Exposes a copy operation, if the backend supports it."""
 
     def copy(self, source, dest):
         """Copies a key. The destination is overwritten if does exist.
 
-        In case there is no native backend method available to do so, uses get and put to emulate the copy.
-        
         :param source: The source key to copy
         :param dest: The destination for the copy
 
@@ -452,38 +447,4 @@ class CopyMoveMixin(object):
         :raises: exceptions.KeyError: If the source key was not found"""
         self._check_valid_key(source)
         self._check_valid_key(dest)
-        # try using _copy from the backend, falling back to the default if it is not available
-        _copy = getattr(super(CopyMoveMixin, self), '_copy', self._copy)
-        return _copy(source, dest)
-
-    def move(self, source, dest):
-        """Moves a key. The destination is overwritten if does exist.
-
-        In case there is no native backend method available to do so, uses copy and delete to emulate the move.
-        
-        :param source: The source key to move
-        :param dest: The new name of the key
-
-        :returns: The destination key
-
-        :raises exceptions.ValueError: If the source or dest key are not valid
-        :raises exceptions.KeyError: If the source key was not found"""
-        self._check_valid_key(source)
-        self._check_valid_key(dest)
-        # try using _move from the backend, falling back to the default if it is not available
-        _move = getattr(super(CopyMoveMixin, self), '_move', self._move)
-        return _move(source, dest)
-
-    def _copy(self, source, dest):
-        """Implementation for :meth:`~simplekv.CopyMoveMixin.copy`. The default
-        implementation will simply get the data from source and put it under the new key.
-        """
-        return self.put(dest, self.get(source))
-
-    def _move(self, source, dest):
-        """Implementation for :meth:`~simplekv.CopyMoveMixin.move`. The default
-        implementation will copy the data from source to dest and then delete the source key.
-        """
-        k = self._copy(source, dest)
-        self.delete(source)
-        return k
+        return self._copy(source, dest)

@@ -8,7 +8,6 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.exc import OperationalError
 
 from simplekv.db.sql import SQLAlchemyStore
-from simplekv import CopyMoveMixin
 
 from basic_store import BasicStore
 
@@ -40,21 +39,6 @@ class TestSQLAlchemyStore(BasicStore):
     def store(self, engine):
         metadata = MetaData(bind=engine)
         store = SQLAlchemyStore(engine, metadata, 'simplekv_test')
-
-        # create table
-        store.table.create()
-
-        yield store
-
-        metadata.drop_all()
-
-    @pytest.yield_fixture()
-    def copy_move_store(self, engine):
-        class CopyMoveStore(SQLAlchemyStore, CopyMoveMixin):
-            pass
-
-        metadata = MetaData(bind=engine)
-        store = CopyMoveStore(engine, metadata, 'simplekv_test')
 
         # create table
         store.table.create()

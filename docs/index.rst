@@ -95,6 +95,12 @@ The core API
    :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
              open, put, put_file
 
+Some backends support an efficient copy operation, which is provided by a
+mixin class:
+
+.. autoclass:: simplekv.CopyMixin
+   :members: copy
+
 In addition to that, a mixin class is available for backends that provide a
 method to support URL generation:
 
@@ -125,30 +131,6 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
 .. autodata:: simplekv.VALID_KEY_RE
 
 .. _implement:
-
-Copy and Move operations
-========================
-Some backends support an efficient copy and/or move operation.
-To access it, the :class:`~simplekv.CopyMoveMixin` has to be used as follows:
-::
-
-   class CopyMoveStore(FilesystemStore, CopyMoveMixin):
-      pass
-
-   store = CopyMoveStore(u".")
-
-   store.put(key, value)
-   store.copy(key, key2)
-
-If a backend does not implement the copy or move operation, the mixin will
-provide its own implementation by performing a sequence of
-get/put/delete/copy operations. Note that this sequence of operations is not
-guaranteed to be atomic, and might leave the source and destination keys in an
-undesired state if it is interrupted.
-
-.. autoclass:: simplekv.CopyMoveMixin
-   :members:
-
 
 Implementing a new backend
 ==========================

@@ -1,7 +1,6 @@
 from simplekv._compat import BytesIO
 from simplekv.memory import DictStore
 from simplekv.decorator import PrefixDecorator
-from simplekv import CopyMoveMixin
 import pytest
 
 from basic_store import BasicStore
@@ -35,26 +34,6 @@ class TestPrefixDecorator(BasicStore):
             base_store.put(u'test', b'data4')
 
         return PrefixDecorator(prefix, base_store)
-
-    @pytest.fixture(params=[True, False])
-    def copy_move_store(self, request, prefix):
-        class CopyMoveStore(PrefixDecorator, CopyMoveMixin):
-            pass
-
-        class BaseCopyMoveStore(DictStore, CopyMoveMixin):
-            pass
-
-        # we need CopyMoveMixin here so we can use copy/move on the backend
-        base_store = BaseCopyMoveStore()
-
-        # do we add extra keys to the underlying store?
-        if request.param:
-            base_store.put(u'some_other_value', b'data1')
-            base_store.put(u'ends_with_short_', b'data2')
-            base_store.put(u'xx', b'data3')
-            base_store.put(u'test', b'data4')
-
-        return CopyMoveStore(prefix, base_store)
 
     def test_put_returns_correct_key(self, store, prefix, key, value):
         assert key == store.put(key, value)

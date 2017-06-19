@@ -1,6 +1,5 @@
 from simplekv.memory import DictStore
 from simplekv.cache import CacheDecorator
-from simplekv import CopyMoveMixin
 
 from basic_store import BasicStore
 
@@ -15,20 +14,11 @@ class TestCache(BasicStore):
 
     @pytest.fixture
     def backing_store(self):
-        # the backing store needs the CopyMoveMixin, so we can test that later
-        class BackingCopyMoveStore(DictStore, CopyMoveMixin):
-            pass
-        return BackingCopyMoveStore()
+        return DictStore()
 
     @pytest.fixture
     def store(self, front_store, backing_store):
         return CacheDecorator(front_store, backing_store)
-
-    @pytest.fixture()
-    def copy_move_store(self, front_store, backing_store):
-        class CopyMoveStore(CacheDecorator, CopyMoveMixin):
-            pass
-        return CopyMoveStore(front_store, backing_store)
 
     def test_works_when_cache_loses_key(self, store, front_store, key, value):
         store.put(key, value)

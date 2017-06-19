@@ -12,7 +12,6 @@ from tempdir import TempDir
 from basic_store import BasicStore
 from url_store import UrlStore
 from idgens import UUIDGen, HashGen
-from simplekv import CopyMoveMixin
 
 from mock import Mock
 import pytest
@@ -27,12 +26,6 @@ class TestBaseFilesystemStore(BasicStore, UrlStore, UUIDGen, HashGen):
     @pytest.fixture
     def store(self, tmpdir):
         return FilesystemStore(tmpdir)
-
-    @pytest.fixture()
-    def copy_move_store(self, tmpdir):
-        class CopyMoveStore(FilesystemStore, CopyMoveMixin):
-            pass
-        return CopyMoveStore(tmpdir)
 
 
 class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
@@ -122,12 +115,6 @@ class TestFileStoreSetPermissions(TestFilesystemStoreUmask):
     def store(self, tmpdir, perms):
         return FilesystemStore(tmpdir, perm=perms)
 
-    @pytest.fixture()
-    def copy_move_store(self, tmpdir, perms):
-        class CopyMoveStore(FilesystemStore, CopyMoveMixin):
-            pass
-        return CopyMoveStore(tmpdir, perm=perms)
-
 
 class TestWebFileStore(TestBaseFilesystemStore):
     @pytest.fixture
@@ -137,12 +124,6 @@ class TestWebFileStore(TestBaseFilesystemStore):
     @pytest.fixture
     def store(self, tmpdir, url_prefix):
         return WebFilesystemStore(tmpdir, url_prefix)
-
-    @pytest.fixture()
-    def copy_move_store(self, tmpdir, url_prefix):
-        class CopyMoveStore(WebFilesystemStore, CopyMoveMixin):
-            pass
-        return CopyMoveStore(tmpdir, url_prefix)
 
     def test_url(self, store, url_prefix, key):
         expected = url_prefix + url_quote(key)

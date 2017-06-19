@@ -2,7 +2,6 @@ from basic_store import BasicStore
 from dulwich.repo import Repo
 from idgens import UUIDGen, HashGen
 from tempdir import TempDir
-from simplekv import CopyMoveMixin
 import pytest
 
 from simplekv.git import GitCommitStore
@@ -27,12 +26,6 @@ class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
     @pytest.fixture
     def store(self, repo_path, branch, subdir_name):
         return GitCommitStore(repo_path, branch=branch, subdir=subdir_name)
-
-    @pytest.fixture()
-    def copy_move_store(self, repo_path, branch, subdir_name):
-        class CopyMoveStore(GitCommitStore, CopyMoveMixin):
-            pass
-        return CopyMoveStore(repo_path, branch=branch, subdir=subdir_name)
 
     def test_uses_subdir(self, repo_path, store, subdir_name, branch):
         # add a key

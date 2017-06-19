@@ -79,12 +79,9 @@ class KeyTransformingDecorator(StoreDecorator):
     def url_for(self, key, *args, **kwargs):
         return self._dstore.url_for(self._map_key(key), *args, **kwargs)
 
-    # support for CopyMoveMixin
-    def _copy(self, source, dest):
-        return self._dstore._copy(self._map_key(source), self._map_key(dest))
-
-    def _move(self, source, dest):
-        return self._dstore._move(self._map_key(source), self._map_key(dest))
+    # support for CopyMixin
+    def copy(self, source, dest):
+        return self._dstore.copy(self._map_key(source), self._map_key(dest))
 
 
 class PrefixDecorator(KeyTransformingDecorator):
@@ -113,4 +110,3 @@ class PrefixDecorator(KeyTransformingDecorator):
         assert key.startswith(self.prefix)
 
         return key[len(self.prefix):]
-

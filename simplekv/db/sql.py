@@ -4,12 +4,12 @@
 from io import BytesIO
 
 from .._compat import imap, text_type
-from .. import KeyValueStore
+from .. import KeyValueStore, CopyMixin
 
 from sqlalchemy import Table, Column, String, LargeBinary, select, exists
 
 
-class SQLAlchemyStore(KeyValueStore):
+class SQLAlchemyStore(KeyValueStore, CopyMixin):
     def __init__(self, bind, metadata, tablename):
         self.bind = bind
 
@@ -43,7 +43,8 @@ class SQLAlchemyStore(KeyValueStore):
     def _open(self, key):
         return BytesIO(self._get(key))
 
-    def _move(self, source, dest):
+    def _copy(self, source, dest):
+        raise NotImplementedError
         if not self._has_key(source):
             raise KeyError(source)
         con = self.bind.connect()
