@@ -15,4 +15,4 @@ before_script:
 - mysql -e 'create database simplekv_test;'
 before_install:
 - openssl aes-256-cbc -K $encrypted_dea9dfb12f4a_key -iv $encrypted_dea9dfb12f4a_iv
-  -in azure_credentials.ini.enc -out azure_credentials.ini -d
+  -in azure_credentials.ini.enc -out azure_credentials.ini -d || echo 'No azure tests run!'
