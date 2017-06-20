@@ -4,7 +4,7 @@ from simplekv.net.azurestore import AzureBlockBlobStore
 from basic_store import BasicStore
 import pytest
 
-pytest.importorskip('azure-storage')
+pytest.importorskip('azure.storage')
 
 
 def load_azure_credentials():
