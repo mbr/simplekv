@@ -1,17 +1,18 @@
 language: python
 sudo: false
-
 env:
 - TOXENV=py27
 - TOXENV=py33
-
 install: pip install tox
 script: tox
 services:
-  - redis-server
-  - mongodb
+- redis-server
+- mongodb
 before_script:
-  - eval "$(gimme 1.8)"
-  - source ./.travis/start_minio.sh
-  - psql -c 'create database simplekv_test;' -U postgres
-  - mysql -e 'create database simplekv_test;'
+- eval "$(gimme 1.8)"
+- source ./.travis/start_minio.sh
+- psql -c 'create database simplekv_test;' -U postgres
+- mysql -e 'create database simplekv_test;'
+before_install:
+- openssl aes-256-cbc -K $encrypted_dea9dfb12f4a_key -iv $encrypted_dea9dfb12f4a_iv
+  -in azure_credentials.ini.enc -out azure_credentials.ini -d
