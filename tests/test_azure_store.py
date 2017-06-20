@@ -16,7 +16,10 @@ def load_azure_credentials():
     cfg_fn = 'azure_credentials.ini'
 
     parser = ConfigParser()
-    if not parser.read(cfg_fn):
+    result = parser.read(cfg_fn)
+    print(result)
+    print(type(result))
+    if not result:
         pytest.skip('file {} not found'.format(cfg_fn))
 
     for section in parser.sections():
