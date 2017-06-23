@@ -81,7 +81,7 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
     def _put_file(self, key, file):
         return self._put(key, file.read())
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         query = select([self.table.c.key])
         if prefix != "":
             query = query.where(self.table.c.key.like(prefix + '%'))
