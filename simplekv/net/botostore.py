@@ -92,17 +92,11 @@ class BotoStore(KeyValueStore, UrlMixin, CopyMixin):
             k.open_read()
             return k
 
-    def copy(self, source, dest):
+    def _copy(self, source, dest):
         if not self._has_key(source):
             raise KeyError(source)
-        try:
-            self.bucket.copy_key(self.prefix + dest, self.bucket.name, self.prefix + source)
-        except StorageResponseError as e:
-            if e.code == 'NoSuchKey':
-                raise KeyError(source)
-            raise IOError(str(e))
-        except (BotoClientError, BotoServerError) as e:
-            raise IOError(str(e))
+        with map_boto_exceptions(key=source):
+                self.bucket.copy_key(self.prefix + dest, self.bucket.name, self.prefix + source)
 
     def _put(self, key, data):
         k = self.__new_key(key)
