@@ -10,9 +10,9 @@ Changelog
 * Added :class:`simplekv.CopyMixin` to allow access to copy operations to
   backends which support a native copy operation
 * Added a decorator which provides a read-only view of a store:
-  :class:`~simplekv.decorator.ReadOnlyStore`
+  :class:`~simplekv.decorator.ReadOnlyStoreDecorator`
 * Added a decorator which url-encodes all keys:
-  :class:`~simplekv.decorator.URLEncodeKeys`
+  :class:`~simplekv.decorator.URLEncodeKeysDecorator`
 
 
 0.10.0
