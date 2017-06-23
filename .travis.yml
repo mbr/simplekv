@@ -14,5 +14,4 @@ before_script:
 - psql -c 'create database simplekv_test;' -U postgres
 - mysql -e 'create database simplekv_test;'
 before_install:
-- [ -z "$encrypted_dea9dfb12f4a_key" ] || openssl aes-256-cbc -K $encrypted_dea9dfb12f4a_key -iv $encrypted_dea9dfb12f4a_iv
-  -in azure_credentials.ini.enc -out azure_credentials.ini -d
+- '[ -z "$encrypted_dea9dfb12f4a_key" ] || openssl aes-256-cbc -K $encrypted_dea9dfb12f4a_key -iv $encrypted_dea9dfb12f4a_iv -in azure_credentials.ini.enc -out azure_credentials.ini -d'
