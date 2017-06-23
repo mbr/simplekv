@@ -2,6 +2,7 @@
 # coding=utf8
 
 from io import BytesIO
+from .._compat import ifilter
 
 from .. import KeyValueStore
 
@@ -28,5 +29,5 @@ class DictStore(KeyValueStore):
         self.d[key] = file.read()
         return key
 
-    def iter_keys(self):
-        return iter(self.d)
+    def iter_keys(self, prefix=""):
+        return ifilter(lambda k: k.startswith(prefix), iter(self.d))

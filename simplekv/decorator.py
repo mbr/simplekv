@@ -29,6 +29,9 @@ class KeyTransformingDecorator(StoreDecorator):
     def _map_key(self, key):
         return key
 
+    def _map_key_prefix(self, key_prefix):
+        return key_prefix
+
     def _unmap_key(self, key):
         return key
 
@@ -50,16 +53,16 @@ class KeyTransformingDecorator(StoreDecorator):
     def get_file(self, key, *args, **kwargs):
         return self._dstore.get_file(self._map_key(key), *args, **kwargs)
 
-    def iter_keys(self):
-        return (self._unmap_key(k) for k in self._dstore.iter_keys()
+    def iter_keys(self, prefix=""):
+        return (self._unmap_key(k) for k in self._dstore.iter_keys(self._map_key_prefix(prefix))
                 if self._filter(k))
 
-    def keys(self):
+    def keys(self, prefix=""):
         """Return a list of keys currently in store, in any order
 
         :raises IOError: If there was an error accessing the store.
         """
-        return list(self.iter_keys())
+        return list(self.iter_keys(prefix))
 
     def open(self, key):
         return self._dstore.open(self._map_key(key))
@@ -95,6 +98,9 @@ class PrefixDecorator(KeyTransformingDecorator):
     def _map_key(self, key):
         self._check_valid_key(key)
         return self.prefix + key
+
+    def _map_key_prefix(self, key_prefix):
+        return self.prefix + key_prefix
 
     def _unmap_key(self, key):
         assert key.startswith(self.prefix)
