@@ -142,7 +142,7 @@ class GitCommitStore(KeyValueStore):
 
         return blob.data
 
-    def iter_keys(self):
+    def iter_keys(self, prefix=""):
         try:
             commit = self.repo[self._refname]
             tree = self.repo[commit.tree]
@@ -154,7 +154,8 @@ class GitCommitStore(KeyValueStore):
             pass
         else:
             for name in tree:
-                yield name.decode('ascii')
+                if name.decode('ascii').startswith(prefix):
+                    yield name.decode('ascii')
 
     def _open(self, key):
         return BytesIO(self._get(key))

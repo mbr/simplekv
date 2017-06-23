@@ -3,12 +3,10 @@
 
 from io import BytesIO
 
-from .._compat import text_type
-from .._compat import imap
+from .._compat import imap, text_type
 from .. import KeyValueStore
 
-from sqlalchemy import MetaData, Table, Column, String, LargeBinary, select,\
-                       delete, insert, update, exists
+from sqlalchemy import Table, Column, String, LargeBinary, select, exists
 
 
 class SQLAlchemyStore(KeyValueStore):
@@ -65,6 +63,9 @@ class SQLAlchemyStore(KeyValueStore):
     def _put_file(self, key, file):
         return self._put(key, file.read())
 
-    def iter_keys(self):
+    def iter_keys(self, prefix=""):
+        query = select([self.table.c.key])
+        if prefix != "":
+            query = query.where(self.table.c.key.like(prefix + '%'))
         return imap(lambda v: text_type(v[0]),
-                   self.bind.execute(select([self.table.c.key])))
+                    self.bind.execute(query))

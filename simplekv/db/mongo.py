@@ -6,6 +6,7 @@ from .._compat import BytesIO
 
 from .._compat import pickle
 from bson.binary import Binary
+import re
 
 
 class MongoStore(KeyValueStore):
@@ -45,6 +46,6 @@ class MongoStore(KeyValueStore):
     def _put_file(self, key, file):
         return self._put(key, file.read())
 
-    def iter_keys(self):
-        for item in self.db[self.collection].find():
+    def iter_keys(self, prefix=""):
+        for item in self.db[self.collection].find({"_id": {"$regex": '^' + re.escape(prefix)}}):
             yield item["_id"]

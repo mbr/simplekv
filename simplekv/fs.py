@@ -102,11 +102,11 @@ class FilesystemStore(KeyValueStore, UrlMixin):
         location = '/'.join(url_quote(p, safe='') for p in parts)
         return 'file://' + location
 
-    def keys(self):
-        return os.listdir(self.root)
+    def keys(self, prefix=""):
+        return filter(lambda p: p.startswith(prefix), os.listdir(self.root))
 
-    def iter_keys(self):
-        return iter(self.keys())
+    def iter_keys(self, prefix=""):
+        return iter(self.keys(prefix))
 
 
 class WebFilesystemStore(FilesystemStore):

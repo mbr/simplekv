@@ -4,7 +4,7 @@
 from io import BytesIO
 
 from .. import KeyValueStore, TimeToLiveMixin, NOT_SET, FOREVER
-
+import re
 
 class RedisStore(TimeToLiveMixin, KeyValueStore):
     """Uses a redis-database as the backend.
@@ -18,11 +18,11 @@ class RedisStore(TimeToLiveMixin, KeyValueStore):
     def _delete(self, key):
         return self.redis.delete(key)
 
-    def keys(self):
-        return list(map(lambda b: b.decode(), self.redis.keys()))
+    def keys(self, prefix=""):
+        return list(map(lambda b: b.decode(), self.redis.keys(pattern=re.escape(prefix) + '*')))
 
-    def iter_keys(self):
-        return iter(self.keys())
+    def iter_keys(self, prefix=""):
+        return iter(self.keys(prefix))
 
     def _has_key(self, key):
         return self.redis.exists(key)
