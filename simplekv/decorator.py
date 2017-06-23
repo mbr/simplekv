@@ -127,7 +127,7 @@ class URLEncodeKeysDecorator(KeyTransformingDecorator):
         return unquote_plus(key)
 
 
-class ReadOnlyStoreDecorator(StoreDecorator):
+class ReadOnlyDecorator(StoreDecorator):
     """
     A read-only view of an underlying simplekv store
 
@@ -144,6 +144,6 @@ class ReadOnlyStoreDecorator(StoreDecorator):
 
     def __getattr__(self, attr):
         if attr in ('get', 'iter_keys', 'keys', 'open', 'get_file'):
-            return super(ReadOnlyStoreDecorator, self).__getattr__(attr)
+            return super(ReadOnlyDecorator, self).__getattr__(attr)
         else:
             raise AttributeError
