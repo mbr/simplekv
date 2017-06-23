@@ -74,7 +74,8 @@ Table of contents
    :maxdepth: 3
 
    filesystem
-   net
+   boto
+   azure
    gae
    memory
    db

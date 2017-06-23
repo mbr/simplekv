@@ -97,3 +97,5 @@ ENV/
 
 # PyCharm
 .idea/
+
+azure_credentials.ini

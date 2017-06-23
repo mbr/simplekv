@@ -39,9 +39,11 @@ else:
 
 if not PY2:
     import pickle
+    import copyreg
 else:
     try:
         import cPickle as pickle
+        import copy_reg as copyreg
     except ImportError:
         import pickle
 
