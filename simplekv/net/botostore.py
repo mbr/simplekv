@@ -2,7 +2,7 @@
 # coding=utf8
 
 from .._compat import imap
-from .. import KeyValueStore, UrlMixin
+from .. import KeyValueStore, UrlMixin, CopyMixin
 from contextlib import contextmanager
 
 
@@ -22,7 +22,7 @@ def map_boto_exceptions(key=None, exc_pass=()):
             raise IOError(str(e))
 
 
-class BotoStore(KeyValueStore, UrlMixin):
+class BotoStore(KeyValueStore, UrlMixin, CopyMixin):
     def __init__(self, bucket, prefix='', url_valid_time=0,
                  reduced_redundancy=False, public=False, metadata=None):
         self.prefix = prefix.strip().lstrip('/')
@@ -91,6 +91,12 @@ class BotoStore(KeyValueStore, UrlMixin):
         with map_boto_exceptions(key=key):
             k.open_read()
             return k
+
+    def _copy(self, source, dest):
+        if not self._has_key(source):
+            raise KeyError(source)
+        with map_boto_exceptions(key=source):
+                self.bucket.copy_key(self.prefix + dest, self.bucket.name, self.prefix + source)
 
     def _put(self, key, data):
         k = self.__new_key(key)

@@ -79,6 +79,10 @@ class KeyTransformingDecorator(StoreDecorator):
     def url_for(self, key, *args, **kwargs):
         return self._dstore.url_for(self._map_key(key), *args, **kwargs)
 
+    # support for CopyMixin
+    def copy(self, source, dest):
+        return self._dstore.copy(self._map_key(source), self._map_key(dest))
+
 
 class PrefixDecorator(KeyTransformingDecorator):
     """Prefixes any key with a string before passing it on the decorated

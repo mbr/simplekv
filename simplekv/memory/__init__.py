@@ -4,10 +4,10 @@
 from io import BytesIO
 from .._compat import ifilter
 
-from .. import KeyValueStore
+from .. import KeyValueStore, CopyMixin
 
 
-class DictStore(KeyValueStore):
+class DictStore(KeyValueStore, CopyMixin):
     """Store data in a dictionary.
 
     This store uses a dictionary as the backend for storing, its implementation
@@ -24,6 +24,9 @@ class DictStore(KeyValueStore):
 
     def _open(self, key):
         return BytesIO(self.d[key])
+
+    def _copy(self, source, dest):
+        self.d[dest] = self.d[source]
 
     def _put_file(self, key, file):
         self.d[key] = file.read()
