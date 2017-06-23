@@ -5,6 +5,7 @@ Changelog
 ======
 * The memcached backend has been removed
 * Keys have to be provided as unicode strings
+* Values have to be provided as bytes (python 2) or as str (python 3)
 
 0.10.0
 ======
