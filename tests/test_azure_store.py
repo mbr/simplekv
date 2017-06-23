@@ -1,7 +1,9 @@
 from uuid import uuid4 as uuid
 from simplekv._compat import ConfigParser, pickle
 from simplekv.net.azurestore import AzureBlockBlobStore
+from simplekv.contrib import ExtendedKeyspaceMixin
 from basic_store import BasicStore
+from conftest import ExtendedKeyspaceTests
 import pytest
 
 pytest.importorskip('azure.storage')
@@ -45,6 +47,22 @@ class TestAzureStorage(BasicStore):
 
         yield AzureBlockBlobStore(conn_string=conn_string, container=container,
                                   public=False)
+        s.delete_container(container)
+
+
+class TestExtendedKeyspaceAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
+    @pytest.fixture
+    def store(self):
+        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, AzureBlockBlobStore):
+            pass
+        from azure.storage.blob import BlockBlobService
+
+        container = uuid()
+        conn_string = create_azure_conn_string(load_azure_credentials())
+        s = BlockBlobService(connection_string=conn_string)
+
+        yield ExtendedKeyspaceStore(conn_string=conn_string,
+                                    container=container, public=False)
         s.delete_container(container)
 
 
