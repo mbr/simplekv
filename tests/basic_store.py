@@ -103,9 +103,9 @@ class BasicStore(object):
     def test_exception_on_invalid_key_copy(self, store, invalid_key, key):
         if not isinstance(store, CopyMixin):
             pytest.skip()
-        with pytest.raises(KeyError):
+        with pytest.raises(ValueError):
             store.copy(invalid_key, key)
-        with pytest.raises(KeyError):
+        with pytest.raises(ValueError):
             store.copy(key, invalid_key)
 
     def test_exception_on_invalid_key_get_file(self, store, invalid_key):
