@@ -62,11 +62,6 @@ class BasicStore(object):
         assert store.get(key) == value
         assert store.get(key2) == value
 
-    def test_store_copy_nonexistant(self, store, key, key2):
-        if not isinstance(store, CopyMixin):
-            pytest.skip()
-        with pytest.raises(KeyError):
-            store.copy(key, key2)
 
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))
@@ -83,6 +78,12 @@ class BasicStore(object):
         with pytest.raises(KeyError):
             store.get(key)
 
+    def test_key_error_on_nonexistant_copy(self, store, key, key2):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        with pytest.raises(KeyError):
+            store.copy(key, key2)
+
     def test_key_error_on_nonexistant_open(self, store, key):
         with pytest.raises(KeyError):
             store.open(key)
@@ -98,6 +99,14 @@ class BasicStore(object):
     def test_exception_on_invalid_key_get(self, store, invalid_key):
         with pytest.raises(ValueError):
             store.get(invalid_key)
+
+    def test_exception_on_invalid_key_copy(self, store, invalid_key, key):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        with pytest.raises(KeyError):
+            store.copy(invalid_key, key)
+        with pytest.raises(KeyError):
+            store.copy(key, invalid_key)
 
     def test_exception_on_invalid_key_get_file(self, store, invalid_key):
         with pytest.raises(ValueError):
