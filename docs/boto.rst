@@ -10,7 +10,7 @@ a backend that utilizes `boto <http://boto.cloudhackers.com/>`_ (preferably >=
 2.25).
 
 Note that boto is not a dependency for simplekv. You need to install it
-"manually", otherwise you will see an :exc:`~exceptions.ImportError`.
+manually, otherwise you will see an :exc:`~exceptions.ImportError`.
 
 Here is a short example:
 
@@ -27,7 +27,7 @@ Here is a short example:
    store = BotoStore(bucket)
 
    # at this point, we can use the store like any other
-   store.put(u'some-key', 'Hello, World!')
+   store.put(u'some-key', b'Hello, World!')
 
    # print out what's behind some-key. you should be able to see it
    # in the bucket now as well
@@ -39,7 +39,7 @@ Unit testing
 
 The unit-tests for the boto storage can only run if you have access to a Google
 Storage and/or Amazon S3 account. The tests will look in a file
-``boto_credentials`` in the simplekv source root folder for account
+``boto_credentials.ini`` in the simplekv source root folder for account
 credentials, here is an example file:
 
 ::
@@ -55,6 +55,8 @@ credentials, here is an example file:
   connect_func = connect_gs
 
 If a section is not present, the tests for that backend will be skipped.
+
+The unit tests for S3 will be run by travis against a local minio instance, emulating S3.
 
 
 .. class:: simplekv.net.boto.BotoStore

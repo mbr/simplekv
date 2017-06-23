@@ -13,6 +13,8 @@ Changelog
   :class:`~simplekv.decorator.ReadOnlyDecorator`
 * Added a decorator which url-encodes all keys:
   :class:`~simplekv.decorator.URLEncodeKeysDecorator`
+* Added a Microsoft Azure Blob Storage backend:
+  :class:`~simplekv.net.azurestore.AzureBlockBlobStore`
 
 
 0.10.0
