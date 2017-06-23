@@ -10,6 +10,7 @@ from simplekv._compat import BytesIO, xrange, text_type
 from simplekv.decorator import PrefixDecorator
 from simplekv.crypt import HMACDecorator
 from simplekv.idgen import UUIDDecorator, HashDecorator
+from simplekv import CopyMixin
 
 
 class BasicStore(object):
@@ -40,6 +41,27 @@ class BasicStore(object):
         store.put_file(key, BytesIO(value))
         assert store.open(key).read() == value
 
+    def test_store_and_copy(self, store, key, key2, value):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        store.put(key, value)
+        assert store.get(key) == value
+        store.copy(key, key2)
+        assert store.get(key) == value
+        assert store.get(key2) == value
+
+    def test_store_and_copy_overwrite(self, store, key, key2,
+                                      value, value2):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        store.put(key, value)
+        store.put(key2, value2)
+        assert store.get(key) == value
+        assert store.get(key2) == value2
+        store.copy(key, key2)
+        assert store.get(key) == value
+        assert store.get(key2) == value
+
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))
         ok = store.open(key)
@@ -54,6 +76,12 @@ class BasicStore(object):
     def test_key_error_on_nonexistant_get(self, store, key):
         with pytest.raises(KeyError):
             store.get(key)
+
+    def test_key_error_on_nonexistant_copy(self, store, key, key2):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        with pytest.raises(KeyError):
+            store.copy(key, key2)
 
     def test_key_error_on_nonexistant_open(self, store, key):
         with pytest.raises(KeyError):
@@ -70,6 +98,14 @@ class BasicStore(object):
     def test_exception_on_invalid_key_get(self, store, invalid_key):
         with pytest.raises(ValueError):
             store.get(invalid_key)
+
+    def test_exception_on_invalid_key_copy(self, store, invalid_key, key):
+        if not isinstance(store, CopyMixin):
+            pytest.skip()
+        with pytest.raises(ValueError):
+            store.copy(invalid_key, key)
+        with pytest.raises(ValueError):
+            store.copy(key, invalid_key)
 
     def test_exception_on_invalid_key_get_file(self, store, invalid_key):
         with pytest.raises(ValueError):

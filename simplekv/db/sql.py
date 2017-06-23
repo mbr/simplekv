@@ -4,12 +4,12 @@
 from io import BytesIO
 
 from .._compat import imap, text_type
-from .. import KeyValueStore
+from .. import KeyValueStore, CopyMixin
 
 from sqlalchemy import Table, Column, String, LargeBinary, select, exists
 
 
-class SQLAlchemyStore(KeyValueStore):
+class SQLAlchemyStore(KeyValueStore, CopyMixin):
     def __init__(self, bind, metadata, tablename):
         self.bind = bind
 
@@ -42,6 +42,24 @@ class SQLAlchemyStore(KeyValueStore):
 
     def _open(self, key):
         return BytesIO(self._get(key))
+
+    def _copy(self, source, dest):
+        con = self.bind.connect()
+        with con.begin():
+            data = self.bind.execute(
+                select([self.table.c.value], self.table.c.key == source).limit(1)
+            ).scalar()
+            if not data:
+                raise KeyError(source)
+
+            # delete the potential existing previous key
+            con.execute(self.table.delete(self.table.c.key == dest))
+            con.execute(self.table.insert({
+                'key': dest,
+                'value': data,
+            }))
+        con.close()
+        return dest
 
     def _put(self, key, data):
         con = self.bind.connect()

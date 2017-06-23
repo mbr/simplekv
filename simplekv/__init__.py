@@ -430,3 +430,21 @@ class UrlKeyValueStore(UrlMixin, KeyValueStore):
        Use the :class:`.UrlMixin` instead.
     """
     pass
+
+
+class CopyMixin(object):
+    """Exposes a copy operation, if the backend supports it."""
+
+    def copy(self, source, dest):
+        """Copies a key. The destination is overwritten if does exist.
+
+        :param source: The source key to copy
+        :param dest: The destination for the copy
+
+        :returns: The destination key
+
+        :raises: exceptions.ValueError: If the source or target key are not valid
+        :raises: exceptions.KeyError: If the source key was not found"""
+        self._check_valid_key(source)
+        self._check_valid_key(dest)
+        return self._copy(source, dest)

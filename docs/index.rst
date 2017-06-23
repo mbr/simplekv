@@ -95,6 +95,12 @@ The core API
    :members: __contains__, __iter__, delete, get, get_file, iter_keys, keys,
              open, put, put_file
 
+Some backends support an efficient copy operation, which is provided by a
+mixin class:
+
+.. autoclass:: simplekv.CopyMixin
+   :members: copy
+
 In addition to that, a mixin class is available for backends that provide a
 method to support URL generation:
 
@@ -125,7 +131,6 @@ this is represented by the :class:`~simplekv.TimeToLiveMixin`:
 .. autodata:: simplekv.VALID_KEY_RE
 
 .. _implement:
-
 
 Implementing a new backend
 ==========================
