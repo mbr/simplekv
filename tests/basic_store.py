@@ -62,7 +62,6 @@ class BasicStore(object):
         assert store.get(key) == value
         assert store.get(key2) == value
 
-
     def test_open_incremental_read(self, store, key, long_value):
         store.put_file(key, BytesIO(long_value))
         ok = store.open(key)
