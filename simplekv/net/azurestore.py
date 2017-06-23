@@ -75,9 +75,11 @@ class AzureBlockBlobStore(KeyValueStore):
         with map_azure_exceptions(key=key):
             return self.block_blob_service.exists(self.container, key)
 
-    def iter_keys(self):
+    def iter_keys(self, prefix=u""):
+        if prefix == "":
+            prefix = None
         with map_azure_exceptions():
-            blobs = self.block_blob_service.list_blobs(self.container)
+            blobs = self.block_blob_service.list_blobs(self.container, prefix=prefix)
             return (blob.name.decode('utf-8') if isinstance(blob.name, binary_type)
                     else blob.name for blob in blobs)
 
