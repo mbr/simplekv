@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from simplekv.decorator import ReadOnlyStore
+from simplekv.decorator import ReadOnlyStoreDecorator
 from simplekv.memory import DictStore
 import pytest
 
@@ -11,7 +11,7 @@ class TestReadOnlyStoreDecorator(object):
         store0 = DictStore()
         store0.put(u"file1", b"content")
 
-        store = ReadOnlyStore(store0)
+        store = ReadOnlyStoreDecorator(store0)
         with pytest.raises(AttributeError):
             store.put(u"file1", b"content2")
         with pytest.raises(AttributeError):

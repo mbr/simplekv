@@ -113,7 +113,7 @@ class PrefixDecorator(KeyTransformingDecorator):
         return key[len(self.prefix):]
 
 
-class URLEncodeKeys(KeyTransformingDecorator):
+class URLEncodeKeysDecorator(KeyTransformingDecorator):
     """URL-encodes keys before passing them on to the underlying store."""
     def _map_key(self, key):
         if not isinstance(key, text_type):
@@ -127,7 +127,7 @@ class URLEncodeKeys(KeyTransformingDecorator):
         return unquote_plus(key)
 
 
-class ReadOnlyStore(StoreDecorator):
+class ReadOnlyStoreDecorator(StoreDecorator):
     """
     A read-only view of an underlying simplekv store
 
@@ -144,6 +144,6 @@ class ReadOnlyStore(StoreDecorator):
 
     def __getattr__(self, attr):
         if attr in ('get', 'iter_keys', 'keys', 'open', 'get_file'):
-            return super(ReadOnlyStore, self).__getattr__(attr)
+            return super(ReadOnlyStoreDecorator, self).__getattr__(attr)
         else:
             raise AttributeError

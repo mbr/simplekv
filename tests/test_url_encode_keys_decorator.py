@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-from simplekv.decorator import URLEncodeKeys
+from simplekv.decorator import URLEncodeKeysDecorator
 from simplekv.memory import DictStore
 import pytest
 
@@ -15,7 +15,7 @@ class TestURLEncodeKeysDecorator(BasicStore):
 
     @pytest.fixture()
     def store(self, base_store):
-        return URLEncodeKeys(base_store)
+        return URLEncodeKeysDecorator(base_store)
 
     def test_urlencode(self, store):
         store.put(u'key special:-🍺', b'val1')
