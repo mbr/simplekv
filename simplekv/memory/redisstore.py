@@ -18,10 +18,10 @@ class RedisStore(TimeToLiveMixin, KeyValueStore):
     def _delete(self, key):
         return self.redis.delete(key)
 
-    def keys(self, prefix=""):
+    def keys(self, prefix=u""):
         return list(map(lambda b: b.decode(), self.redis.keys(pattern=re.escape(prefix) + '*')))
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         return iter(self.keys(prefix))
 
     def _has_key(self, key):

@@ -79,9 +79,9 @@ Table of contents
    memory
    db
    git
-   decorators
    idgen
    crypt
+   decorators
    cache
    development
 

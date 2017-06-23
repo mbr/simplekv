@@ -1,4 +1,6 @@
-Prefix-generating decorators
-****************************
+Other decorators
+****************
 
 .. autoclass:: simplekv.decorator.PrefixDecorator
+.. autoclass:: simplekv.decorator.URLEncodeKeysDecorator
+.. autoclass:: simplekv.decorator.ReadOnlyDecorator

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding=utf8
+from ._compat import quote_plus, unquote_plus, text_type, binary_type
 
 
 class StoreDecorator(object):
@@ -53,11 +54,11 @@ class KeyTransformingDecorator(StoreDecorator):
     def get_file(self, key, *args, **kwargs):
         return self._dstore.get_file(self._map_key(key), *args, **kwargs)
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         return (self._unmap_key(k) for k in self._dstore.iter_keys(self._map_key_prefix(prefix))
                 if self._filter(k))
 
-    def keys(self, prefix=""):
+    def keys(self, prefix=u""):
         """Return a list of keys currently in store, in any order
 
         :raises IOError: If there was an error accessing the store.
@@ -110,3 +111,42 @@ class PrefixDecorator(KeyTransformingDecorator):
         assert key.startswith(self.prefix)
 
         return key[len(self.prefix):]
+
+
+class URLEncodeKeysDecorator(KeyTransformingDecorator):
+    """URL-encodes keys before passing them on to the underlying store."""
+    def _map_key(self, key):
+        if not isinstance(key, text_type):
+            raise ValueError('%r is not a unicode string' % key)
+        quoted = quote_plus(key.encode('utf-8'))
+        if isinstance(quoted, binary_type):
+            quoted = quoted.decode('utf-8')
+        return quoted
+
+    def _map_key_prefix(self, key_prefix):
+        return self._map_key(key_prefix)
+
+    def _unmap_key(self, key):
+        return unquote_plus(key)
+
+
+class ReadOnlyDecorator(StoreDecorator):
+    """
+    A read-only view of an underlying simplekv store
+
+    Provides only access to the following methods/attributes of the
+    underlying store: get, iter_keys, keys, open, get_file.
+    It also forwards __contains__.
+    Accessing any other method will raise AttributeError.
+
+    Note that the original store for r/w can still be accessed,
+    so using this class as a wrapper only provides protection
+    against bugs and other kinds of unintentional writes;
+    it is not meant to be a real security measure.
+    """
+
+    def __getattr__(self, attr):
+        if attr in ('get', 'iter_keys', 'keys', 'open', 'get_file'):
+            return super(ReadOnlyDecorator, self).__getattr__(attr)
+        else:
+            raise AttributeError

@@ -32,5 +32,5 @@ class DictStore(KeyValueStore, CopyMixin):
         self.d[key] = file.read()
         return key
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         return ifilter(lambda k: k.startswith(prefix), iter(self.d))
