@@ -54,11 +54,11 @@ class KeyTransformingDecorator(StoreDecorator):
     def get_file(self, key, *args, **kwargs):
         return self._dstore.get_file(self._map_key(key), *args, **kwargs)
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         return (self._unmap_key(k) for k in self._dstore.iter_keys(self._map_key_prefix(prefix))
                 if self._filter(k))
 
-    def keys(self, prefix=""):
+    def keys(self, prefix=u""):
         """Return a list of keys currently in store, in any order
 
         :raises IOError: If there was an error accessing the store.
@@ -122,6 +122,9 @@ class URLEncodeKeysDecorator(KeyTransformingDecorator):
         if isinstance(quoted, binary_type):
             quoted = quoted.decode('utf-8')
         return quoted
+
+    def _map_key_prefix(self, key_prefix):
+        return self._map_key(key_prefix)
 
     def _unmap_key(self, key):
         return unquote_plus(key)

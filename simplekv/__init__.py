@@ -99,7 +99,7 @@ class KeyValueStore(object):
         else:
             return self._get_file(key, file)
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         """Return an Iterator over all keys currently in the store, in any
         order.
         If prefix is not the empty string, iterates only over all keys starting with prefix.
@@ -108,7 +108,7 @@ class KeyValueStore(object):
         """
         raise NotImplementedError
 
-    def keys(self, prefix=""):
+    def keys(self, prefix=u""):
         """Return a list of keys currently in store, in any order
         If prefix is not the empty string, returns only all keys starting with prefix.
 

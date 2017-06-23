@@ -142,7 +142,7 @@ class GitCommitStore(KeyValueStore):
 
         return blob.data
 
-    def iter_keys(self, prefix=""):
+    def iter_keys(self, prefix=u""):
         try:
             commit = self.repo[self._refname]
             tree = self.repo[commit.tree]
