@@ -143,6 +143,8 @@ class KeyValueStore(object):
                                     be read
         """
         self._check_valid_key(key)
+        if not isinstance(data, bytes):
+            raise IOError("Provided data is not of type bytes")
         return self._put(key, data)
 
     def put_file(self, key, file):
@@ -381,8 +383,13 @@ class TimeToLiveMixin(object):
            :param ttl_secs: Number of seconds until the key expires. See above
                             for valid values.
            :raises exceptions.ValueError: If ``ttl_secs`` is invalid.
+           :raises exceptions.IOError: If storing failed or the file could not
+                            be read
+
         """
         self._check_valid_key(key)
+        if not isinstance(data, bytes):
+            raise IOError("Provided data is not of type bytes")
         return self._put(key, data, self._valid_ttl(ttl_secs))
 
     def put_file(self, key, file, ttl_secs=None):
