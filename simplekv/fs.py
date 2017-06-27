@@ -87,6 +87,7 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
             source_file_name = self._build_filename(source)
             dest_file_name = self._build_filename(dest)
 
+            self._ensure_dir_exists(os.path.dirname(dest_file_name))
             shutil.copy(source_file_name, dest_file_name)
             self._fix_permissions(dest_file_name)
             return dest
