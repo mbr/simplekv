@@ -50,10 +50,10 @@ class TestAzureStorage(BasicStore):
         s.delete_container(container)
 
 
-class TestExtendedKeyspaceAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
+class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
     @pytest.fixture
     def store(self):
-        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, AzureBlockBlobStore):
+        class ExtendedKeysStore(ExtendedKeyspaceMixin, AzureBlockBlobStore):
             pass
         from azure.storage.blob import BlockBlobService
 
@@ -61,8 +61,8 @@ class TestExtendedKeyspaceAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
         conn_string = create_azure_conn_string(load_azure_credentials())
         s = BlockBlobService(connection_string=conn_string)
 
-        yield ExtendedKeyspaceStore(conn_string=conn_string,
-                                    container=container, public=False)
+        yield ExtendedKeysStore(conn_string=conn_string,
+                                container=container, public=False)
         s.delete_container(container)
 
 

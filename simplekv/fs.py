@@ -137,8 +137,9 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
 
     def keys(self, prefix=u""):
         root = os.path.abspath(self.root)
-        return filter(lambda p: p.startswith(prefix), [os.path.join(dp, f)[len(root)+1:]
-                for dp, dn, fn in os.walk(root) for f in fn])
+        return filter(lambda p: p.startswith(prefix),
+                      [os.path.join(dp, f)[len(root)+1:]
+                      for dp, dn, fn in os.walk(root) for f in fn])
 
     def iter_keys(self, prefix=u""):
         return iter(self.keys(prefix))
