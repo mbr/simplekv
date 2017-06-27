@@ -159,10 +159,9 @@ class GitCommitStore(KeyValueStore):
             pass
         else:
             for o in self.repo.object_store\
-                    .iter_tree_contents(tree.sha().hexdigest()):
-                print(o.path)
-                if o.path.startswith(prefix):
-                    yield text_type(o.path.decode('ascii'))
+                    .iter_tree_contents(tree.sha().hexdigest().encode('ascii')):
+                if o.path.decode('ascii').startswith(prefix):
+                    yield o.path.decode('ascii')
 
     def _open(self, key):
         return BytesIO(self._get(key))
