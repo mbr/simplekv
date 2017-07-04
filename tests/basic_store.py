@@ -225,6 +225,12 @@ class BasicStore(object):
         l.sort()
         assert l == sorted([key_prefix_1, key_prefix_2])
 
+    def test_iter_while_changing_store(self, store, key, key2, value):
+        store.put(key, value)
+        store.put(key2, value)
+        for k in store.iter_keys():
+            store.delete(k)
+
     def test_keys(self, store, key, key2, value, value2):
         store.put(key, value)
         store.put(key2, value2)
