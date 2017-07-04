@@ -63,3 +63,20 @@ def bytestring_key(request):
 @pytest.fixture(params=[u'a' * 250, u'b' * 250])
 def max_key(request):
     return request.param
+
+
+# Test class to derive from to get test fixtures for the extended keyspace
+class ExtendedKeyspaceTests:
+    @pytest.fixture(params=[u'short ke/y', u'short_key', u'spaces  in key',
+                            u"""'!"`#$%&'()+,-.<=>?@[]^_{}~/'"""])
+    def key(self, request):
+        return request.param
+
+    @pytest.fixture(params=[u'key_number/2 with space',
+                            u'and_again_a_second_key'])
+    def key2(self, request):
+        return request.param
+
+    @pytest.fixture(params=[u'ä', u'/', u'\x00', u'*', u''])
+    def invalid_key(self, request):
+        return request.param

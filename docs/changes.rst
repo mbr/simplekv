@@ -15,6 +15,8 @@ Changelog
   :class:`~simplekv.decorator.URLEncodeKeysDecorator`
 * Added a Microsoft Azure Blob Storage backend:
   :class:`~simplekv.net.azurestore.AzureBlockBlobStore`
+* Added :class:`~simplekv.contrib.ExtendedKeyspaceMixin` which allows slashes and spaces in key names
+  This mixin is experimental, unsupported and might not work with all backends.
 
 
 0.10.0
