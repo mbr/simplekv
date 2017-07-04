@@ -13,6 +13,9 @@ from basic_store import BasicStore
 from url_store import UrlStore
 from idgens import UUIDGen, HashGen
 
+from conftest import ExtendedKeyspaceTests
+from simplekv.contrib import ExtendedKeyspaceMixin
+
 from mock import Mock
 import pytest
 
@@ -139,3 +142,12 @@ class TestWebFileStore(TestBaseFilesystemStore):
         assert store.url_for(key) == expected
 
         mock_callable.assert_called_with(store, key)
+
+
+class TestExtendedKeyspaceFilesystemStore(TestBaseFilesystemStore,
+                                          ExtendedKeyspaceTests):
+    @pytest.fixture
+    def store(self, tmpdir):
+        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, FilesystemStore):
+            pass
+        return ExtendedKeyspaceStore(tmpdir)

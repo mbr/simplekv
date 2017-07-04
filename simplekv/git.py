@@ -6,6 +6,7 @@ from dulwich.repo import Repo
 from dulwich.objects import Commit, Tree, Blob
 
 from . import KeyValueStore, __version__
+from ._compat import text_type
 
 
 def _on_tree(repo, tree, components, obj):
@@ -77,6 +78,10 @@ class GitCommitStore(KeyValueStore):
     def _subdir_components(self):
         return [c.encode('ascii') for c in self.subdir.split('/')]
 
+    def _key_components(self, key):
+        return [c.encode('ascii') for c in key.split('/')]
+
+
     @property
     def _refname(self):
         return b'refs/heads/' + self.branch
@@ -109,7 +114,7 @@ class GitCommitStore(KeyValueStore):
         commit = self._create_top_commit()
         objects_to_add = []
 
-        components = [key.encode('ascii')]
+        components = self._key_components(key)
         if self.subdir:
             components = self._subdir_components + components
 
@@ -153,9 +158,10 @@ class GitCommitStore(KeyValueStore):
         except KeyError:
             pass
         else:
-            for name in tree:
-                if name.decode('ascii').startswith(prefix):
-                    yield name.decode('ascii')
+            for o in self.repo.object_store\
+                    .iter_tree_contents(tree.sha().hexdigest().encode('ascii')):
+                if o.path.decode('ascii').startswith(prefix):
+                    yield o.path.decode('ascii')
 
     def _open(self, key):
         return BytesIO(self._get(key))
@@ -183,8 +189,7 @@ class GitCommitStore(KeyValueStore):
 
         objects_to_add = [blob]
 
-        # no subdirs in filename, add directly to tree
-        components = [key.encode('ascii')]
+        components = self._key_components(key)
         if self.subdir:
             components = self._subdir_components + components
         res = _on_tree(self.repo, tree, components, blob)
