@@ -33,4 +33,5 @@ class DictStore(KeyValueStore, CopyMixin):
         return key
 
     def iter_keys(self, prefix=u""):
-        return ifilter(lambda k: k.startswith(prefix), iter(self.d))
+        # We need the copy here so the user can modify the store while iterating through the keys
+        return ifilter(lambda k: k.startswith(prefix), iter(self.d.copy()))
