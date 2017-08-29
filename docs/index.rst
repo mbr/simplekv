@@ -83,6 +83,7 @@ Table of contents
    idgen
    crypt
    decorators
+   transforms
    cache
    development
 
