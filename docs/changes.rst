@@ -1,6 +1,10 @@
 Changelog
 *********
 
+0.11.1
+======
+* Fix version in setup.py
+
 0.11.0
 ======
 * The memcached backend has been removed
