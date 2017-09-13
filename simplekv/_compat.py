@@ -54,6 +54,6 @@ if not PY2:
     unichr = chr
     binary_type = bytes
 else:
-    text_type = unicode
+    text_type = basestring
     unichr = unichr
     binary_type = str
