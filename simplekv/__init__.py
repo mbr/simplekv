@@ -3,7 +3,7 @@
 
 import re
 from io import BytesIO
-from ._compat import text_type
+from ._compat import key_type
 
 __version__ = '0.11.1'
 
@@ -186,7 +186,7 @@ class KeyValueStore(object):
 
         :param key: The key to be checked
         """
-        if not isinstance(key, text_type):
+        if not isinstance(key, key_type):
             raise ValueError('%r is not a unicode string' % key)
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
