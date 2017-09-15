@@ -187,7 +187,7 @@ class KeyValueStore(object):
         :param key: The key to be checked
         """
         if not isinstance(key, key_type):
-            raise ValueError('%r is not a unicode string' % key)
+            raise ValueError('%r is not a valid key type' % key)
         if not VALID_KEY_RE.match(key):
             raise ValueError('%r contains illegal characters' % key)
 
