@@ -6,6 +6,7 @@ import pytest
 sqlalchemy = pytest.importorskip('sqlalchemy')
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.pool import StaticPool
 
 from simplekv.db.sql import SQLAlchemyStore
 
@@ -30,7 +31,7 @@ class TestSQLAlchemyStore(BasicStore):
         module_name, dsn = request.param
         # check module is available
         pytest.importorskip(module_name)
-        engine = create_engine(dsn)
+        engine = create_engine(dsn, poolclass=StaticPool)
         try:
             engine.connect()
         except OperationalError:
