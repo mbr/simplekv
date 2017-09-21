@@ -7,19 +7,16 @@ from contextlib import contextmanager
 
 
 @contextmanager
-def map_boto_exceptions(key=None, exc_pass=()):
+def map_boto_exceptions(key=None):
     """Map boto-specific exceptions to the simplekv-API."""
     from boto.exception import BotoClientError, BotoServerError, \
         StorageResponseError
     try:
         yield
-    except StorageResponseError as e:
-        if e.code == 'NoSuchKey':
+    except (BotoClientError, BotoServerError, StorageResponseError) as e:
+        if getattr(e, 'code', None) == 'NoSuchKey':
             raise KeyError(key)
         raise IOError(str(e))
-    except (BotoClientError, BotoServerError) as e:
-        if ex.__class__.__name__ not in exc_pass:
-            raise IOError(str(e))
 
 
 class BotoStore(KeyValueStore, UrlMixin, CopyMixin):
