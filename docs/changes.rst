@@ -1,6 +1,10 @@
 Changelog
 *********
 
+0.11.2
+======
+* Restore old behaviour of accepting valid keys of type `str` on Python 2
+
 0.11.1
 ======
 * Fix version in setup.py
