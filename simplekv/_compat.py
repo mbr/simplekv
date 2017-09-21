@@ -51,9 +51,11 @@ xrange = range if not PY2 else xrange
 
 if not PY2:
     text_type = str
+    key_type = str
     unichr = chr
     binary_type = bytes
 else:
     text_type = unicode
+    key_type = basestring
     unichr = unichr
     binary_type = str

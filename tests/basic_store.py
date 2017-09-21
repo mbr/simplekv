@@ -69,10 +69,6 @@ class BasicStore(object):
         assert long_value[3:5] == ok.read(2)
         assert long_value[5:8] == ok.read(3)
 
-    def test_bytestring_key_store(self, store, bytestring_key, value):
-        with pytest.raises(ValueError):
-            store.put(bytestring_key, value)
-
     def test_key_error_on_nonexistant_get(self, store, key):
         with pytest.raises(KeyError):
             store.get(key)
