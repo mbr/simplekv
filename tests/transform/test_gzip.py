@@ -50,7 +50,8 @@ def test_unused_data_raises():
     gunzipper = p.inverse()
     teststring = b'lrigjoij t'
     with pytest.raises(ValueError) as ex:
-        gunzipper.transform(_compress(teststring) + b'additional_data') + gunzipper.finalize()
+        (gunzipper.transform(_compress(teststring) + b'additional_data') +
+         gunzipper.finalize())
     assert 'Unused data' in str(ex.value)
 
 

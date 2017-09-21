@@ -63,4 +63,3 @@ def test_write_already_closed():
     with pytest.raises(ValueError) as ex:
         wa.write(b'b')
     assert 'already closed' in str(ex)
-

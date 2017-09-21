@@ -59,7 +59,9 @@ def test_forwards(store):
 
 
 def test_gzip_reverse(store):
-    store = ValueTransformingDecorator(store, [Gzip(), ReverseTransformerPair()])
+    store = ValueTransformingDecorator(
+        store, [Gzip(), ReverseTransformerPair()]
+    )
     key, value = u'key0', b'value'
     store.put(key, value)
     assert store.get(key) == value

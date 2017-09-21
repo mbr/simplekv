@@ -1,4 +1,6 @@
-from simplekv.transform.b64encode import Base64Encoder, Base64Decoder, B64Encode
+from simplekv.transform.b64encode import (
+    Base64Encoder, Base64Decoder, B64Encode,
+)
 from simplekv.transform.transformer import Pipe
 from base64 import b64encode
 import pytest

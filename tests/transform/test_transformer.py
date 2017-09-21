@@ -12,7 +12,9 @@ def test_pipe():
 
 
 def test_pipe_pair():
-    p = PipeTransformerPair([ReverseTransformerPair(), ReverseTransformerPair()])
+    p = PipeTransformerPair(
+        [ReverseTransformerPair(), ReverseTransformerPair()]
+    )
     testdata = b'lfig 8ijg'
 
     trafo = p.transformer()

@@ -29,7 +29,7 @@ def test_keep_nlast3():
     testdata = gen_random_bytes(100)
     output = b''
     for i in range(len(testdata)):
-        output += t.transform(testdata[i:i+1])
+        output += t.transform(testdata[i:i + 1])
     assert output == testdata[:-5]
     assert t.finalize() == testdata[-5:]
 
@@ -125,7 +125,9 @@ def test_tamper_data():
     testdata = b'ldgroijgr'
     encrypted = enc.transform(testdata) + enc.finalize()
     pos = 4 + NONCE_NBYTES + 2
-    encrypted = encrypted[:pos] + _bitflip(encrypted[pos:pos + 1]) + encrypted[pos + 1:]
+    encrypted = (
+        encrypted[:pos] + _bitflip(encrypted[pos:pos + 1]) +
+        encrypted[pos + 1:])
     dec = p.inverse()
     with pytest.raises(InvalidSignature):
         dec.transform(encrypted) + dec.finalize()

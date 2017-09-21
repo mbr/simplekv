@@ -20,4 +20,7 @@ def test_for_doc(decorated_store):
     # accessing decorated_store directly will retrieve the gip'ed value:
     from gzip import GzipFile
 
-    assert GzipFile(fileobj=decorated_store.open(u'key'), mode='r').read() == b'value'
+    assert (
+        GzipFile(fileobj=decorated_store.open(u'key'), mode='r').read() ==
+        b'value'
+    )
