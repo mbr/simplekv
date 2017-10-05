@@ -3,7 +3,7 @@
 import re
 
 from simplekv import VALID_NON_NUM
-from simplekv._compat import text_type
+from simplekv._compat import key_type
 
 VALID_NON_NUM_EXTENDED = VALID_NON_NUM + r"/ "
 VALID_KEY_REGEXP_EXTENDED = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM_EXTENDED)
@@ -29,7 +29,7 @@ class ExtendedKeyspaceMixin(object):
 
         :param key: The key to be checked
         """
-        if not isinstance(key, text_type) and key is not None:
-            raise ValueError('%r is not a unicode string' % key)
+        if not isinstance(key, key_type) and key is not None:
+            raise ValueError('%r is not a valid key type' % key)
         if not VALID_KEY_RE_EXTENDED.match(key) or key == u'/':
             raise ValueError('%r contains illegal characters' % key)
