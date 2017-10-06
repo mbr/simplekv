@@ -11,7 +11,7 @@ def read(fname):
 
 
 setup(name='simplekv',
-      version='0.11.2',
+      version='0.11.3',
       description=('A key-value storage for binary data, support many '
                    'backends.'),
       long_description=read('README.rst'),

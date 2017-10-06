@@ -1,6 +1,10 @@
 Changelog
 *********
 
+0.11.3
+======
+* Apply 0.11.2 in ExtendedKeySpaceMixin as well
+
 0.11.2
 ======
 * Restore old behaviour of accepting valid keys of type `str` on Python 2
