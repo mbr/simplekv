@@ -15,7 +15,16 @@
 import sys
 import os
 
-import sphinx_readable_theme
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+
+if on_rtd:
+    import sphinx_rtd_theme
+    html_theme = 'default'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+else:
+    import sphinx_readable_theme
+    html_theme = 'nature'
+    html_theme_path = [sphinx_readable_theme.get_html_theme_path()]
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -95,17 +104,10 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output -------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  Major themes that come with
-# Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'readable'
-
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
-
-# Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_readable_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
