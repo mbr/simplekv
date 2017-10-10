@@ -18,12 +18,10 @@ import os
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 if on_rtd:
-    import sphinx_rtd_theme
-    html_theme = 'default'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    html_theme = 'alabaster'
 else:
     import sphinx_readable_theme
-    html_theme = 'nature'
+    html_theme = 'readable'
     html_theme_path = [sphinx_readable_theme.get_html_theme_path()]
 
 # If extensions (or modules to document with autodoc) are in another directory,
