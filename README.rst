@@ -3,6 +3,8 @@ simple key-value storage api
 
 .. image:: https://travis-ci.org/mbr/simplekv.png?branch=master
    :target: https://travis-ci.org/mbr/simplekv
+.. image:: https://coveralls.io/repos/github/mbr/simplekv/badge.svg?branch=master
+   :target: https://coveralls.io/github/mbr/simplekv?branch=master
 
 *simplekv* is an API for very basic key-value stores used for small, frequently
 accessed data or large binary blobs. Its basic interface is easy to implement
