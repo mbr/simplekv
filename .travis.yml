@@ -1,4 +1,5 @@
 language: python
+cache: pip
 sudo: false
 matrix:
   include:
@@ -10,16 +11,23 @@ matrix:
       env: TOXENV=py35
     - python: 3.6
       env: TOXENV=py36
-install: pip install tox
-script: tox
+
 services:
 - redis-server
 - mongodb
+
+install: pip install tox coveralls
+
 before_script:
-- eval "$(gimme 1.8.3)"
-- source ./.travis/start_minio.sh
+- eval "$(gimme 1.9.2)"
+- bash .travis/start_minio.sh
 - psql -c 'create database simplekv_test;' -U postgres
+- psql -c 'ALTER ROLE travis CONNECTION LIMIT -1;' -U postgres
 - mysql -e 'create database simplekv_test;'
 - mysql -e 'set global max_connections = 200;'
-before_install:
 - '[ -z "$encrypted_dea9dfb12f4a_key" ] || openssl aes-256-cbc -K $encrypted_dea9dfb12f4a_key -iv $encrypted_dea9dfb12f4a_iv -in azure_credentials.ini.enc -out azure_credentials.ini -d'
+
+script: tox
+
+after_success:
+- coveralls

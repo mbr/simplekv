@@ -12,5 +12,8 @@ go get -u github.com/minio/minio
 export MINIO_ACCESS_KEY=minio
 export MINIO_SECRET_KEY=miniostorage
 
+go version
+
 mkdir -p ~/s3
+minio version
 minio server ~/s3 &
