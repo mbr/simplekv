@@ -15,6 +15,8 @@
 import sys
 import os
 
+sys.path.append('../')
+
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 if on_rtd:
