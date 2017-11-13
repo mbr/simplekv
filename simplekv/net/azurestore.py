@@ -151,13 +151,12 @@ class IOInterface(io.BufferedIOBase):
             if size < 0:
                 size = self.size - self.pos
 
-            #TODO double check +/- 1
-            end = min(self.pos+size-1, self.size)
+            end = min(self.pos + size - 1, self.size)
             b = self.block_blob_service.get_blob_to_bytes(self.container_name,
                                                           self.key,
                                                           start_range=self.pos,
                                                           end_range=end)  # end_range is inclusive
-            self.pos += end+1
+            self.pos += end + 1
             return b.content
 
     def seek(self, offset, whence=0):
