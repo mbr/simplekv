@@ -148,7 +148,7 @@ class IOInterface(io.BufferedIOBase):
         """Returns 'size' amount of bytes or less if there is no more data.
         If no size is given all data is returned. size can be >= 0."""
         with map_azure_exceptions(key=self.key):
-            if size <0:
+            if size < 0:
                 size = self.size - self.pos
 
             #TODO double check +/- 1
