@@ -49,6 +49,19 @@ class TestAzureStorage(BasicStore):
                                   public=False)
         s.delete_container(container)
 
+    def test_open_seek_and_tell(self, store, key, long_value):
+        store.put(key, long_value)
+        ok = store.open(key)
+        ok.seek(10)
+        assert ok.tell() == 10
+        ok.seek(-6, 1)
+        assert ok.tell() == 4
+        with pytest.raises(IOError):
+            ok.seek(-6, 1)
+        assert ok.tell() == 4
+        assert long_value[4] == ok.read(1)
+        assert ok.tell() == 5
+
 
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
     @pytest.fixture
