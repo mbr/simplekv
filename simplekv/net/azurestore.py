@@ -152,11 +152,12 @@ class IOInterface(io.BufferedIOBase):
                 size = self.size - self.pos
 
             end = min(self.pos + size - 1, self.size)
-            b = self.block_blob_service.get_blob_to_bytes(self.container_name,
-                                                          self.key,
-                                                          start_range=self.pos,
-                                                          end_range=end)  # end_range is inclusive
-            self.pos += end + 1
+            b = self.block_blob_service.get_blob_to_bytes(
+                    self.container_name,
+                    self.key,
+                    start_range=self.pos,
+                    end_range=end)  # end_range is inclusive
+            self.pos += len(b.content)
             return b.content
 
     def seek(self, offset, whence=0):
@@ -171,8 +172,14 @@ class IOInterface(io.BufferedIOBase):
         should succeed. tell() should report that position and read()
         should return an empty bytes object."""
         if whence == 0:
+            if offset < 0:
+                raise IOError('seek would move position outside the file')
             self.pos = offset
         elif whence == 1:
+            if self.pos + offset < 0:
+                raise IOError('seek would move position outside the file')
             self.pos += offset
         elif whence == 2:
+            if self.size + offset < 0:
+                raise IOError('seek would move position outside the file')
             self.pos = self.size + offset

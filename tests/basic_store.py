@@ -69,6 +69,19 @@ class BasicStore(object):
         assert long_value[3:5] == ok.read(2)
         assert long_value[5:8] == ok.read(3)
 
+    def test_open_seek_and_tell(self, store, key, long_value):
+        store.put(key, long_value)
+        ok = store.open(key)
+        ok.seek(10)
+        assert ok.tell() == 10
+        ok.seek(-6, 1)
+        assert ok.tell() == 4
+        with pytest.raises(IOError):
+            ok.seek(-6, 1)
+        assert ok.tell() == 4
+        assert long_value[4] == ok.read(1)
+        assert ok.tell() == 5
+
     def test_key_error_on_nonexistant_get(self, store, key):
         with pytest.raises(KeyError):
             store.get(key)
