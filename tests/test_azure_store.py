@@ -49,13 +49,6 @@ class TestAzureStorage(BasicStore):
                                   public=False)
         s.delete_container(container)
 
-    def test_key_error_on_nonexistant_open_2(self, store, key, value):
-        store.put(key, value)
-        handle = store.open(key)
-        store.delete(key)
-        with pytest.raises(KeyError):
-            handle.read()
-
 
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
     @pytest.fixture
