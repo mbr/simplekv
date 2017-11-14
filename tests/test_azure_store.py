@@ -57,10 +57,19 @@ class TestAzureStorage(BasicStore):
         ok.seek(-6, 1)
         assert ok.tell() == 4
         with pytest.raises(IOError):
+            ok.seek(-1, 0)
+        with pytest.raises(IOError):
             ok.seek(-6, 1)
+        with pytest.raises(IOError):
+            ok.seek(-len(long_value) - 1, 2)
+
         assert ok.tell() == 4
         assert long_value[4:5] == ok.read(1)
         assert ok.tell() == 5
+        ok.seek(-1, 2)
+        length_lv = len(long_value)
+        assert long_value[length_lv - 1:length_lv] == ok.read(1)
+        assert ok.tell() == length_lv
 
 
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
