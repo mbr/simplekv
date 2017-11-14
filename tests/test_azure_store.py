@@ -59,7 +59,7 @@ class TestAzureStorage(BasicStore):
         with pytest.raises(IOError):
             ok.seek(-6, 1)
         assert ok.tell() == 4
-        assert long_value[4] == ok.read(1)
+        assert long_value[4:5] == ok.read(1)
         assert ok.tell() == 5
 
 
