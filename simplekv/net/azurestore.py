@@ -89,11 +89,8 @@ class AzureBlockBlobStore(KeyValueStore):
 
     def _put(self, key, data):
         with map_azure_exceptions(key=key):
-            if isinstance(data, binary_type):
-                self.block_blob_service.create_blob_from_bytes(self.container,
+            self.block_blob_service.create_blob_from_bytes(self.container,
                                                                key, data)
-            else:
-                raise TypeError('Wrong type, expecting str or bytes.')
             return key
 
     def _put_file(self, key, file):
