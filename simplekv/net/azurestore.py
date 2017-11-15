@@ -85,19 +85,12 @@ class AzureBlockBlobStore(KeyValueStore):
 
     def _open(self, key):
         with map_azure_exceptions(key=key):
-            output_stream = io.BytesIO()
-            self.block_blob_service.get_blob_to_stream(self.container, key,
-                                                       output_stream)
-            output_stream.seek(0)
-            return output_stream
+            return IOInterface(self.block_blob_service, self.container, key)
 
     def _put(self, key, data):
         with map_azure_exceptions(key=key):
-            if isinstance(data, binary_type):
-                self.block_blob_service.create_blob_from_bytes(self.container,
+            self.block_blob_service.create_blob_from_bytes(self.container,
                                                                key, data)
-            else:
-                raise TypeError('Wrong type, expecting str or bytes.')
             return key
 
     def _put_file(self, key, file):
@@ -128,3 +121,67 @@ def pickle_azure_store(store):
                              store.create_if_missing)
 
 copyreg.pickle(AzureBlockBlobStore, pickle_azure_store)
+
+
+class IOInterface(io.BufferedIOBase):
+    """
+    Class which provides a file-like interface to selectively read from a blob in the blob store.
+    """
+    def __init__(self, block_blob_service, container_name, key):
+        super(IOInterface, self).__init__()
+        self.block_blob_service = block_blob_service
+        self.container_name = container_name
+        self.key = key
+
+        blob = self.block_blob_service.get_blob_properties(container_name, key)
+        self.size = blob.properties.content_length
+        self.pos = 0
+
+    def tell(self):
+        """Returns he current offset as int. Always >= 0."""
+        return self.pos
+
+    def read(self, size=-1):
+        """Returns 'size' amount of bytes or less if there is no more data.
+        If no size is given all data is returned. size can be >= 0."""
+        with map_azure_exceptions(key=self.key):
+            if size < 0:
+                size = self.size - self.pos
+
+            end = min(self.pos + size - 1, self.size)
+            if self.pos > end:
+                return b''
+            b = self.block_blob_service.get_blob_to_bytes(
+                    self.container_name,
+                    self.key,
+                    start_range=self.pos,
+                    end_range=end)  # end_range is inclusive
+            self.pos += len(b.content)
+            return b.content
+
+    def seek(self, offset, whence=0):
+        """Move to a new offset either relative or absolute. whence=0 is
+        absolute, whence=1 is relative, whence=2 is relative to the end.
+
+        Any relative or absolute seek operation which would result in a
+        negative position is undefined and that case can be ignored
+        in the implementation.
+
+        Any seek operation which moves the position after the stream
+        should succeed. tell() should report that position and read()
+        should return an empty bytes object."""
+        if whence == 0:
+            if offset < 0:
+                raise IOError('seek would move position outside the file')
+            self.pos = offset
+        elif whence == 1:
+            if self.pos + offset < 0:
+                raise IOError('seek would move position outside the file')
+            self.pos += offset
+        elif whence == 2:
+            if self.size + offset < 0:
+                raise IOError('seek would move position outside the file')
+            self.pos = self.size + offset
+
+    def seekable(self):
+        return True
