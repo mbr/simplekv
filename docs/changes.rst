@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.11.4
+======
+* The open() method in the azure backend now supports partial reads of blobs
+* The exceptions from the azure backend contain more human-readable information in case of common errors.
+
 0.11.3
 ======
 * Apply 0.11.2 in ExtendedKeySpaceMixin as well
