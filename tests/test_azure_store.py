@@ -111,7 +111,8 @@ class TestAzureExceptionHandling(object):
     def test_missing_container(self):
         container = uuid()
         conn_string = create_azure_conn_string(load_azure_credentials())
-        store = AzureBlockBlobStore(conn_string=conn_string, container=container, create_if_missing=False)
+        store = AzureBlockBlobStore(conn_string=conn_string,
+                                    container=container, create_if_missing=False)
         with pytest.raises(IOError) as exc:
             store.iter_keys()
         assert u"The specified container does not exist." in str(exc.value)
@@ -120,8 +121,10 @@ class TestAzureExceptionHandling(object):
         from azure.storage.retry import ExponentialRetry
         container = uuid()
         conn_string = create_azure_conn_string(load_azure_credentials())
-        conn_string += ";BlobEndpoint=https://hopefullynostoragethere.blob.core.windows.net;"
-        store = AzureBlockBlobStore(conn_string=conn_string, container=container, create_if_missing=False)
+        conn_string += \
+            ";BlobEndpoint=https://hopefullynostoragethere.blob.core.windows.net;"
+        store = AzureBlockBlobStore(conn_string=conn_string,
+                                    container=container, create_if_missing=False)
         store.block_blob_service.retry = ExponentialRetry(max_attempts=0).retry
 
         with pytest.raises(IOError) as exc:
@@ -131,8 +134,11 @@ class TestAzureExceptionHandling(object):
     def test_wrong_credentials(self):
         from azure.storage.retry import ExponentialRetry
         container = uuid()
-        conn_string = 'DefaultEndpointsProtocol=https;AccountName={};AccountKey={}'.format("testaccount", "wrongsecret")
-        store = AzureBlockBlobStore(conn_string=conn_string, container=container, create_if_missing=False)
+        conn_string = \
+            'DefaultEndpointsProtocol=https;AccountName={};AccountKey={}'.\
+                format("testaccount", "wrongsecret")
+        store = AzureBlockBlobStore(conn_string=conn_string,
+                                    container=container, create_if_missing=False)
         store.block_blob_service.retry = ExponentialRetry(max_attempts=0).retry
 
         with pytest.raises(IOError) as exc:
