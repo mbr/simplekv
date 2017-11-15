@@ -29,13 +29,16 @@ def map_azure_exceptions(key=None, exc_pass=()):
         yield
     except AzureMissingResourceHttpError as ex:
         if ex.__class__.__name__ not in exc_pass:
+            s = str(ex)
+            if s.startswith(u"The specified container does not exist."):
+                raise IOError(s)
             raise KeyError(key)
     except AzureHttpError as ex:
         if ex.__class__.__name__ not in exc_pass:
             raise IOError(str(ex))
     except AzureException as ex:
         if ex.__class__.__name__ not in exc_pass:
-            raise KeyError(key)
+            raise IOError(str(ex))
 
 
 class AzureBlockBlobStore(KeyValueStore):

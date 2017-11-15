@@ -97,8 +97,7 @@ def test_azure_setgetstate():
     container = uuid()
     conn_string = create_azure_conn_string(load_azure_credentials())
     s = BlockBlobService(connection_string=conn_string)
-    store = AzureBlockBlobStore(conn_string=conn_string, container=container,
-                                public=False)
+    store = AzureBlockBlobStore(conn_string=conn_string, container=container)
     store.put(u'key1', b'value1')
 
     buf = pickle.dumps(store, protocol=2)
@@ -106,3 +105,36 @@ def test_azure_setgetstate():
 
     assert store.get(u'key1') == b'value1'
     s.delete_container(container)
+
+
+class TestAzureExceptionHandling(object):
+    def test_missing_container(self):
+        container = uuid()
+        conn_string = create_azure_conn_string(load_azure_credentials())
+        store = AzureBlockBlobStore(conn_string=conn_string, container=container, create_if_missing=False)
+        with pytest.raises(IOError) as exc:
+            store.iter_keys()
+        assert u"The specified container does not exist." in str(exc.value)
+
+    def test_wrong_endpoint(self):
+        from azure.storage.retry import ExponentialRetry
+        container = uuid()
+        conn_string = create_azure_conn_string(load_azure_credentials())
+        conn_string += ";BlobEndpoint=https://hopefullynostoragethere.blob.core.windows.net;"
+        store = AzureBlockBlobStore(conn_string=conn_string, container=container, create_if_missing=False)
+        store.block_blob_service.retry = ExponentialRetry(max_attempts=0).retry
+
+        with pytest.raises(IOError) as exc:
+            store.put(u"key", b"data")
+        assert u"Failed to establish a new connection" in str(exc.value)
+
+    def test_wrong_credentials(self):
+        from azure.storage.retry import ExponentialRetry
+        container = uuid()
+        conn_string = 'DefaultEndpointsProtocol=https;AccountName={};AccountKey={}'.format("testaccount", "wrongsecret")
+        store = AzureBlockBlobStore(conn_string=conn_string, container=container, create_if_missing=False)
+        store.block_blob_service.retry = ExponentialRetry(max_attempts=0).retry
+
+        with pytest.raises(IOError) as exc:
+            store.put(u"key", b"data")
+        assert u"Incorrect padding" in str(exc.value)
