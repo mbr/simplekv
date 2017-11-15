@@ -149,6 +149,8 @@ class IOInterface(io.BufferedIOBase):
                 size = self.size - self.pos
 
             end = min(self.pos + size - 1, self.size)
+            if self.pos > end:
+                return b''
             b = self.block_blob_service.get_blob_to_bytes(
                     self.container_name,
                     self.key,
@@ -180,3 +182,6 @@ class IOInterface(io.BufferedIOBase):
             if self.size + offset < 0:
                 raise IOError('seek would move position outside the file')
             self.pos = self.size + offset
+
+    def seekable(self):
+        return True
