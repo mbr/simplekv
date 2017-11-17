@@ -61,7 +61,7 @@ class ValueTransformingDecorator(object):
         # as from the url mixin, as this would break invariants
         # (for example, users of the url mixing can reasonably expect that
         # downloading the data from the generated url matched what they
-        # retreive via the store's `get`).
+        # retrieve via the store's `get`).
         # Note that in particular, 'copy' is not exposed, as one should
         # always re-encrypt with a different nonce instead (i.e. implementing
         # copy via 'get' and 'put' will do that).

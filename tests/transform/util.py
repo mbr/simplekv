@@ -1,3 +1,4 @@
+# coding=utf-8
 from simplekv.transform.transformer import Transformer, TransformerPair
 import io
 import random

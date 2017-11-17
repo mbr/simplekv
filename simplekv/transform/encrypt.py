@@ -1,3 +1,4 @@
+# coding=utf-8
 from .transformer import Transformer, TransformerPair
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -145,7 +146,7 @@ class Encrypt(TransformerPair):
         there is only one version which uses ``b'SCR\\0'``
      2. NONCE_NBYTES (16) the nonce, randomly generated for each
         stored key
-     3. n bytes of encrypted data, using AES256 with the ``encyption_key``
+     3. n bytes of encrypted data, using AES256 with the ``encryption_key``
         provided in the initializer using the CTR mode with the nonce
      4. MAC_NBYTES (32) the HMAC: sha256-based, computed over 1.-3.
 

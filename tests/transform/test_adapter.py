@@ -1,3 +1,4 @@
+# coding=utf-8
 from simplekv.transform.adapter import ReadAdapter, WriteAdapter
 import pytest
 import io

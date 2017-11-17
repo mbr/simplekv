@@ -55,7 +55,7 @@ class WriteAdapter(object):
     """
     Accept data via `write`, and write transformed data to an underlying file
 
-    IMPORTANT: you must call `close` (before closing the unerlying file)
+    IMPORTANT: you must call `close` (before closing the underlying file)
     to ensure that any buffered data is written to the underlying file.
 
     :param file: file-like object with a `write` method to write the

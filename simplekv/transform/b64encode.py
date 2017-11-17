@@ -1,3 +1,4 @@
+# coding=utf-8
 from .transformer import Transformer, TransformerPair
 import io
 import base64

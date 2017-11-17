@@ -1,3 +1,4 @@
+# coding=utf-8
 from simplekv.transform.gzip import Gzip
 from simplekv.transform.transformer import Pipe
 from util import gen_random_bytes

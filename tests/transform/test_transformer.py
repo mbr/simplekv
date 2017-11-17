@@ -1,3 +1,4 @@
+# coding=utf-8
 from simplekv.transform.transformer import Pipe, PipeTransformerPair
 from simplekv.transform.gzip import Gzip
 from simplekv.transform.b64encode import B64Encode

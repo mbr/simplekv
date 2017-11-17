@@ -1,3 +1,4 @@
+# coding=utf-8
 from simplekv.transform.b64encode import (
     Base64Encoder, Base64Decoder, B64Encode,
 )

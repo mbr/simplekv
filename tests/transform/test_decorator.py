@@ -1,3 +1,4 @@
+# coding=utf-8
 from simplekv.transform import Gzip, ValueTransformingDecorator
 from simplekv.memory import DictStore
 import pytest

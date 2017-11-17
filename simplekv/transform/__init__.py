@@ -1,7 +1,8 @@
+# coding=utf-8
 """
 Value-transforming decorators.
 
-To construct a SimpleKeyValueStore that first gzips the data and then encodes
+To construct a KeyValueStore that first gzips the data and then encodes
 it using base64, use::
 
     dstore = DictStore()  # or any other store
