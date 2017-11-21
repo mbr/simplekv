@@ -31,3 +31,12 @@ script: tox
 
 after_success:
 - coveralls
+
+deploy:
+  provider: pypi
+  user: "fxmc"
+  password:
+    secure: "bTmsf99BGyjIYj8NxMoWcKu2pdynHF0mUY6q3QgP7mnq430n0UONEJ/fdS9Q73mlouRzAjvdBESvwh9474g9RO778N3HTzn0XTLWpY50gRvblG8yD49x6g3+/IPPJ6ZifrViiiw7tbM4fZhQdPXd0t8vDrSZAVV6Z1v15NsWfkQ="
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
