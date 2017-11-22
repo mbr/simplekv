@@ -2,9 +2,10 @@
 
 from .adapter import ReadAdapter, WriteAdapter
 from .transformer import PipeTransformerPair
+from ..decorator import StoreDecorator
 
 
-class ValueTransformingDecorator(object):
+class ValueTransformingDecorator(StoreDecorator):
     """Apply transformations on values before passing them to a ``decorated_store``
 
     :param store: the :class:`simplekv.KeyValueStore` to decorate
@@ -16,7 +17,7 @@ class ValueTransformingDecorator(object):
     """
 
     def __init__(self, store, transformations):
-        self._dstore = store
+        super(ValueTransformingDecorator, self).__init__(store)
         if isinstance(transformations, (list, tuple)):
             self._transformer_pair = PipeTransformerPair(transformations)
         else:
@@ -68,12 +69,6 @@ class ValueTransformingDecorator(object):
         if item in {'iter_keys', 'keys', 'delete'}:
             return getattr(self._dstore, item)
         raise AttributeError
-
-    def __contains__(self, item):
-        return self._dstore.__contains__(item)
-
-    def __iter__(self):
-        return self._dstore.__iter__()
 
     def __str__(self):
         return 'ValueTrafo({}, {})'.format(self._dstore,
