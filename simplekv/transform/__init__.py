@@ -10,7 +10,8 @@ it using base64, use::
     store.put(key, value)
 
 The list of transformations will be applied from left to right
-to the 'local' data (i.e. the data passed to `put`). So in the example
+to the data passed to store, and the transformed data is forwarded
+to the decorated store. So in the example
 above, `dstore` will contain::
 
    base64.b64encode(gzip.compress(value))

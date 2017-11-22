@@ -6,54 +6,47 @@ import io
 from util import IdentityTransformer, IdentityTransformer2
 
 
-def test_read_identity():
-    testdata = b'sdj n02ht'
-    # FIXME: remove:
+def test_read_identity(value):
     t = IdentityTransformer()
-    assert t.transform(testdata) == testdata
+    assert t.transform(value) == value
     assert t.finalize() == b''
-    file = io.BytesIO(testdata)
+    file = io.BytesIO(value)
     ra = ReadAdapter(file, IdentityTransformer())
-    assert ra.read() == testdata
+    assert ra.read() == value
 
 
-def test_read_size_identity():
-    testdata = b'sdj n02ht'
-    file = io.BytesIO(testdata)
+def test_read_size_identity(value):
+    file = io.BytesIO(value)
     ra = ReadAdapter(file, IdentityTransformer())
-    assert (ra.read(2), ra.read(1), ra.read()) == (b'sd', b'j', b' n02ht')
+    assert (ra.read(2), ra.read(1), ra.read()) == (value[:2], value[2:3], value[3:])
 
 
-def test_read_identity2():
-    testdata = b'sdj n02ht'
-    file = io.BytesIO(testdata)
+def test_read_identity2(value):
+    file = io.BytesIO(value)
     ra = ReadAdapter(file, IdentityTransformer2())
-    assert ra.read() == testdata
+    assert ra.read() == value
 
 
-def test_read_size_identity2():
-    testdata = b'sdj n02ht'
-    file = io.BytesIO(testdata)
+def test_read_size_identity2(value):
+    file = io.BytesIO(value)
     ra = ReadAdapter(file, IdentityTransformer2())
-    assert (ra.read(2), ra.read(1), ra.read()) == (b'sd', b'j', b' n02ht')
+    assert (ra.read(2), ra.read(1), ra.read()) == (value[:2], value[2:3], value[3:])
 
 
-def test_write_identity():
-    testdata = b'sdj n02ht'
+def test_write_identity(value):
     file = io.BytesIO()
     wa = WriteAdapter(file, IdentityTransformer())
-    wa.write(testdata)
+    wa.write(value)
     wa.close()
-    assert file.getvalue() == testdata
+    assert file.getvalue() == value
 
 
-def test_write_identity2():
-    testdata = b'sdj n02ht'
+def test_write_identity2(value):
     file = io.BytesIO()
     wa = WriteAdapter(file, IdentityTransformer2())
-    wa.write(testdata)
+    wa.write(value)
     wa.close()
-    assert file.getvalue() == testdata
+    assert file.getvalue() == value
 
 
 def test_write_already_closed():

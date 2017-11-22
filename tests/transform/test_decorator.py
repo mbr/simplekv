@@ -18,18 +18,18 @@ def test_str(store):
     assert str(decorated) == 'ValueTrafo({}, Gzip | Gzip)'.format(store)
 
 
-def test_put_get(store):
+def test_put_get(store, value):
     store = ValueTransformingDecorator(store, [Gzip()])
-    key, value = u'key0', b'value'
+    key = u'key0'
     store.put(key, value)
     # check that some transformation happened:
     assert store._dstore.get(key) != value
     assert store.get(key) == value
 
 
-def test_put_get_file(store):
+def test_put_get_file(store, value):
     store = ValueTransformingDecorator(store, [Gzip()])
-    key, value = u'key0', b'value'
+    key = u'key0'
     with tempfile.NamedTemporaryFile('wb+', 0) as file:
         file.write(value)
         store.put_file(key, file.name)
@@ -38,17 +38,17 @@ def test_put_get_file(store):
         assert file.read() == value
 
 
-def test_open(store):
+def test_open(store, value):
     store = ValueTransformingDecorator(store, [Gzip()])
-    key, value = u'key0', b'value'
+    key = u'key0'
     store.put(key, value)
     f = store.open(key)
     assert f.read() == value
 
 
-def test_forwards(store):
+def test_forwards(store, value):
     store = ValueTransformingDecorator(store, [Gzip()])
-    key, value = u'key0', b'value'
+    key = u'key0'
     store.put(key, value)
     assert list(store) == [key]
     assert key in store
@@ -59,11 +59,11 @@ def test_forwards(store):
         store.url_for
 
 
-def test_gzip_reverse(store):
+def test_gzip_reverse(store, value):
     store = ValueTransformingDecorator(
         store, [Gzip(), ReverseTransformerPair()]
     )
-    key, value = u'key0', b'value'
+    key = u'key0'
     store.put(key, value)
     assert store.get(key) == value
     assert store.open(key).read() == value

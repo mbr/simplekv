@@ -22,28 +22,25 @@ def _decompress(data):
     return gfile.read()
 
 
-def test_compress_gzip():
+def test_compress_gzip(value):
     p = Gzip()
     gzipper = p.transformer()
-    teststring = b'blrigjoij t'
-    output = gzipper.transform(teststring) + gzipper.finalize()
-    assert _decompress(output) == teststring
+    output = gzipper.transform(value) + gzipper.finalize()
+    assert _decompress(output) == value
 
 
-def test_decompress_gzip():
+def test_decompress_gzip(value):
     p = Gzip()
     gunzipper = p.inverse()
-    teststring = b'lrigjoij t'
-    output = gunzipper.transform(_compress(teststring)) + gunzipper.finalize()
-    assert output == teststring
+    output = gunzipper.transform(_compress(value)) + gunzipper.finalize()
+    assert output == value
 
 
-def test_roundtrip():
+def test_roundtrip(value):
     p = Gzip()
     pipe = Pipe([p.transformer(), p.inverse()])
-    teststring = b'lrigjoij t'
-    output = pipe.transform(teststring) + pipe.finalize()
-    assert output == teststring
+    output = pipe.transform(value) + pipe.finalize()
+    assert output == value
 
 
 def test_unused_data_raises():

@@ -18,6 +18,7 @@ def _bytesio_for_append(data):
 class Base64Encoder(Transformer):
 
     def __init__(self):
+        # base64 is defined in chunks of 3 input bytes to 4 output bytes, so
         # encode in chunks of 3
         self._buffer = io.BytesIO()
 
@@ -38,7 +39,7 @@ class Base64Encoder(Transformer):
 class Base64Decoder(Transformer):
 
     def __init__(self):
-        # decode in chunks of 4
+        # decode in chunks of 4 (see comment in Base64Encoder)
         self._buffer = io.BytesIO()
 
     def transform(self, data):

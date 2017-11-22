@@ -1,7 +1,8 @@
 # coding=utf8
 
 """
-Apply a transformer to an underlying file and expose a file-like interface
+Apply a transformer to an underlying file objects and expose interfaces with
+either a 'read' method or 'write' and 'close' methods
 """
 
 import io

@@ -7,7 +7,15 @@ from base64 import b64encode
 import pytest
 
 
-@pytest.mark.parametrize('testdata', [b'', b'X', b'XY', b'XYZ', b'XYZW'])
+# make sure to include payload sizes around the base64 blockk length
+# of 3 bytes in the test, as well as the empty string as special case.
+# Thus, use a new test fixture instead of the 'value' one
+
+@pytest.fixture(params=[b'', b'X', b'XY', b'XYZ', b'XYZW'])
+def testdata(request):
+    return request.param
+
+
 def test_roundtrip(testdata):
     pair = B64Encode()
     p = Pipe([pair.transformer(), pair.inverse()])
@@ -19,7 +27,6 @@ def test_str():
     assert str(pair) == 'B64Encode'
 
 
-@pytest.mark.parametrize('testdata', [b'', b'X', b'XY', b'XYZ', b'XYZW'])
 def test_encoder_singlebytes(testdata):
     enc = Base64Encoder()
     output = b''
@@ -29,7 +36,6 @@ def test_encoder_singlebytes(testdata):
     assert output == b64encode(testdata)
 
 
-@pytest.mark.parametrize('testdata', [b'', b'X', b'XY', b'XYZ', b'XYZW'])
 def test_decoder_singlebytes(testdata):
     dec = Base64Decoder()
     output = b''

@@ -7,7 +7,7 @@ from .transformer import PipeTransformerPair
 class ValueTransformingDecorator(object):
     """Apply transformations on values before passing them to a ``decorated_store``
 
-    :param decorated_store: the :class:`simplekv.KeyValueStore` to decorate
+    :param store: the :class:`simplekv.KeyValueStore` to decorate
     :param transformations: the transformation or list/tuple of
       transformations to apply to the values. In case a list is given,
       they are applied from left-to-right before writing values to ``store``
@@ -15,8 +15,8 @@ class ValueTransformingDecorator(object):
       from ``store``).
     """
 
-    def __init__(self, decorated_store, transformations):
-        self._dstore = decorated_store
+    def __init__(self, store, transformations):
+        self._dstore = store
         if isinstance(transformations, (list, tuple)):
             self._transformer_pair = PipeTransformerPair(transformations)
         else:
