@@ -142,11 +142,15 @@ class IOInterface(io.BufferedIOBase):
 
     def tell(self):
         """Returns he current offset as int. Always >= 0."""
+        if self.closed:
+            raise ValueError("I/O operation on closed file")
         return self.pos
 
     def read(self, size=-1):
         """Returns 'size' amount of bytes or less if there is no more data.
         If no size is given all data is returned. size can be >= 0."""
+        if self.closed:
+            raise ValueError("I/O operation on closed file")
         with map_azure_exceptions(key=self.key):
             if size < 0:
                 size = self.size - self.pos
@@ -173,6 +177,8 @@ class IOInterface(io.BufferedIOBase):
         Any seek operation which moves the position after the stream
         should succeed. tell() should report that position and read()
         should return an empty bytes object."""
+        if self.closed:
+            raise ValueError("I/O operation on closed file")
         if whence == 0:
             if offset < 0:
                 raise IOError('seek would move position outside the file')
@@ -187,4 +193,7 @@ class IOInterface(io.BufferedIOBase):
             self.pos = self.size + offset
 
     def seekable(self):
+        return True
+
+    def readable(self):
         return True

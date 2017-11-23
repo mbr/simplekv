@@ -53,6 +53,7 @@ class TestAzureStorage(BasicStore):
         store.put(key, long_value)
         ok = store.open(key)
         assert ok.seekable()
+        assert ok.readable()
         ok.seek(10)
         assert ok.tell() == 10
         ok.seek(-6, 1)
@@ -74,6 +75,14 @@ class TestAzureStorage(BasicStore):
         ok.seek(length_lv + 10, 0)
         assert ok.tell() == length_lv + 10
         assert len(ok.read()) == 0
+
+        ok.close()
+        with pytest.raises(ValueError):
+            ok.tell()
+        with pytest.raises(ValueError):
+            ok.read(1)
+        with pytest.raises(ValueError):
+            ok.seek(10)
 
 
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
