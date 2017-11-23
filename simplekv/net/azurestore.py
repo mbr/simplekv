@@ -155,7 +155,7 @@ class IOInterface(io.BufferedIOBase):
             if size < 0:
                 size = self.size - self.pos
 
-            end = min(self.pos + size - 1, self.size)
+            end = min(self.pos + size - 1, self.size - 1)
             if self.pos > end:
                 return b''
             b = self.block_blob_service.get_blob_to_bytes(
