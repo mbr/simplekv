@@ -1,5 +1,8 @@
 Changelog
 *********
+0.11.5
+======
+* Fix one off in open() method interfaces for azure backend
 
 0.11.4
 ======
