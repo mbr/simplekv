@@ -1,5 +1,9 @@
 Changelog
 *********
+0.11.6
+======
+* Support seek() and tell() API for file handles in opened in the botostore.
+
 0.11.5
 ======
 * Fix one off in open() method interfaces for azure backend

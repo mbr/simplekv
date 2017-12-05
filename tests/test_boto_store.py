@@ -9,7 +9,7 @@ boto = pytest.importorskip('boto')
 from simplekv.net.botostore import BotoStore
 from simplekv._compat import BytesIO
 
-from basic_store import BasicStore
+from basic_store import BasicStore, OpenSeekTellStore
 from url_store import UrlStore
 from bucket_manager import boto_credentials, boto_bucket
 from conftest import ExtendedKeyspaceTests
@@ -28,7 +28,7 @@ def bucket(credentials):
         yield bucket
 
 
-class TestBotoStorage(BasicStore, UrlStore):
+class TestBotoStorage(BasicStore, UrlStore, OpenSeekTellStore):
     @pytest.fixture(params=[True, False])
     def reduced_redundancy(self, request):
         return request.param

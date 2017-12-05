@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
+import os
 from .._compat import imap
 from .. import KeyValueStore, UrlMixin, CopyMixin
 from contextlib import contextmanager
@@ -87,10 +88,41 @@ class BotoStore(KeyValueStore, UrlMixin, CopyMixin):
             return k.get_contents_to_filename(filename)
 
     def _open(self, key):
+        from boto.s3.keyfile import KeyFile
+
+        class SimpleKeyFile(KeyFile):
+            def read(self, size=-1):
+                if self.closed:
+                    raise ValueError("I/O operation on closed file")
+                if size < 0:
+                    size = self.key.size - self.location
+                return KeyFile.read(self, size)
+
+            def seekable(self):
+                return True
+
+            def readable(self):
+                return True
+
+            def seek(self, offset, whence=os.SEEK_SET):
+                if self.closed:
+                    raise ValueError("I/O operation on closed file")
+                if whence == os.SEEK_SET:
+                    if offset < 0:
+                        raise IOError('seek would move position outside the file')
+                    return KeyFile.seek(self, offset, whence)
+                elif whence == os.SEEK_CUR:
+                    if self.tell() + offset < 0:
+                        raise IOError('seek would move position outside the file')
+                    return KeyFile.seek(self, offset, whence)
+                elif whence == os.SEEK_END:
+                    if self.key.size + offset < 0:
+                        raise IOError('seek would move position outside the file')
+                    return KeyFile.seek(self, offset, whence)
+
         k = self.__new_key(key)
         with map_boto_exceptions(key=key):
-            k.open_read()
-            return k
+            return SimpleKeyFile(k)
 
     def _copy(self, source, dest):
         if not self._has_key(source):
