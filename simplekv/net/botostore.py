@@ -18,7 +18,7 @@ def map_boto_exceptions(key=None, exc_pass=()):
             raise KeyError(key)
         raise IOError(str(e))
     except (BotoClientError, BotoServerError) as e:
-        if ex.__class__.__name__ not in exc_pass:
+        if e.__class__.__name__ not in exc_pass:
             raise IOError(str(e))
 
 
