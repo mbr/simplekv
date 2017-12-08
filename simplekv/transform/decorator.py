@@ -4,9 +4,11 @@ from .adapter import ReadAdapter, WriteAdapter
 from .transformer import PipeTransformerPair
 from ..decorator import StoreDecorator
 
+import contextlib
+
 
 class ValueTransformingDecorator(StoreDecorator):
-    """Apply transformations on values before passing them to a ``decorated_store``
+    """Apply transformations on values before passing them to ``store``
 
     :param store: the :class:`simplekv.KeyValueStore` to decorate
     :param transformations: the transformation or list/tuple of
@@ -39,7 +41,8 @@ class ValueTransformingDecorator(StoreDecorator):
             with open(file, 'rb') as f:
                 return self.put_file(key, f, *args, **kwargs)
         adapter = ReadAdapter(file, self._transformer_pair.transformer())
-        return self._dstore.put_file(key, adapter, *args, **kwargs)
+        with contextlib.closing(adapter):
+            return self._dstore.put_file(key, adapter, *args, **kwargs)
 
     def get_file(self, key, file, *args, **kwargs):
         if isinstance(file, str):

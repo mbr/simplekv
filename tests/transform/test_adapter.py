@@ -33,6 +33,23 @@ def test_read_size_identity2(value):
     assert (ra.read(2), ra.read(1), ra.read()) == (value[:2], value[2:3], value[3:])
 
 
+def test_read_iobase_interface():
+    file = io.BytesIO(b'data')
+    ra = ReadAdapter(file, IdentityTransformer())
+    assert ra.readable()
+    assert not ra.seekable()
+    assert not ra.writable()
+    assert not ra.isatty()
+    assert not ra.closed
+    assert not file.closed
+    ra.close()
+    assert ra.closed
+    assert file.closed
+    with pytest.raises(ValueError) as ex:
+        ra.read()
+    assert 'already closed' in str(ex.value)
+
+
 def test_write_identity(value):
     file = io.BytesIO()
     wa = WriteAdapter(file, IdentityTransformer())

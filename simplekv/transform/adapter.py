@@ -1,8 +1,12 @@
 # coding=utf8
 
 """
-Apply a transformer to an underlying file objects and expose interfaces with
-either a 'read' method or 'write' and 'close' methods
+Apply a transformer to an underlying file object and expose
+'file-like' interfaces that transform data before (after) writing to
+(reading from) the underlying file. The interface is 'file-like' in the sense
+that
+   - :class:`.ReadAdapter` used for reading data inherits from io.IOBase
+   - :class:`.WriteAdapter` used for writing data has the methods 'write' and 'close'
 """
 
 import io
@@ -10,8 +14,12 @@ import io
 _DEFAULT_CHUNK_SIZE = 1 << 16  # 65k
 
 
-class ReadAdapter(object):
+class ReadAdapter(io.IOBase):
     """Read data from an underlying file, transform it, and provide it via `read`
+
+    :param file: file-like object opened for reading. Must
+       have a `read` method. Will be closed from :meth:`ReadAdapter.close`
+       if it has a `close` method.
     """
 
     def __init__(self, file, transformer, chunk_size=_DEFAULT_CHUNK_SIZE):
@@ -23,6 +31,16 @@ class ReadAdapter(object):
         # has self.transformer.finalize been called
         self._finalized = False
 
+    def readable(self):
+        return True
+
+    def close(self):
+        # be conservative about the underlying file: only try to
+        # close it if the close method exists.
+        if hasattr(self.file, 'close'):
+            self.file.close()
+        io.IOBase.close(self)
+
     def read(self, size=-1):
         """
         Read transformed data
@@ -31,6 +49,8 @@ class ReadAdapter(object):
           means to read until end-of-file.
         :return: the transformed bytes. Empty if end-of-file has been reached.
         """
+        if self.closed:
+            raise ValueError("Cannot read: already closed")
         results = []
         while size != 0:
             result_part = self._buffer.read(size)
