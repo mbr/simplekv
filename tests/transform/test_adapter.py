@@ -18,7 +18,8 @@ def test_read_identity(value):
 def test_read_size_identity(value):
     file = io.BytesIO(value)
     ra = ReadAdapter(file, IdentityTransformer())
-    assert (ra.read(2), ra.read(1), ra.read()) == (value[:2], value[2:3], value[3:])
+    assert (ra.read(2), ra.read(1), ra.read()) == \
+           (value[:2], value[2:3], value[3:])
 
 
 def test_read_identity2(value):
@@ -30,7 +31,8 @@ def test_read_identity2(value):
 def test_read_size_identity2(value):
     file = io.BytesIO(value)
     ra = ReadAdapter(file, IdentityTransformer2())
-    assert (ra.read(2), ra.read(1), ra.read()) == (value[:2], value[2:3], value[3:])
+    assert (ra.read(2), ra.read(1), ra.read()) == \
+           (value[:2], value[2:3], value[3:])
 
 
 def test_read_iobase_interface():
