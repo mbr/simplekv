@@ -9,10 +9,14 @@ it using base64, use::
     store = ValueTransformingDecorator(dstore, [Gzip(), B64Encode()])
     store.put(key, value)
 
-The list of transformations will be applied from left to right
-to the data passed to store, and the transformed data is forwarded
-to the decorated store. So in the example
-above, `dstore` will contain the value::
+The list of transformations is applied from left to right to the data passed to
+:meth:`~ValueTransformingDecorator.put` or :meth:`~ValueTransformingDecorator.put_file`
+and the transformed data is forwarded to the decorated store (dstore in the above
+example). Conversely, the inverse of these transformations is applied from right-to-left
+when using :meth:`~ValueTransformingDecorator.get`,
+:meth:`~ValueTransformingDecorator.get_file`, or :meth:`~ValueTransformingDecorator.open`
+to read data from the decorated store.
+So in the example above, `dstore` will contain the value::
 
    base64.b64encode(gzip.compress(value))
 
