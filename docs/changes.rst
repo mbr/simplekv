@@ -2,7 +2,7 @@ Changelog
 *********
 0.11.6
 ======
-* Support seek() and tell() API for file handles in opened in the botostore.
+* Support seek() and tell() API for file handles opened in the botostore.
 
 0.11.5
 ======
