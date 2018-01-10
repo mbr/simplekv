@@ -373,3 +373,60 @@ class TTLStore(object):
 
     def test_can_pass_ttl_through_decorator(self, dstore, key, value):
         dstore.put(key, value, ttl_secs=10)
+
+
+class OpenSeekTellStore(object):
+
+    def test_open_seek_and_tell_empty_value(self, store, key):
+        value = b''
+        store.put(key, value)
+        ok = store.open(key)
+        assert ok.seekable()
+        ok.seek(10)
+        assert ok.tell() == 10
+        ok.seek(-6, 1)
+        assert ok.tell() == 4
+        with pytest.raises(IOError):
+            ok.seek(-1, 0)
+        with pytest.raises(IOError):
+            ok.seek(-6, 1)
+        with pytest.raises(IOError):
+            ok.seek(-1, 2)
+
+        assert ok.tell() == 4
+        assert b'' == ok.read(1)
+
+    def test_open_seek_and_tell(self, store, key, long_value):
+        store.put(key, long_value)
+        ok = store.open(key)
+        assert ok.seekable()
+        assert ok.readable()
+        ok.seek(10)
+        assert ok.tell() == 10
+        ok.seek(-6, 1)
+        assert ok.tell() == 4
+        with pytest.raises(IOError):
+            ok.seek(-1, 0)
+        with pytest.raises(IOError):
+            ok.seek(-6, 1)
+        with pytest.raises(IOError):
+            ok.seek(-len(long_value) - 1, 2)
+
+        assert ok.tell() == 4
+        assert long_value[4:5] == ok.read(1)
+        assert ok.tell() == 5
+        ok.seek(-1, 2)
+        length_lv = len(long_value)
+        assert long_value[length_lv - 1:length_lv] == ok.read(1)
+        assert ok.tell() == length_lv
+        ok.seek(length_lv + 10, 0)
+        assert ok.tell() == length_lv + 10
+        assert b'' == ok.read()
+
+        ok.close()
+        with pytest.raises(ValueError):
+            ok.tell()
+        with pytest.raises(ValueError):
+            ok.read(1)
+        with pytest.raises(ValueError):
+            ok.seek(10)
