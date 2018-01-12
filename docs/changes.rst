@@ -1,5 +1,9 @@
 Changelog
 *********
+0.11.7
+======
+* removed seek() and tell() API for file handles opened in the botostore, due to it leaking HTTP connections to S3.
+
 0.11.6
 ======
 * Support seek() and tell() API for file handles opened in the botostore.
