@@ -99,26 +99,10 @@ class BotoStore(KeyValueStore, UrlMixin, CopyMixin):
                 return KeyFile.read(self, size)
 
             def seekable(self):
-                return True
+                return False
 
             def readable(self):
                 return True
-
-            def seek(self, offset, whence=os.SEEK_SET):
-                if self.closed:
-                    raise ValueError("I/O operation on closed file")
-                if whence == os.SEEK_SET:
-                    if offset < 0:
-                        raise IOError('seek would move position outside the file')
-                    return KeyFile.seek(self, offset, whence)
-                elif whence == os.SEEK_CUR:
-                    if self.tell() + offset < 0:
-                        raise IOError('seek would move position outside the file')
-                    return KeyFile.seek(self, offset, whence)
-                elif whence == os.SEEK_END:
-                    if self.key.size + offset < 0:
-                        raise IOError('seek would move position outside the file')
-                    return KeyFile.seek(self, offset, whence)
 
         k = self.__new_key(key)
         with map_boto_exceptions(key=key):
