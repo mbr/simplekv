@@ -43,11 +43,12 @@ def map_azure_exceptions(key=None, exc_pass=()):
 
 class AzureBlockBlobStore(KeyValueStore):
     def __init__(self, conn_string=None, container=None, public=False,
-                 create_if_missing=True):
+                 create_if_missing=True, max_connections=2):
         self.conn_string = conn_string
         self.container = container
         self.public = public
         self.create_if_missing = create_if_missing
+        self.max_connections = max_connections
 
     # This allows recreating the block_blob_service instance when needed.
     # Together with the copyreg-registration at the bottom of this file,
@@ -72,7 +73,10 @@ class AzureBlockBlobStore(KeyValueStore):
     def _get(self, key):
         with map_azure_exceptions(key=key):
             return self.block_blob_service.get_blob_to_bytes(
-                self.container, key).content
+                container_name=self.container,
+                blob_name=key,
+                max_connections=self.max_connections,
+            ).content
 
     def _has_key(self, key):
         with map_azure_exceptions(key=key):
@@ -88,34 +92,54 @@ class AzureBlockBlobStore(KeyValueStore):
 
     def _open(self, key):
         with map_azure_exceptions(key=key):
-            return IOInterface(self.block_blob_service, self.container, key)
+            return IOInterface(self.block_blob_service, self.container, key, self.max_connections)
 
     def _put(self, key, data):
         with map_azure_exceptions(key=key):
-            self.block_blob_service.create_blob_from_bytes(self.container,
-                                                               key, data)
+            self.block_blob_service.create_blob_from_bytes(
+                container_name=self.container,
+                blob_name=key,
+                blob=data,
+                max_connections=self.max_connections,
+            )
             return key
 
     def _put_file(self, key, file):
         with map_azure_exceptions(key=key):
-            self.block_blob_service.create_blob_from_stream(self.container,
-                                                            key, file)
+            self.block_blob_service.create_blob_from_stream(
+                container_name=self.container,
+                blob_name=key,
+                stream=file,
+                max_connections=self.max_connections,
+            )
             return key
 
     def _get_file(self, key, file):
         with map_azure_exceptions(key=key):
-            self.block_blob_service.get_blob_to_stream(self.container, key,
-                                                       file)
+            self.block_blob_service.get_blob_to_stream(
+                container_name=self.container,
+                blob_name=key,
+                stream=file,
+                max_connections=self.max_connections,
+            )
 
     def _get_filename(self, key, filename):
         with map_azure_exceptions(key=key):
-            self.block_blob_service.get_blob_to_path(self.container, key,
-                                                     filename)
+            self.block_blob_service.get_blob_to_path(
+                container_name=self.container,
+                blob_name=key,
+                file_path=filename,
+                max_connections=self.max_connections,
+            )
 
     def _put_filename(self, key, filename):
         with map_azure_exceptions(key=key):
-            self.block_blob_service.create_blob_from_path(self.container, key,
-                                                          filename)
+            self.block_blob_service.create_blob_from_path(
+                container_name=self.container,
+                blob_name=key,
+                file_path=filename,
+                max_connections=self.max_connections,
+            )
             return key
 
 
@@ -130,11 +154,12 @@ class IOInterface(io.BufferedIOBase):
     """
     Class which provides a file-like interface to selectively read from a blob in the blob store.
     """
-    def __init__(self, block_blob_service, container_name, key):
+    def __init__(self, block_blob_service, container_name, key, max_connections):
         super(IOInterface, self).__init__()
         self.block_blob_service = block_blob_service
         self.container_name = container_name
         self.key = key
+        self.max_connections = max_connections
 
         blob = self.block_blob_service.get_blob_properties(container_name, key)
         self.size = blob.properties.content_length
@@ -159,10 +184,12 @@ class IOInterface(io.BufferedIOBase):
             if self.pos > end:
                 return b''
             b = self.block_blob_service.get_blob_to_bytes(
-                    self.container_name,
-                    self.key,
+                    container_name=self.container_name,
+                    blob_name=self.key,
                     start_range=self.pos,
-                    end_range=end)  # end_range is inclusive
+                    end_range=end,  # end_range is inclusive
+                    max_connections=self.max_connections,
+            )
             self.pos += len(b.content)
             return b.content
 
