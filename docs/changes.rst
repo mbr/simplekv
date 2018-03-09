@@ -1,5 +1,11 @@
 Changelog
 *********
+
+0.11.8
+======
+* Depend on azure-storage-blob, following the new naming scheme.
+* Pass the max_connections parameter to Azure backend.
+
 0.11.7
 ======
 * removed seek() and tell() API for file handles opened in the botostore, due to it leaking HTTP connections to S3.
