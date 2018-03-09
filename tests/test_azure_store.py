@@ -6,7 +6,7 @@ from basic_store import BasicStore, OpenSeekTellStore
 from conftest import ExtendedKeyspaceTests
 import pytest
 
-pytest.importorskip('azure.storage')
+pytest.importorskip('azure.storage.blob')
 
 
 def load_azure_credentials():
@@ -93,7 +93,7 @@ class TestAzureExceptionHandling(object):
         assert u"The specified container does not exist." in str(exc.value)
 
     def test_wrong_endpoint(self):
-        from azure.storage.retry import ExponentialRetry
+        from azure.storage.common.retry import ExponentialRetry
         container = uuid()
         conn_string = create_azure_conn_string(load_azure_credentials())
         conn_string += \
@@ -108,7 +108,7 @@ class TestAzureExceptionHandling(object):
         assert u"Failed to establish a new connection" in str(exc.value)
 
     def test_wrong_credentials(self):
-        from azure.storage.retry import ExponentialRetry
+        from azure.storage.common.retry import ExponentialRetry
         container = uuid()
         conn_string = \
             'DefaultEndpointsProtocol=https;AccountName={};AccountKey={}'.\

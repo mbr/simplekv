@@ -3,9 +3,9 @@ Microsoft Azure Blob Storage
 
 Simplekv supports storing data in `Microsoft Azure Block Blob Storage <https://azure.microsoft.com/en-us/services/storage/blobs/>`_.
 
-The backend uses the `azure-storage <https://github.com/Azure/azure-storage-python>`_ python module to access the azure blob storage.
-Note that azure-storage is not a dependency for simplekv. You need to install it
-manually, otherwise you will see an :exc:`~exceptions.ImportError`.
+The backend uses the `azure-storage-blob <https://github.com/Azure/azure-storage-python/tree/master/azure-storage-blob>`_
+python distribution to access the azure blob storage. Note that `azure-storage-blob` is not
+a dependency for simplekv. You need to install it manually, otherwise you will see an :exc:`~exceptions.ImportError`.
 
 Here is a short example:
 
