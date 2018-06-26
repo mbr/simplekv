@@ -2,7 +2,7 @@
 
 import os
 import stat
-from simplekv._compat import BytesIO, url_quote, url_unquote
+from simplekv._compat import BytesIO, url_quote, url_unquote, PY2
 import tempfile
 from simplekv._compat import urlparse
 
@@ -45,8 +45,12 @@ class TestFilesystemStoreMkdir(TestBaseFilesystemStore):
         store = FilesystemStore(os.path.join(tmpdir, 'test'))
         # We have mocked os.makedirs, so this won't work. But it should
         # pass beyond the OS error and simply fail on writing the file itself.
-        with pytest.raises(FileNotFoundError):
-            store.put('test', b'test')
+        if PY2:
+            with pytest.raises(IOError):
+                store.put('test', b'test')
+        else:
+            with pytest.raises(FileNotFoundError):
+                store.put('test', b'test')
 
 
 class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
