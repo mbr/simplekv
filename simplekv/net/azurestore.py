@@ -30,6 +30,7 @@ def _file_md5(file_):
     chunk_size = 128 * md5.block_size
     for chunk in iter(lambda: file_.read(chunk_size), b''):
         md5.update(chunk)
+    file_.seek(0)
     byte_digest = md5.digest()
     return base64.b64encode(byte_digest).decode()
 
