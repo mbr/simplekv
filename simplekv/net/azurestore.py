@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding=utf8
 
+import base64
+import hashlib
 import io
 from contextlib import contextmanager
 
@@ -18,6 +20,35 @@ def lazy_property(fn):
             setattr(self, attr_name, fn(self))
         return getattr(self, attr_name)
     return _lazy_property
+
+
+def _file_md5(file_):
+    """
+    Compute the md5 digest of a file in base64 encoding.
+    """
+    md5 = hashlib.md5()
+    chunk_size = 128 * md5.block_size
+    for chunk in iter(lambda: file_.read(chunk_size), b''):
+        md5.update(chunk)
+    byte_digest = md5.digest()
+    return base64.b64encode(byte_digest).decode()
+
+
+def _filename_md5(filename):
+    """
+    Compute the md5 digest of a file in base64 encoding.
+    """
+    with open(filename, 'rb') as f:
+        return _file_md5(f)
+
+
+def _byte_buffer_md5(buffer_):
+    """
+    Computes the md5 digest of a byte buffer in base64 encoding.
+    """
+    md5 = hashlib.md5(buffer_)
+    byte_digest = md5.digest()
+    return base64.b64encode(byte_digest).decode()
 
 
 @contextmanager
@@ -43,12 +74,13 @@ def map_azure_exceptions(key=None, exc_pass=()):
 
 class AzureBlockBlobStore(KeyValueStore):
     def __init__(self, conn_string=None, container=None, public=False,
-                 create_if_missing=True, max_connections=2):
+                 create_if_missing=True, max_connections=2, checksum=False):
         self.conn_string = conn_string
         self.container = container
         self.public = public
         self.create_if_missing = create_if_missing
         self.max_connections = max_connections
+        self.checksum = checksum
 
     # This allows recreating the block_blob_service instance when needed.
     # Together with the copyreg-registration at the bottom of this file,
@@ -95,22 +127,38 @@ class AzureBlockBlobStore(KeyValueStore):
             return IOInterface(self.block_blob_service, self.container, key, self.max_connections)
 
     def _put(self, key, data):
+        from azure.storage.blob.models import ContentSettings
+
+        if self.checksum:
+            content_settings = ContentSettings(content_md5=_byte_buffer_md5(data))
+        else:
+            content_settings = ContentSettings()
+
         with map_azure_exceptions(key=key):
             self.block_blob_service.create_blob_from_bytes(
                 container_name=self.container,
                 blob_name=key,
                 blob=data,
                 max_connections=self.max_connections,
+                content_settings=content_settings,
             )
             return key
 
     def _put_file(self, key, file):
+        from azure.storage.blob.models import ContentSettings
+
+        if self.checksum:
+            content_settings = ContentSettings(content_md5=_file_md5(file))
+        else:
+            content_settings = ContentSettings()
+
         with map_azure_exceptions(key=key):
             self.block_blob_service.create_blob_from_stream(
                 container_name=self.container,
                 blob_name=key,
                 stream=file,
                 max_connections=self.max_connections,
+                content_settings=content_settings,
             )
             return key
 
@@ -133,12 +181,20 @@ class AzureBlockBlobStore(KeyValueStore):
             )
 
     def _put_filename(self, key, filename):
+        from azure.storage.blob.models import ContentSettings
+
+        if self.checksum:
+            content_settings = ContentSettings(content_md5=_filename_md5(filename))
+        else:
+            content_settings = ContentSettings()
+
         with map_azure_exceptions(key=key):
             self.block_blob_service.create_blob_from_path(
                 container_name=self.container,
                 blob_name=key,
                 file_path=filename,
                 max_connections=self.max_connections,
+                content_settings=content_settings,
             )
             return key
 
