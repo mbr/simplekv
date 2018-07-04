@@ -1,10 +1,6 @@
 Changelog
 *********
 
-0.11.9
-======
-* Add option to set the checksum for Azure blobs.
-
 0.11.8
 ======
 * Depend on azure-storage-blob, following the new naming scheme.
