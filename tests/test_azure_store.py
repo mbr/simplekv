@@ -158,7 +158,7 @@ class TestChecksum(object):
     def test_checksum_put_file(self, store, tmpdir):
         file_ = tmpdir.join('my_file')
         file_.write(self.CONTENT)
-        store.put_file(self.KEY, file_.open())
+        store.put_file(self.KEY, file_.open('rb'))
         assert self._checksum(store) == self.EXPECTED_CHECKSUM
         assert store.get(self.KEY) == self.CONTENT
 
