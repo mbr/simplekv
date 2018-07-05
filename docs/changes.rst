@@ -4,6 +4,7 @@ Changelog
 0.11.9
 ======
 * Add option to set the checksum for Azure blobs.
+* Make the FilesystemStore resilient to parallel directory creations.
 
 0.11.8
 ======
