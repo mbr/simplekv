@@ -99,7 +99,11 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
 
     def _ensure_dir_exists(self, path):
         if not os.path.isdir(path):
-            os.makedirs(path)
+            try:
+                os.makedirs(path)
+            except OSError as e:
+                if not os.path.isdir(path):
+                    raise e
 
     def _put_file(self, key, file):
         bufsize = self.bufsize

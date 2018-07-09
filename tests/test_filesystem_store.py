@@ -2,7 +2,7 @@
 
 import os
 import stat
-from simplekv._compat import BytesIO, url_quote, url_unquote
+from simplekv._compat import BytesIO, url_quote, url_unquote, PY2
 import tempfile
 from simplekv._compat import urlparse
 
@@ -29,6 +29,28 @@ class TestBaseFilesystemStore(BasicStore, UrlStore, UUIDGen, HashGen):
     @pytest.fixture
     def store(self, tmpdir):
         return FilesystemStore(tmpdir)
+
+
+class TestFilesystemStoreMkdir(TestBaseFilesystemStore):
+
+    def test_concurrent_mkdir(self, tmpdir, mocker):
+        # Concurrent instantiation of the store in two threads could lead to
+        # the situation where both threads see that the directory does not
+        # exists. For one, the call to mkdir succeeds, for the other it fails.
+        # This is ok for us as long as the directory exists afterwards.
+        makedirs = mocker.patch('os.makedirs')
+        makedirs.side_effect = OSError("Failure")
+        mocker.patch('os.path.isdir')
+
+        store = FilesystemStore(os.path.join(tmpdir, 'test'))
+        # We have mocked os.makedirs, so this won't work. But it should
+        # pass beyond the OS error and simply fail on writing the file itself.
+        if PY2:
+            with pytest.raises(IOError):
+                store.put('test', b'test')
+        else:
+            with pytest.raises(FileNotFoundError):
+                store.put('test', b'test')
 
 
 class TestFilesystemStoreFileURI(TestBaseFilesystemStore):
