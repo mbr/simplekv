@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.11.10
+=======
+
+* Azure files handles now correctly implement seek and return the new position.
+
 0.11.9
 ======
 * Add option to set the checksum for Azure blobs.
