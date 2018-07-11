@@ -382,9 +382,9 @@ class OpenSeekTellStore(object):
         store.put(key, value)
         ok = store.open(key)
         assert ok.seekable()
-        ok.seek(10)
+        assert ok.seek(10) == 10
         assert ok.tell() == 10
-        ok.seek(-6, 1)
+        assert ok.seek(-6, 1) == 4
         assert ok.tell() == 4
         with pytest.raises(IOError):
             ok.seek(-1, 0)

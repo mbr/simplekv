@@ -275,6 +275,7 @@ class IOInterface(io.BufferedIOBase):
             if self.size + offset < 0:
                 raise IOError('seek would move position outside the file')
             self.pos = self.size + offset
+        return self.pos
 
     def seekable(self):
         return True
