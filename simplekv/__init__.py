@@ -227,12 +227,15 @@ class KeyValueStore(object):
         # this allows us to support file-like objects without close as well,
         # such as BytesIO.
         source = self.open(key)
-        while True:
-            buf = source.read(bufsize)
-            file.write(buf)
+        try:
+            while True:
+                buf = source.read(bufsize)
+                file.write(buf)
 
-            if len(buf) < bufsize:
-                break
+                if len(buf) < bufsize:
+                    break
+        finally:
+            source.close()
 
     def _get_filename(self, key, filename):
         """Write key to file. Either this method or
