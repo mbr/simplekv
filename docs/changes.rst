@@ -1,6 +1,11 @@
 Changelog
 *********
 
+Next
+====
+
+* Fix file-descriptor leak in `KeyValueStore._get_file`
+
 0.11.10
 =======
 
