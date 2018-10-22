@@ -21,7 +21,7 @@ can be installed through `pip <http://pypi.python.org/pypi/pip>`_::
 Documentation
 -------------
 The documentation for simplekv is available at
-http://pythonhosted.org/simplekv.
+https://simplekv.readthedocs.io.
 
 License
 -------
