@@ -225,11 +225,12 @@ class BasicStore(object):
         store.put(key, value)
         store.put(key2, value2)
 
-        l = sorted(store.keys())
+        l = store.keys()
+        assert isinstance(l, list)
         for k in l:
             assert isinstance(k, text_type)
 
-        assert l == sorted([key, key2])
+        assert set(l) == {key, key2}
 
     def test_keys_with_prefix(self, store, key, key2, value):
         prefix = key
@@ -239,11 +240,13 @@ class BasicStore(object):
         store.put(key_prefix_2, value)
         store.put(key2, value)
 
-        l = sorted(store.keys())
-        assert l == sorted([key_prefix_1, key_prefix_2, key2])
+        l = store.keys()
+        assert isinstance(l, list)
+        assert set(l) == {key_prefix_1, key_prefix_2, key2}
 
-        l = sorted(store.keys(prefix))
-        assert l == sorted([key_prefix_1, key_prefix_2])
+        l = store.keys(prefix)
+        assert isinstance(l, list)
+        assert set(l) == {key_prefix_1, key_prefix_2}
 
     def test_has_key(self, store, key, key2, value):
         store.put(key, value)
