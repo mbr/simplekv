@@ -296,17 +296,21 @@ class BasicStore(object):
 TTL_MARGIN = 1
 
 
+def ustore(store):
+    return UUIDDecorator(store)
+
+
 class TTLStore(object):
-    @pytest.fixture
-    def ustore(self, store):
-        return UUIDDecorator(store)
+    @pytest.fixture(name='ustore')
+    def ustore_fixture(self, store):
+        return ustore(store)
 
     @pytest.fixture(params=['hash', 'uuid', 'hmac', 'prefix'])
     def dstore(self, request, store, secret_key):
         if request.param == 'hash':
             return HashDecorator(store)
         elif request.param == 'uuid':
-            return self.ustore(store)
+            return ustore(store)
         elif request.param == 'hmac':
             return HMACDecorator(secret_key, store)
         elif request.param == 'prefix':
