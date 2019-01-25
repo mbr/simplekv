@@ -73,6 +73,30 @@ def map_azure_exceptions(key=None, exc_pass=()):
             raise IOError(str(ex))
 
 
+def _convert_xml_to_blob_name_list(response):
+    from azure.storage.common.models import _list
+    from xml.etree import cElementTree as ETree
+
+    if response is None or response.body is None:
+        return None
+
+    blob_list = _list()
+    list_element = ETree.fromstring(response.body)
+
+    setattr(blob_list, 'next_marker', list_element.findtext('NextMarker'))
+
+    blobs_element = list_element.find('Blobs')
+    blob_prefix_elements = blobs_element.findall('BlobPrefix')
+    if blob_prefix_elements is not None:
+        for blob_prefix_element in blob_prefix_elements:
+            blob_list.append(blob_prefix_element.findtext('Name'))
+
+    for blob_element in blobs_element.findall('Blob'):
+        blob_list.append(blob_element.findtext('Name'))
+
+    return blob_list
+
+
 class AzureBlockBlobStore(KeyValueStore):
     def __init__(self, conn_string=None, container=None, public=False,
                  create_if_missing=True, max_connections=2, checksum=False):
@@ -115,13 +139,39 @@ class AzureBlockBlobStore(KeyValueStore):
         with map_azure_exceptions(key=key):
             return self.block_blob_service.exists(self.container, key)
 
+    def _list_blob_names(self, _context, prefix=None):
+        from azure.storage.common._http import HTTPRequest
+        request = HTTPRequest()
+        request.method = 'GET'
+        request.host_locations = self.block_blob_service._get_host_locations(secondary=True)
+        request.path = "/{0}".format(self.container)
+        request.query = {
+            'restype': 'container',
+            'comp': 'list',
+        }
+        if prefix:
+            request.query['prefix'] = prefix
+
+        return self.block_blob_service._perform_request(request, _convert_xml_to_blob_name_list, operation_context=_context)
+
     def iter_keys(self, prefix=u""):
+        from azure.storage.common.models import (
+            ListGenerator,
+            _OperationContext,
+        )
+
         if prefix == "":
             prefix = None
         with map_azure_exceptions():
-            blobs = self.block_blob_service.list_blobs(self.container, prefix=prefix)
-            return (blob.name.decode('utf-8') if isinstance(blob.name, binary_type)
-                    else blob.name for blob in blobs)
+            operation_context = _OperationContext(location_lock=True)
+            kwargs = {
+                'prefix': prefix,
+                '_context': operation_context,
+            }
+
+            resp = self._list_blob_names(**kwargs)
+            return (b.decode("utf-8") if isinstance(b, binary_type) else b
+                    for b in ListGenerator(resp, self._list_blob_names, [], kwargs))
 
     def _open(self, key):
         with map_azure_exceptions(key=key):
