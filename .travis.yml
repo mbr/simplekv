@@ -4,13 +4,13 @@ sudo: false
 matrix:
   include:
     - python: 2.7
-      env: TOXENV=py27
+      env: TOXENV=py27 BOTO_CONFIG=/dev/null
     - python: 3.4
-      env: TOXENV=py34
+      env: TOXENV=py34 BOTO_CONFIG=/dev/null
     - python: 3.5
-      env: TOXENV=py35
+      env: TOXENV=py35 BOTO_CONFIG=/dev/null
     - python: 3.6
-      env: TOXENV=py36
+      env: TOXENV=py36 BOTO_CONFIG=/dev/null
 
 services:
 - redis-server
