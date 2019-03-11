@@ -119,9 +119,9 @@ class AzureBlockBlobStore(KeyValueStore):
         if prefix == "":
             prefix = None
         with map_azure_exceptions():
-            blobs = self.block_blob_service.list_blobs(self.container, prefix=prefix)
-            return (blob.name.decode('utf-8') if isinstance(blob.name, binary_type)
-                    else blob.name for blob in blobs)
+            blobs = self.block_blob_service.list_blob_names(self.container, prefix=prefix)
+            return (blob.decode('utf-8') if isinstance(blob, binary_type)
+                    else blob for blob in blobs)
 
     def _open(self, key):
         with map_azure_exceptions(key=key):

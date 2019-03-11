@@ -1,6 +1,13 @@
 Changelog
 *********
 
+0.12.0
+======
+
+* Use ``BlockBlobService.list_blob_names`` in :meth:`simplekv.net.azurestore.AzureBlockBlobStore.iter_keys``.
+  This will only parse the names from Azure's XML response thus reducing CPU time
+  siginificantly for this function.
+
 0.11.11
 ====
 
