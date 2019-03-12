@@ -7,6 +7,8 @@ Changelog
 * Use ``BlockBlobService.list_blob_names`` in :meth:`simplekv.net.azurestore.AzureBlockBlobStore.iter_keys``.
   This will only parse the names from Azure's XML response thus reducing CPU time
   siginificantly for this function.
+* They ``.keys()`` method on Python 3 now returns a list. This is in line with the documentation and the
+  behaviour on Python 2. It used to return a generator.
 
 0.11.11
 ====
