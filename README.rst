@@ -17,6 +17,10 @@ simplekv is `available on PyPI <http://pypi.python.org/pypi/simplekv/>`_ and
 can be installed through `pip <http://pypi.python.org/pypi/pip>`_::
 
    pip install simplekv
+   
+or via ``conda`` on `conda-forge <https://github.com/conda-forge/simplekv-feedstock>`_::
+
+  conda install -c conda-forge simplekv
 
 Documentation
 -------------
