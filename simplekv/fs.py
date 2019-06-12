@@ -2,6 +2,7 @@
 # coding=utf8
 
 import os
+import os.path
 import shutil
 
 from . import KeyValueStore, UrlMixin, CopyMixin
@@ -152,6 +153,39 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
 
     def iter_keys(self, prefix=u""):
         return iter(self.keys(prefix))
+
+    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
+        if delimiter != os.sep:
+            return super(FilesystemStore, self).iter_keys_upto_delimiter(
+                delimiter,
+                prefix,
+            )
+        return self._iter_keys_upto_delimiter_efficient(delimiter, prefix)
+
+    def _iter_keys_upto_delimiter_efficient(self, delimiter, prefix=u""):
+        if delimiter in prefix:
+            pos = prefix.rfind(delimiter)
+            search_prefix = prefix[:pos]
+            path = os.path.join(self.root, search_prefix)
+        else:
+            search_prefix = None
+            path = self.root
+
+        try:
+            for k in os.listdir(path):
+                subpath = os.path.join(path, k)
+
+                if search_prefix is not None:
+                    k = os.path.join(search_prefix, k)
+
+                if os.path.isdir(subpath):
+                    k += delimiter
+
+                if k.startswith(prefix):
+                    yield k
+        except OSError:
+            # path does not exists
+            pass
 
 
 class WebFilesystemStore(FilesystemStore):
