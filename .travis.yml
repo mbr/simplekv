@@ -23,7 +23,6 @@ services:
 install: pip install tox coveralls
 
 before_script:
-- eval "$(gimme 1.10.3)"
 - bash .travis/start_minio.sh
 - psql -c 'create database simplekv_test;' -U postgres
 - psql -c 'ALTER ROLE travis CONNECTION LIMIT -1;' -U postgres
