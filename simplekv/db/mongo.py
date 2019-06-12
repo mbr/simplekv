@@ -21,10 +21,10 @@ class MongoStore(KeyValueStore):
         self.collection = collection
 
     def _has_key(self, key):
-        return self.db[self.collection].find({"_id": key}).count() > 0
+        return self.db[self.collection].count_documents({"_id": key}) > 0
 
     def _delete(self, key):
-        return self.db[self.collection].remove({"_id": key})
+        return self.db[self.collection].delete_one({"_id": key})
 
     def _get(self, key):
         try:
@@ -37,7 +37,7 @@ class MongoStore(KeyValueStore):
         return BytesIO(self._get(key))
 
     def _put(self, key, value):
-        self.db[self.collection].update(
+        self.db[self.collection].update_one(
             {"_id": key},
             {"$set": {"v": Binary(pickle.dumps(value))}},
             upsert=True)
