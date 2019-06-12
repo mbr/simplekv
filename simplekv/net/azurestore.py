@@ -134,6 +134,14 @@ class AzureBlockBlobStore(KeyValueStore):
             return (blob.decode('utf-8') if isinstance(blob, binary_type)
                     else blob for blob in blobs)
 
+    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
+        if prefix == "":
+            prefix = None
+        with map_azure_exceptions():
+            blobs = self.block_blob_service.list_blob_names(self.container, prefix=prefix, delimiter=delimiter)
+            return (blob.decode('utf-8') if isinstance(blob, binary_type)
+                    else blob for blob in blobs)
+
     def _open(self, key):
         with map_azure_exceptions(key=key):
             return IOInterface(self.block_blob_service, self.container, key, self.max_connections)
