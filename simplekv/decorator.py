@@ -58,6 +58,20 @@ class KeyTransformingDecorator(StoreDecorator):
         return (self._unmap_key(k) for k in self._dstore.iter_keys(self._map_key_prefix(prefix))
                 if self._filter(k))
 
+    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
+        dlen = len(delimiter)
+        plen = len(prefix)
+        memory = set()
+
+        for k in self.iter_keys(prefix):
+            pos = k.find(delimiter, plen)
+            if pos >= 0:
+                k = k[: pos + dlen]
+
+            if k not in memory:
+                yield k
+                memory.add(k)
+
     def keys(self, prefix=u""):
         """Return a list of keys currently in store, in any order
 

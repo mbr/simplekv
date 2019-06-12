@@ -221,6 +221,31 @@ class BasicStore(object):
         l.sort()
         assert l == sorted([key_prefix_1, key_prefix_2])
 
+    def test_key_iterator_upto_delimiter(self, store, value):
+        delimiter = u"X"
+        for k in [
+            u"X",
+            u"a1Xb1",
+            u"a1Xb1",
+            u"a2X",
+            u"a2Xb1",
+            u"a3",
+            u"a4Xb1Xc1",
+            u"a4Xb1Xc2",
+            u"a4Xb2Xc1",
+            u"a4Xb3",
+        ]:
+            store.put(k, value)
+
+        l = sorted(store.iter_keys_upto_delimiter(u"X"))
+        assert l == [u"X", u"a1X", u"a2X", u"a3", u"a4X"]
+
+        l = sorted(store.iter_keys_upto_delimiter(u"X", prefix=u"a4X"))
+        assert l == [u"a4Xb1X", u"a4Xb2X", u"a4Xb3"]
+
+        l = sorted(store.iter_keys_upto_delimiter(u"X", prefix=u"foo"))
+        assert l == []
+
     def test_keys(self, store, key, key2, value, value2):
         store.put(key, value)
         store.put(key2, value2)

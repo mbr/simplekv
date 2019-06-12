@@ -108,6 +108,28 @@ class KeyValueStore(object):
         """
         raise NotImplementedError
 
+    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
+        """Returns an Iterator over all keys currently in the store, in any order. The keys are listed up to the given delimiter.
+
+        If the prefix contains the delimiter, the first delimiter after the prefix is used as a cut-off point.
+
+        The uniqueness of the keys is ensured.
+
+        :raises exceptions.IOError: If there was an error accessing the store.
+        """
+        dlen = len(delimiter)
+        plen = len(prefix)
+        memory = set()
+
+        for k in self.iter_keys(prefix):
+            pos = k.find(delimiter, plen)
+            if pos >= 0:
+                k = k[: pos + dlen]
+
+            if k not in memory:
+                yield k
+                memory.add(k)
+
     def keys(self, prefix=u""):
         """Return a list of keys currently in store, in any order
         If prefix is not the empty string, returns only all keys starting with prefix.
