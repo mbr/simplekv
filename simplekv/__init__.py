@@ -108,12 +108,14 @@ class KeyValueStore(object):
         """
         raise NotImplementedError
 
-    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
-        """Returns an Iterator over all keys currently in the store, in any order. The keys are listed up to the given delimiter.
+    def iter_prefixes_upto_delimiter(self, delimiter, prefix=u""):
+        """Returns an Iterator over all prefixes currently in the store, in any order. The
+        prefixes are listed up to the given delimiter.
 
-        If the prefix contains the delimiter, the first delimiter after the prefix is used as a cut-off point.
+        If the prefix contains the delimiter, the first delimiter after the prefix is used
+        as a cut-off point.
 
-        The uniqueness of the keys is ensured.
+        The uniqueness of the prefixes is ensured.
 
         :raises exceptions.IOError: If there was an error accessing the store.
         """

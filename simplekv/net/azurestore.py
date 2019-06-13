@@ -123,7 +123,7 @@ class AzureBlockBlobStore(KeyValueStore):
             return (blob.decode('utf-8') if isinstance(blob, binary_type)
                     else blob for blob in blobs)
 
-    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
+    def iter_prefixes_upto_delimiter(self, delimiter, prefix=u""):
         if prefix == "":
             prefix = None
         with map_azure_exceptions():
