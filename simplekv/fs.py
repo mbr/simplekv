@@ -154,15 +154,15 @@ class FilesystemStore(KeyValueStore, UrlMixin, CopyMixin):
     def iter_keys(self, prefix=u""):
         return iter(self.keys(prefix))
 
-    def iter_keys_upto_delimiter(self, delimiter, prefix=u""):
+    def iter_prefixes_upto_delimiter(self, delimiter, prefix=u""):
         if delimiter != os.sep:
-            return super(FilesystemStore, self).iter_keys_upto_delimiter(
+            return super(FilesystemStore, self).iter_prefixes_upto_delimiter(
                 delimiter,
                 prefix,
             )
-        return self._iter_keys_upto_delimiter_efficient(delimiter, prefix)
+        return self._iter_prefixes_upto_delimiter_efficient(delimiter, prefix)
 
-    def _iter_keys_upto_delimiter_efficient(self, delimiter, prefix=u""):
+    def _iter_prefixes_upto_delimiter_efficient(self, delimiter, prefix=u""):
         if delimiter in prefix:
             pos = prefix.rfind(delimiter)
             search_prefix = prefix[:pos]

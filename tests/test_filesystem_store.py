@@ -174,7 +174,7 @@ class TestExtendedKeyspaceFilesystemStore(TestBaseFilesystemStore,
             pass
         return ExtendedKeyspaceStore(tmpdir)
 
-    def test_key_iterator_upto_delimiter_ossep(self, store, value):
+    def test_prefix_iterator_upto_delimiter_ossep(self, store, value):
         delimiter = u"X"
         for k in [
             u"a1" + os.sep + u"b1",
@@ -188,7 +188,7 @@ class TestExtendedKeyspaceFilesystemStore(TestBaseFilesystemStore,
         ]:
             store.put(k, value)
 
-        l = sorted(store.iter_keys_upto_delimiter(os.sep))
+        l = sorted(store.iter_prefixes_upto_delimiter(os.sep))
         assert l == [
             u"a1" + os.sep,
             u"a2" + os.sep,
@@ -196,7 +196,7 @@ class TestExtendedKeyspaceFilesystemStore(TestBaseFilesystemStore,
             u"a4" + os.sep,
         ]
 
-        l = sorted(store.iter_keys_upto_delimiter(
+        l = sorted(store.iter_prefixes_upto_delimiter(
             os.sep,
             prefix=u"a4" + os.sep,
         ))
@@ -206,7 +206,7 @@ class TestExtendedKeyspaceFilesystemStore(TestBaseFilesystemStore,
             u"a4" + os.sep + "b3",
         ]
 
-        l = sorted(store.iter_keys_upto_delimiter(
+        l = sorted(store.iter_prefixes_upto_delimiter(
             os.sep,
             prefix=u"foo" + os.sep,
         ))
