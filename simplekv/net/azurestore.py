@@ -6,13 +6,19 @@ import hashlib
 import io
 from contextlib import contextmanager
 
-from .._compat import binary_type, copyreg
+from .._compat import binary_type
 from .. import KeyValueStore
+
+LAZY_PROPERTY_ATTR_PREFIX = '_lazy_'
 
 
 def lazy_property(fn):
-    """Decorator that makes a property lazy-evaluated."""
-    attr_name = '_lazy_' + fn.__name__
+    """Decorator that makes a property lazy-evaluated.
+
+    On first access, lazy properties are computed and saved
+    as instance attribute with the name `'_lazy_' + method_name`
+    Any subsequent property access then returns the cached value."""
+    attr_name = LAZY_PROPERTY_ATTR_PREFIX + fn.__name__
 
     @property
     def _lazy_property(self):
@@ -83,9 +89,10 @@ class AzureBlockBlobStore(KeyValueStore):
         self.max_connections = max_connections
         self.checksum = checksum
 
-    # This allows recreating the block_blob_service instance when needed.
-    # Together with the copyreg-registration at the bottom of this file,
-    # allows the store object to be pickled and unpickled.
+    # Using @lazy_property will (re-)create block_blob_service instance needed.
+    # Together with the __getstate__ implementation below, this allows
+    # AzureBlockBlobStore to be pickled, even if
+    # azure.storage.blob.BlockBlobService does not support pickling.
     @lazy_property
     def block_blob_service(self):
         from azure.storage.blob import BlockBlobService, PublicAccess
@@ -199,12 +206,13 @@ class AzureBlockBlobStore(KeyValueStore):
             )
             return key
 
-
-def pickle_azure_store(store):
-    return store.__class__, (store.conn_string, store.container, store.public,
-                             store.create_if_missing)
-
-copyreg.pickle(AzureBlockBlobStore, pickle_azure_store)
+    def __getstate__(self):
+        # keep all of __dict__, except lazy properties:
+        return {
+            key: value
+            for key, value in self.__dict__.items()
+            if not key.startswith(LAZY_PROPERTY_ATTR_PREFIX)
+        }
 
 
 class IOInterface(io.BufferedIOBase):
