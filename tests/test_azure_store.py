@@ -81,6 +81,25 @@ def test_azure_setgetstate():
     s.delete_container(container)
 
 
+def test_azure_store_attributes():
+    abbs = AzureBlockBlobStore('CONN_STR', 'CONTAINER',
+                               max_connections=42, checksum=True)
+    assert abbs.conn_string == 'CONN_STR'
+    assert abbs.container == 'CONTAINER'
+    assert abbs.public is False
+    assert abbs.create_if_missing is True
+    assert abbs.max_connections == 42
+    assert abbs.checksum is True
+
+    abbs2 = pickle.loads(pickle.dumps(abbs))
+    assert abbs2.conn_string == 'CONN_STR'
+    assert abbs2.container == 'CONTAINER'
+    assert abbs2.public is False
+    assert abbs2.create_if_missing is True
+    assert abbs2.max_connections == 42
+    assert abbs2.checksum is True
+
+
 class TestAzureExceptionHandling(object):
     def test_missing_container(self):
         container = uuid()
