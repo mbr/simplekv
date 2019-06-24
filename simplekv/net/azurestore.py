@@ -81,13 +81,15 @@ def map_azure_exceptions(key=None, exc_pass=()):
 
 class AzureBlockBlobStore(KeyValueStore):
     def __init__(self, conn_string=None, container=None, public=False,
-                 create_if_missing=True, max_connections=2, checksum=False):
+                 create_if_missing=True, max_connections=2, checksum=False,
+                 socket_timeout=None):
         self.conn_string = conn_string
         self.container = container
         self.public = public
         self.create_if_missing = create_if_missing
         self.max_connections = max_connections
         self.checksum = checksum
+        self.socket_timeout = socket_timeout
 
     # Using @lazy_property will (re-)create block_blob_service instance needed.
     # Together with the __getstate__ implementation below, this allows
@@ -97,7 +99,9 @@ class AzureBlockBlobStore(KeyValueStore):
     def block_blob_service(self):
         from azure.storage.blob import BlockBlobService, PublicAccess
         block_blob_service = BlockBlobService(
-            connection_string=self.conn_string)
+            connection_string=self.conn_string,
+            socket_timeout=self.socket_timeout,
+        )
         if self.create_if_missing:
             block_blob_service.create_container(
                 self.container,
