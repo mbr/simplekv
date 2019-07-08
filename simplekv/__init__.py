@@ -117,6 +117,9 @@ class KeyValueStore(object):
 
         The uniqueness of the prefixes is ensured.
 
+        The default uses an naive key iteration. Some backends may implement more efficient
+        variants.
+
         :raises exceptions.IOError: If there was an error accessing the store.
         """
         dlen = len(delimiter)
