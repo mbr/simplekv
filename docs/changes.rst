@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.13.0
+======
+* Add ``iter_prefixes()`` method to iterate over all prefixes currently in the store, in any order. The
+        prefixes are listed up to the given delimiter.
+
 0.12.0
 ======
 
