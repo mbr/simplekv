@@ -81,13 +81,14 @@ def map_azure_exceptions(key=None, exc_pass=()):
 
 class AzureBlockBlobStore(KeyValueStore):
     def __init__(self, conn_string=None, container=None, public=False,
-                 create_if_missing=True, max_connections=2, max_block_size=4 * 1024 * 1024, checksum=False,
+                 create_if_missing=True, max_connections=2, max_block_size=4 * 1024 * 1024,max_single_put_size=64 * 1024 * 1024, checksum=False,
                  socket_timeout=None):
         self.conn_string = conn_string
         self.container = container
         self.public = public
         self.create_if_missing = create_if_missing
         self.max_connections = max_connections
+        self.max_single_put_size = max_single_put_size
         self.max_block_size = max_block_size
         self.checksum = checksum
         self.socket_timeout = socket_timeout
@@ -102,9 +103,10 @@ class AzureBlockBlobStore(KeyValueStore):
         block_blob_service = BlockBlobService(
             connection_string=self.conn_string,
             socket_timeout=self.socket_timeout,
-            max_single_put_size=64 * 1024 * 1024,
-            max_block_size = 4 * 1024 * 1024,
         )
+        block_blob_service.MAX_BLOCK_SIZE = self.max_block_size
+        block_blob_service.MAX_SINGLE_PUT_SIZE = self.max_single_put_size
+
         if self.create_if_missing:
             block_blob_service.create_container(
                 self.container,
