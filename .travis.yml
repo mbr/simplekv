@@ -24,6 +24,8 @@ install: pip install tox coveralls
 
 before_script:
 - bash .travis/start_minio.sh
+- psql which psql
+- psql echo $PATH
 - psql -c 'create database simplekv_test;' -U postgres
 - psql -c 'ALTER ROLE travis CONNECTION LIMIT -1;' -U postgres
 - mysql -e 'create database simplekv_test;'
