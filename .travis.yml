@@ -20,6 +20,7 @@ services:
 - redis-server
 - mongodb
 - postgresql
+- mysql
 
 install: pip install tox coveralls
 
