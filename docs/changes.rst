@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.13.1
+======
+
+* Add the optional parameters of the Azure API max_block_size and max_single_put_size to the AzureBlockBlobStore.
+
 0.13.0
 ======
 * Add ``iter_prefixes()`` method to iterate over all prefixes currently in the store, in any order. The
