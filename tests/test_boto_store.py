@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-from tempdir import TempDir
 
 import pytest
 
@@ -48,18 +47,16 @@ class TestBotoStorage(BasicStore, UrlStore):
     # Disable max key length test as it leads to problems with minio
     test_max_key_length = None
 
-    def test_get_filename_nonexistant(self, store, key):
+    def test_get_filename_nonexistant(self, store, key, tmp_path):
         # NOTE: boto misbehaves here and tries to erase the target file
         # the parent tests use /dev/null, which you really should not try
         # to os.remove!
-        with TempDir() as tmpdir:
-            with pytest.raises(KeyError):
-                store.get_file(key, os.path.join(tmpdir, 'a'))
+        with pytest.raises(KeyError):
+            store.get_file(key, os.path.join(str(tmp_path), 'a'))
 
-    def test_key_error_on_nonexistant_get_filename(self, store, key):
-        with TempDir() as tmpdir:
-            with pytest.raises(KeyError):
-                store.get_file(key, os.path.join(tmpdir, 'a'))
+    def test_key_error_on_nonexistant_get_filename(self, store, key, tmp_path):
+        with pytest.raises(KeyError):
+            store.get_file(key, os.path.join(str(tmp_path), 'a'))
 
     def test_storage_class_put(
         self, store, prefix, key, value, storage_class, bucket

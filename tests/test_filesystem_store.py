@@ -7,7 +7,6 @@ import tempfile
 from simplekv._compat import urlparse
 
 from simplekv.fs import FilesystemStore, WebFilesystemStore
-from tempdir import TempDir
 
 from basic_store import BasicStore
 from url_store import UrlStore
@@ -22,9 +21,8 @@ import pytest
 
 class TestBaseFilesystemStore(BasicStore, UrlStore, UUIDGen, HashGen):
     @pytest.yield_fixture
-    def tmpdir(self):
-        with TempDir() as tmpdir:
-            yield tmpdir
+    def tmpdir(self, tmp_path):
+        yield str(tmp_path)
 
     @pytest.fixture
     def store(self, tmpdir):
