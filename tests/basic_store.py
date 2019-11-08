@@ -3,7 +3,6 @@
 import os
 import time
 import tempfile
-from tempdir import TempDir
 
 import pytest
 from simplekv._compat import BytesIO, xrange, text_type
@@ -133,14 +132,13 @@ class BasicStore(object):
 
             assert store.get(key) == value
 
-    def test_get_into_file(self, store, key, value):
-        with TempDir() as tmpdir:
-            store.put(key, value)
-            out_filename = os.path.join(tmpdir, 'output')
+    def test_get_into_file(self, store, key, value, tmp_path):
+        store.put(key, value)
+        out_filename = os.path.join(str(tmp_path), 'output')
 
-            store.get_file(key, out_filename)
+        store.get_file(key, out_filename)
 
-            assert open(out_filename, 'rb').read() == value
+        assert open(out_filename, 'rb').read() == value
 
     def test_get_into_stream(self, store, key, value):
         store.put(key, value)

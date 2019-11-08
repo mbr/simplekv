@@ -1,7 +1,6 @@
 from basic_store import BasicStore
 from dulwich.repo import Repo
 from idgens import UUIDGen, HashGen
-from tempdir import TempDir
 import pytest
 
 from simplekv.git import GitCommitStore
@@ -21,10 +20,9 @@ class TestGitCommitStore(BasicStore, UUIDGen, HashGen):
         return request.param
 
     @pytest.yield_fixture
-    def repo_path(self):
-        with TempDir() as tmpdir:
-            Repo.init_bare(tmpdir)
-            yield tmpdir
+    def repo_path(self, tmp_path):
+        Repo.init_bare(str(tmp_path))
+        yield str(tmp_path)
 
     @pytest.fixture
     def store(self, repo_path, branch, subdir_name):
