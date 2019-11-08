@@ -15,6 +15,9 @@ matrix:
     - python: 3.6
       env:
         - TOXENV=py36
+    - python: 3.6
+      env:
+        - TOXENV=py36-old-azure-storage-blob
 
 services:
 - redis-server
