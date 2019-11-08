@@ -5,6 +5,7 @@ from simplekv.contrib import ExtendedKeyspaceMixin
 from basic_store import BasicStore, OpenSeekTellStore
 from conftest import ExtendedKeyspaceTests
 import pytest
+from base64 import b64encode
 
 pytest.importorskip('azure.storage.blob')
 
@@ -36,18 +37,34 @@ def create_azure_conn_string(credentials):
     return fmt_str.format(account_name, account_key)
 
 
+def _delete_container(conn_string, container):
+    try:
+        # for azure-storage-blob>=12:
+        from azure.storage.blob import BlobServiceClient
+        from azure.core.exceptions import AzureError
+
+        s = BlobServiceClient.from_connection_string(conn_string)
+        try:
+            s.delete_container(container)
+        except AzureError as ex:
+            # ignore the ContainerNotFound error:
+            if ex.error_code != 'ContainerNotFound':
+                raise
+    except ImportError:
+        # for azure-storage-blob<12
+        from azure.storage.blob import BlockBlobService
+        s = BlockBlobService(connection_string=conn_string)
+        s.delete_container(container)
+
+
 class TestAzureStorage(BasicStore, OpenSeekTellStore):
     @pytest.fixture
     def store(self):
-        from azure.storage.blob import BlockBlobService
-
-        container = uuid()
+        container = str(uuid())
         conn_string = create_azure_conn_string(load_azure_credentials())
-        s = BlockBlobService(connection_string=conn_string)
-
         yield AzureBlockBlobStore(conn_string=conn_string, container=container,
                                   public=False)
-        s.delete_container(container)
+        _delete_container(conn_string, container)
 
 
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
@@ -55,22 +72,17 @@ class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
     def store(self):
         class ExtendedKeysStore(ExtendedKeyspaceMixin, AzureBlockBlobStore):
             pass
-        from azure.storage.blob import BlockBlobService
 
-        container = uuid()
+        container = str(uuid())
         conn_string = create_azure_conn_string(load_azure_credentials())
-        s = BlockBlobService(connection_string=conn_string)
-
         yield ExtendedKeysStore(conn_string=conn_string,
                                 container=container, public=False)
-        s.delete_container(container)
+        _delete_container(conn_string, container)
 
 
 def test_azure_setgetstate():
-    from azure.storage.blob import BlockBlobService
-    container = uuid()
+    container = str(uuid())
     conn_string = create_azure_conn_string(load_azure_credentials())
-    s = BlockBlobService(connection_string=conn_string)
     store = AzureBlockBlobStore(conn_string=conn_string, container=container)
     store.put(u'key1', b'value1')
 
@@ -78,7 +90,7 @@ def test_azure_setgetstate():
     store = pickle.loads(buf)
 
     assert store.get(u'key1') == b'value1'
-    s.delete_container(container)
+    _delete_container(conn_string, container)
 
 
 def test_azure_store_attributes():
@@ -112,30 +124,41 @@ class TestAzureExceptionHandling(object):
         assert u"The specified container does not exist." in str(exc.value)
 
     def test_wrong_endpoint(self):
-        from azure.storage.common.retry import ExponentialRetry
-        container = uuid()
+        container = str(uuid())
         conn_string = create_azure_conn_string(load_azure_credentials())
         conn_string += \
             ";BlobEndpoint=https://hopenostorethere.blob.core.windows.net;"
         store = AzureBlockBlobStore(conn_string=conn_string,
                                     container=container,
                                     create_if_missing=False)
-        store.block_blob_service.retry = ExponentialRetry(max_attempts=0).retry
+        if hasattr(store, 'block_blob_service'):
+            from azure.storage.common.retry import ExponentialRetry
+            store.block_blob_service.retry = ExponentialRetry(
+                max_attempts=0
+            ).retry
+        else:
+            store.blob_container_client._config.retry_policy.total_retries = 0
 
         with pytest.raises(IOError) as exc:
             store.put(u"key", b"data")
-        assert u"Failed to establish a new connection" in str(exc.value)
+        assert u"connect" in str(exc.value)
 
     def test_wrong_credentials(self):
-        from azure.storage.common.retry import ExponentialRetry
-        container = uuid()
+        container = str(uuid())
         conn_string = \
             'DefaultEndpointsProtocol=https;AccountName={};AccountKey={}'.\
             format("testaccount", "wrongsecret")
         store = AzureBlockBlobStore(conn_string=conn_string,
                                     container=container,
                                     create_if_missing=False)
-        store.block_blob_service.retry = ExponentialRetry(max_attempts=0).retry
+
+        if hasattr(store, 'block_blob_service'):
+            from azure.storage.common.retry import ExponentialRetry
+            store.block_blob_service.retry = ExponentialRetry(
+                max_attempts=0
+            ).retry
+        else:
+            store.blob_container_client._config.retry_policy.total_retries = 0
 
         with pytest.raises(IOError) as exc:
             store.put(u"key", b"data")
@@ -149,11 +172,8 @@ class TestChecksum(object):
 
     @pytest.fixture
     def store(self):
-        from azure.storage.blob import BlockBlobService
-
-        container = uuid()
+        container = str(uuid())
         conn_string = create_azure_conn_string(load_azure_credentials())
-        s = BlockBlobService(connection_string=conn_string)
 
         yield AzureBlockBlobStore(
             conn_string=conn_string,
@@ -161,13 +181,20 @@ class TestChecksum(object):
             public=False,
             checksum=True,
         )
-        s.delete_container(container)
+        _delete_container(conn_string, container)
 
     def _checksum(self, store):
-        return store.block_blob_service.get_blob_properties(
-            store.container,
-            self.KEY,
-        ).properties.content_settings.content_md5
+        # request the md5 checksum from azure and return the b64 encoded value
+        if hasattr(store, 'block_blob_service'):
+            return store.block_blob_service.get_blob_properties(
+                store.container,
+                self.KEY,
+            ).properties.content_settings.content_md5
+        else:
+            checksum_bytes = store.blob_container_client.get_blob_client(
+                self.KEY
+            ).get_blob_properties().content_settings.content_md5
+            return b64encode(checksum_bytes).decode()
 
     def test_checksum_put(self, store):
         store.put(self.KEY, self.CONTENT)
