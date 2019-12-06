@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.14.0
+======
+
+* Add support for ``azure-storage-blob`` version 12. (``azure-storage-blob`` version 2 is still supported.)
+
 0.13.1
 ======
 
