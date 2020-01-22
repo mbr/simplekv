@@ -4,6 +4,7 @@ This implements the AzureBlockBlobStore for `azure-storage-blob~=12`
 import hashlib
 import io
 from contextlib import contextmanager
+from azure.core.exceptions import ResourceNotFoundError
 
 from .._compat import binary_type
 from .. import KeyValueStore
@@ -95,7 +96,13 @@ class AzureBlockBlobStore(KeyValueStore):
             return downloader.readall()
 
     def _has_key(self, key):
-        return self.blob_container_client.exists(key)
+        # https://github.com/Azure/azure-sdk-for-python/issues/9507
+        blob_client = self.blob_container_client.get_blob_client(key)
+        with map_azure_exceptions(key, ("BlobNotFound",)):
+            # One of the very few methods which do not mutate state
+            blob_client.get_blob_properties()
+            return True
+        return False
 
     def iter_keys(self, prefix=None):
         blobs = self.blob_container_client.list_blobs(name_starts_with=prefix)

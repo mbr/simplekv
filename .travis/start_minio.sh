@@ -10,5 +10,6 @@ export MINIO_ACCESS_KEY=minio
 export MINIO_SECRET_KEY=miniostorage
 
 mkdir -p ~/s3
-~/minio version
+
+~/minio --version
 ~/minio server ~/s3 &

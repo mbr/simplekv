@@ -1,6 +1,11 @@
 Changelog
 *********
 
+Next
+====
+
+* Fix an issue where `key in store` check for the new azure-storage-blob API did raise
+
 0.14.0
 ======
 

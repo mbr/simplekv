@@ -66,6 +66,11 @@ class TestAzureStorage(BasicStore, OpenSeekTellStore):
                                   public=False)
         _delete_container(conn_string, container)
 
+    def test_exists(self, store):
+        assert "key" not in store
+        store.put("key", b"value")
+        assert "key" in store
+
 
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
     @pytest.fixture
