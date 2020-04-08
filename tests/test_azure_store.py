@@ -112,15 +112,35 @@ def test_azure_store_attributes():
     assert abbs2.checksum is True
 
 
+def test_azure_special_args():
+    # For azure-storage-blob 12,
+    # test that the special arguments `max_block_size` and
+    # `max_single_put_size` propagate to the constructed ContainerClient
+    conn_string = create_azure_conn_string(load_azure_credentials())
+    MBS = 983645
+    MSP = 756235
+    abbs = AzureBlockBlobStore(
+        conn_string=conn_string,
+        container='container-unused',
+        max_block_size=MBS,
+        max_single_put_size=MSP,
+        create_if_missing=False
+    )
+    if hasattr(abbs, "blob_container_client"):
+        cfg = abbs.blob_container_client._config
+        assert cfg.max_single_put_size == MSP
+        assert cfg.max_block_size == MBS
+
+
 class TestAzureExceptionHandling(object):
     def test_missing_container(self):
-        container = uuid()
+        container = str(uuid())
         conn_string = create_azure_conn_string(load_azure_credentials())
         store = AzureBlockBlobStore(conn_string=conn_string,
                                     container=container,
                                     create_if_missing=False)
         with pytest.raises(IOError) as exc:
-            store.iter_keys()
+            store.keys()
         assert u"The specified container does not exist." in str(exc.value)
 
     def test_wrong_endpoint(self):

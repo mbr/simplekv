@@ -95,11 +95,21 @@ class AzureBlockBlobStore(KeyValueStore):
             return downloader.readall()
 
     def _has_key(self, key):
-        return self.blob_container_client.exists(key)
+        blob_client = self.blob_container_client.get_blob_client(key)
+        with map_azure_exceptions(key, ("BlobNotFound",)):
+            blob_client.get_blob_properties()
+            return True
+        return False
 
     def iter_keys(self, prefix=None):
-        blobs = self.blob_container_client.list_blobs(name_starts_with=prefix)
-        return (blob.name for blob in blobs)
+        with map_azure_exceptions():
+            blobs = self.blob_container_client.list_blobs(name_starts_with=prefix)
+
+        def gen_names():
+            with map_azure_exceptions():
+                for blob in blobs:
+                    yield blob.name
+        return gen_names()
 
     def iter_prefixes(self, delimiter, prefix=u""):
         return (
@@ -193,7 +203,7 @@ class IOInterface(io.BufferedIOBase):
         if self.closed:
             raise ValueError("I/O operation on closed file")
         max_size = max(0, self.size - self.pos)
-        if size < 0:
+        if size < 0 or size > max_size:
             size = max_size
         if size == 0:
             return b""

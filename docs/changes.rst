@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.14.1
+======
+
+* Fix support for ``key in store`` for azure with ``azure-storage-blob`` 12
+
 0.14.0
 ======
 
