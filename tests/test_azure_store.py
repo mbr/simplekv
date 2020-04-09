@@ -12,23 +12,27 @@ asb = pytest.importorskip('azure.storage.blob')
 
 def get_azure_conn_string():
     cfg_fn = 'azure_credentials.ini'
-    parser = ConfigParser()
+    parser = ConfigParser({
+        'protocol': 'https',
+        'endpoint': '',
+        'account_name': '',
+    })
     result = parser.read(cfg_fn)
     if not result:
         pytest.skip('file {} not found'.format(cfg_fn))
 
     for section in parser.sections():
-        account_name = parser.get(section, 'account_name', fallback=None)
-        if account_name is None:
+        account_name = parser.get(section, 'account_name')
+        if not account_name:
             pytest.skip("no 'account_name' found in file {}".format(cfg_fn))
 
         account_key = parser.get(section, 'account_key')
-        protocol = parser.get(section, 'protocol', fallback='https')
-        endpoint = parser.get(section, 'endpoint', fallback=None)
+        protocol = parser.get(section, 'protocol')
+        endpoint = parser.get(section, 'endpoint')
         conn_string = 'DefaultEndpointsProtocol={};AccountName={};AccountKey={}'.format(
             protocol, account_name, account_key
         )
-        if endpoint is not None:
+        if endpoint:
             conn_string += ';BlobEndpoint={}'.format(endpoint)
         return conn_string
 
