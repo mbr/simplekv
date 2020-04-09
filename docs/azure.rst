@@ -27,17 +27,26 @@ Here is a short example:
    print store.get(u'some-key')
 
 
-Unit testing
-============
+Testing
+=======
 
-The unit-tests for the azure backend are either run by travis on the main repo, or if you provide
-your own credentials via a `azure_credentials.ini`` file in the root folder of the project.
-An example looks like this:
+The tests for the azure backend either
 
-::
+ * use a real azure blob store account or
+ * use the `Azurite <https://github.com/Azure/Azurite>`_ blob storage emulator
 
-  [my-azure-test-account]
-  account_name=my_account_name
-  account_key=AZURE_TEST_KEY
+The travis tests use the second method.
+
+To test with a real blob store account, edit the file ``azure_credentials.ini``
+s.t. the first config section contains the actual account_name and account_key
+of your test account.
+
+To test against a locally running azurite instance make sure to start azurite::
+
+ docker run -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 &
+
+before running the tests.
+
+To skip the tests of the azure backend, comment out the ``account_name`` in the ``azure_credentials.ini`` file.
 
 .. autoclass:: simplekv.net.azurestore.AzureBlockBlobStore
