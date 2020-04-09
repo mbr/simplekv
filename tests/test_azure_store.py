@@ -7,34 +7,30 @@ from conftest import ExtendedKeyspaceTests
 import pytest
 from base64 import b64encode
 
-pytest.importorskip('azure.storage.blob')
+asb = pytest.importorskip('azure.storage.blob')
 
 
-def load_azure_credentials():
-    # loaded from the same place as tox.ini. here's a sample
-    #
-    # [my-azure-storage-account]
-    # account_name=foo
-    # account_key=bar
+def get_azure_conn_string():
     cfg_fn = 'azure_credentials.ini'
-
     parser = ConfigParser()
     result = parser.read(cfg_fn)
     if not result:
         pytest.skip('file {} not found'.format(cfg_fn))
 
     for section in parser.sections():
-        return {
-            'account_name': parser.get(section, 'account_name'),
-            'account_key': parser.get(section, 'account_key'),
-        }
+        account_name = parser.get(section, 'account_name', fallback=None)
+        if account_name is None:
+            pytest.skip("no 'account_name' found in file {}".format(cfg_fn))
 
-
-def create_azure_conn_string(credentials):
-    account_name = credentials['account_name']
-    account_key = credentials['account_key']
-    fmt_str = 'DefaultEndpointsProtocol=https;AccountName={};AccountKey={}'
-    return fmt_str.format(account_name, account_key)
+        account_key = parser.get(section, 'account_key')
+        protocol = parser.get(section, 'protocol', fallback='https')
+        endpoint = parser.get(section, 'endpoint', fallback=None)
+        conn_string = 'DefaultEndpointsProtocol={};AccountName={};AccountKey={}'.format(
+            protocol, account_name, account_key
+        )
+        if endpoint is not None:
+            conn_string += ';BlobEndpoint={}'.format(endpoint)
+        return conn_string
 
 
 def _delete_container(conn_string, container):
@@ -61,7 +57,7 @@ class TestAzureStorage(BasicStore, OpenSeekTellStore):
     @pytest.fixture
     def store(self):
         container = str(uuid())
-        conn_string = create_azure_conn_string(load_azure_credentials())
+        conn_string = get_azure_conn_string()
         yield AzureBlockBlobStore(conn_string=conn_string, container=container,
                                   public=False)
         _delete_container(conn_string, container)
@@ -70,11 +66,15 @@ class TestAzureStorage(BasicStore, OpenSeekTellStore):
 class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
     @pytest.fixture
     def store(self):
+        azure_storage_blob_major_version = int(asb.__version__.split('.', 1)[0])
+        conn_string = get_azure_conn_string()
+        use_azurite = 'http://127.0.0.1:10000/devstoreaccount1' in conn_string
+        if use_azurite and azure_storage_blob_major_version < 12:
+            pytest.skip("Compatibility issues with azurite and azure-storage-blob<12")
+        container = str(uuid())
+
         class ExtendedKeysStore(ExtendedKeyspaceMixin, AzureBlockBlobStore):
             pass
-
-        container = str(uuid())
-        conn_string = create_azure_conn_string(load_azure_credentials())
         yield ExtendedKeysStore(conn_string=conn_string,
                                 container=container, public=False)
         _delete_container(conn_string, container)
@@ -82,7 +82,7 @@ class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
 
 def test_azure_setgetstate():
     container = str(uuid())
-    conn_string = create_azure_conn_string(load_azure_credentials())
+    conn_string = get_azure_conn_string()
     store = AzureBlockBlobStore(conn_string=conn_string, container=container)
     store.put(u'key1', b'value1')
 
@@ -116,7 +116,7 @@ def test_azure_special_args():
     # For azure-storage-blob 12,
     # test that the special arguments `max_block_size` and
     # `max_single_put_size` propagate to the constructed ContainerClient
-    conn_string = create_azure_conn_string(load_azure_credentials())
+    conn_string = get_azure_conn_string()
     MBS = 983645
     MSP = 756235
     abbs = AzureBlockBlobStore(
@@ -135,7 +135,7 @@ def test_azure_special_args():
 class TestAzureExceptionHandling(object):
     def test_missing_container(self):
         container = str(uuid())
-        conn_string = create_azure_conn_string(load_azure_credentials())
+        conn_string = get_azure_conn_string()
         store = AzureBlockBlobStore(conn_string=conn_string,
                                     container=container,
                                     create_if_missing=False)
@@ -145,9 +145,10 @@ class TestAzureExceptionHandling(object):
 
     def test_wrong_endpoint(self):
         container = str(uuid())
-        conn_string = create_azure_conn_string(load_azure_credentials())
-        conn_string += \
-            ";BlobEndpoint=https://hopenostorethere.blob.core.windows.net;"
+        conn_string = get_azure_conn_string()
+        conn_settings = dict([s.split("=", 1) for s in conn_string.split(";") if s])
+        conn_settings['BlobEndpoint'] = 'https://host-does-not-exist/'
+        conn_string = ';'.join('{}={}'.format(key, value) for key, value in conn_settings.items())
         store = AzureBlockBlobStore(conn_string=conn_string,
                                     container=container,
                                     create_if_missing=False)
@@ -193,7 +194,7 @@ class TestChecksum(object):
     @pytest.fixture
     def store(self):
         container = str(uuid())
-        conn_string = create_azure_conn_string(load_azure_credentials())
+        conn_string = get_azure_conn_string()
 
         yield AzureBlockBlobStore(
             conn_string=conn_string,
