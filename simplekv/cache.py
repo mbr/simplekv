@@ -112,7 +112,7 @@ class CacheDecorator(StoreDecorator):
 
     def copy(self, source, dest):
         """Implementation of :meth:`~simplekv.CopyMixin.copy`.
-        
+
         Copies the data in the backing store and removes the destination key from the cache,
          in case it was already populated.
          Does not work when the backing store does not implement copy.

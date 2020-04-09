@@ -24,11 +24,11 @@ class _HMACFileReader(object):
         if '' == self.buffer or 0 == n:
             return ''
 
-        new_read = self.source.read(n) if None != n else self.source.read()
-        finished = (None == n or len(new_read) != n)
+        new_read = self.source.read(n) if n is not None else self.source.read()
+        finished = (n is None or len(new_read) != n)
         self.buffer += new_read
 
-        if None != n:
+        if n is not None:
             offset = min(n, len(self.buffer) - self.hm.digest_size)
         else:
             offset = len(self.buffer) - self.hm.digest_size
