@@ -6,6 +6,7 @@ from io import BytesIO
 from .. import KeyValueStore, TimeToLiveMixin, NOT_SET, FOREVER
 import re
 
+
 class RedisStore(TimeToLiveMixin, KeyValueStore):
     """Uses a redis-database as the backend.
 

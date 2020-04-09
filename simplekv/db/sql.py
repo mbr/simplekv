@@ -13,7 +13,8 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
     def __init__(self, bind, metadata, tablename):
         self.bind = bind
 
-        self.table = Table(tablename, metadata,
+        self.table = Table(
+            tablename, metadata,
             # 250 characters is the maximum key length that we guarantee can be
             # handled by any kind of backend
             Column('key', String(250), primary_key=True),
@@ -32,8 +33,8 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
 
     def _get(self, key):
         rv = self.bind.execute(
-                select([self.table.c.value], self.table.c.key == key).limit(1)
-             ).scalar()
+            select([self.table.c.value], self.table.c.key == key).limit(1)
+        ).scalar()
 
         if not rv:
             raise KeyError(key)

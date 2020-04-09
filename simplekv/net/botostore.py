@@ -112,7 +112,7 @@ class BotoStore(KeyValueStore, UrlMixin, CopyMixin):
         if not self._has_key(source):
             raise KeyError(source)
         with map_boto_exceptions(key=source):
-                self.bucket.copy_key(self.prefix + dest, self.bucket.name, self.prefix + source)
+            self.bucket.copy_key(self.prefix + dest, self.bucket.name, self.prefix + source)
 
     def _put(self, key, data):
         k = self.__new_key(key)

@@ -4,7 +4,8 @@ This implements the AzureBlockBlobStore for `azure-storage-blob<12`
 import io
 from contextlib import contextmanager
 
-from ._azurestore_common import _byte_buffer_md5, _file_md5, _filename_md5, lazy_property, LAZY_PROPERTY_ATTR_PREFIX
+from ._azurestore_common import _byte_buffer_md5, _file_md5, _filename_md5,\
+    lazy_property, LAZY_PROPERTY_ATTR_PREFIX
 
 from .._compat import binary_type
 from .. import KeyValueStore
@@ -33,7 +34,8 @@ def map_azure_exceptions(key=None, exc_pass=()):
 
 class AzureBlockBlobStore(KeyValueStore):
     def __init__(self, conn_string=None, container=None, public=False,
-                 create_if_missing=True, max_connections=2, max_block_size=None, max_single_put_size=None,
+                 create_if_missing=True, max_connections=2,
+                 max_block_size=None, max_single_put_size=None,
                  checksum=False,
                  socket_timeout=None):
         self.conn_string = conn_string
@@ -98,7 +100,9 @@ class AzureBlockBlobStore(KeyValueStore):
         if prefix == "":
             prefix = None
         with map_azure_exceptions():
-            blobs = self.block_blob_service.list_blob_names(self.container, prefix=prefix, delimiter=delimiter)
+            blobs = self.block_blob_service.list_blob_names(
+                self.container, prefix=prefix, delimiter=delimiter
+            )
             return (blob.decode('utf-8') if isinstance(blob, binary_type)
                     else blob for blob in blobs)
 

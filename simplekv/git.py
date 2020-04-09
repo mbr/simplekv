@@ -81,7 +81,6 @@ class GitCommitStore(KeyValueStore):
     def _key_components(self, key):
         return [c.encode('ascii') for c in key.split('/')]
 
-
     @property
     def _refname(self):
         return b'refs/heads/' + self.branch

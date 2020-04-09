@@ -7,8 +7,8 @@ from simplekv._compat import key_type
 
 VALID_NON_NUM_EXTENDED = VALID_NON_NUM + r"/ "
 VALID_KEY_REGEXP_EXTENDED = "^[%s0-9a-zA-Z]+$" % re.escape(VALID_NON_NUM_EXTENDED)
-"""This regular expression tests if a key is valid when the extended keyspace mixin is used. Allowed are all
-alphanumeric characters, as well as ``!"`#$%&'()+,-.<=>?@[]^_{}~/``. and spaces"""
+"""This regular expression tests if a key is valid when the extended keyspace mixin is used.
+Allowed are all alphanumeric characters, as well as ``!"`#$%&'()+,-.<=>?@[]^_{}~/``. and spaces"""
 VALID_KEY_RE_EXTENDED = re.compile(VALID_KEY_REGEXP_EXTENDED)
 """A compiled version of :data:`~simplekv.VALID_KEY_REGEXP_EXTENDED`."""
 

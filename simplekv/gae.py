@@ -25,11 +25,13 @@ class NdbStore(KeyValueStore):
         return obj.v
 
     def _has_key(self, key):
-        return None != self.obj_class.get_by_id(id=key)
+        return self.obj_class.get_by_id(id=key) is not None
 
     def iter_keys(self, prefix=u""):
         qry_iter = self.obj_class.query().iter(keys_only=True)
-        return filter(lambda k: k.string_id().startswith(prefix), (k.string_id() for k in qry_iter))
+        return filter(lambda k: k.string_id().startswith(prefix),
+                      (k.string_id() for k in qry_iter)
+                      )
 
     def _open(self, key):
         return StringIO(self._get(key))

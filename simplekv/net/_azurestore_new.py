@@ -140,7 +140,9 @@ class AzureBlockBlobStore(KeyValueStore):
         from azure.storage.blob import ContentSettings
 
         if self.checksum:
-            content_settings = ContentSettings(content_md5=_byte_buffer_md5(data, b64encode=False))
+            content_settings = ContentSettings(
+                content_md5=_byte_buffer_md5(data, b64encode=False)
+            )
         else:
             content_settings = ContentSettings()
 
