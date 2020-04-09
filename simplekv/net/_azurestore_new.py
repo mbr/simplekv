@@ -1,11 +1,10 @@
 """
 This implements the AzureBlockBlobStore for `azure-storage-blob~=12`
 """
-import hashlib
 import io
 from contextlib import contextmanager
 
-from .._compat import binary_type
+from .._compat import PY2
 from .. import KeyValueStore
 
 from ._azurestore_common import (
@@ -14,6 +13,19 @@ from ._azurestore_common import (
     lazy_property,
     LAZY_PROPERTY_ATTR_PREFIX,
 )
+
+
+if PY2:
+
+    def _blobname_to_texttype(name):
+        """
+        Convert the str `name` to unicode
+        """
+        return name.decode('utf-8')
+else:
+
+    def _blobname_to_texttype(name):
+        return name
 
 
 @contextmanager
@@ -47,7 +59,7 @@ class AzureBlockBlobStore(KeyValueStore):
     ):
         """
         Note that socket_timeout is unused;
-        they only exist for backward compatibility.
+        it only exist for backward compatibility.
         """
         self.conn_string = conn_string
         self.container = container
@@ -108,12 +120,12 @@ class AzureBlockBlobStore(KeyValueStore):
         def gen_names():
             with map_azure_exceptions():
                 for blob in blobs:
-                    yield blob.name
+                    yield _blobname_to_texttype(blob.name)
         return gen_names()
 
     def iter_prefixes(self, delimiter, prefix=u""):
         return (
-            blob_prefix.name
+            _blobname_to_texttype(blob_prefix.name)
             for blob_prefix in self.blob_container_client.walk_blobs(
                 name_starts_with=prefix, delimiter=delimiter
             )
