@@ -39,10 +39,27 @@ class TestHMACFileReader(object):
     def chunk_sizes(self, value):
         return [10 ** n for n in xrange(2, 8)]
 
+    def test_close(self, create_reader):
+        reader = create_reader()
+        assert not reader.source.closed
+        reader.close()
+        assert reader.source.closed
+
+    def test_close_via_context(self, create_reader):
+        reader = create_reader()
+        assert not reader.source.closed
+        with reader as r:
+            assert r is reader
+        assert reader.source.closed
+
     def test_reading_limit_0(self, create_reader):
         reader = create_reader()
-        assert reader.read(0) == ''
-        assert reader.read(0) == ''
+        data = reader.read(0)
+        assert isinstance(data, bytes)
+        assert len(data) == 0
+        data = reader.read(0)
+        assert isinstance(data, bytes)
+        assert len(data) == 0
 
     def test_reading_with_limit(self, secret_key, hashfunc, value,
                                 create_reader, chunk_sizes):
@@ -100,6 +117,7 @@ class TestHMACFileReader(object):
 # this only works with dicts, as we access the internal structures to
 # manipulate values
 class HMACDec(object):
+
     @pytest.fixture
     def hmacstore(self, secret_key, store):
         return HMACDecorator(secret_key, store)
@@ -110,6 +128,32 @@ class HMACDec(object):
 
         with pytest.raises(VerificationException):
             hmacstore.get(key)
+
+    def test_copy_raises_not_implemented(self, store):
+        with pytest.raises(NotImplementedError):
+            HMACDecorator(b'secret', store).copy(u'src', u'dest')
+
+    def test_put_file_obj(self, key, value, hmacstore):
+        hmacstore.put_file(key, BytesIO(value))
+        assert hmacstore.get(key) == value
+
+    def test_put_file_str(self, key, value, hmacstore):
+        with tempfile.NamedTemporaryFile(mode='wb', delete=False) as f:
+            f.write(value)
+        hmacstore.put_file(key, f.name)
+        assert hmacstore.get(key) == value
+
+    def test_get_file_obj(self, key, value, hmacstore):
+        hmacstore.put(key, value)
+        b = BytesIO()
+        hmacstore.get_file(key, b)
+        assert b.getvalue() == value
+
+    def test_get_file_non_writable_target(self, key, value, hmacstore):
+        hmacstore.put(key, value)
+        path = '/tmp/this/file/does/not/exist'
+        with pytest.raises(IOError, match='Error opening {} for writing'.format(path)):
+            hmacstore.get_file(key, path)
 
     def test_get_file_fails_on_manipulation(self, hmacstore, key, value):
         hmacstore.put(key, value)
