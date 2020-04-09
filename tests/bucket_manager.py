@@ -48,9 +48,9 @@ def load_boto_credentials():
     cfg_fn = 'boto_credentials.ini'
 
     parser = ConfigParser({'host': 's3.amazonaws.com',
-                           'is_secure': True,
-                           'ordinary_calling_format': False,
-                           'port': None})
+                           'is_secure': 'true',
+                           'ordinary_calling_format': 'false',
+                           })
     if not parser.read(cfg_fn):
         pytest.skip('file {} not found'.format(cfg_fn))
 
