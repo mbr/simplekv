@@ -21,8 +21,8 @@ class _HMACFileReader(object):
                                         '(too small)')
 
     def read(self, n=None):
-        if '' == self.buffer or 0 == n:
-            return ''
+        if b'' == self.buffer or 0 == n:
+            return b''
 
         new_read = self.source.read(n) if n is not None else self.source.read()
         finished = (n is None or len(new_read) != n)
@@ -94,11 +94,6 @@ class HMACDecorator(StoreDecorator):
         self.__hashfunc = hashfunc
         self.__secret_key = bytes(secret_key)
 
-    @property
-    def hmac_digestsize(self):
-        # returns, in bytes, the size of the digest
-        return self.hmac_mixin_hashfunc().digestsize
-
     def __new_hmac(self, key, msg=None):
         if not msg:
             msg = b''
@@ -130,7 +125,7 @@ class HMACDecorator(StoreDecorator):
         if isinstance(file, str):
             try:
                 f = open(file, 'wb')
-            except OSError as e:
+            except (OSError, IOError) as e:
                 raise IOError('Error opening %s for writing: %r' % (
                     file, e
                 ))
