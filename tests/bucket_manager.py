@@ -32,6 +32,22 @@ def boto_bucket(access_key, secret_key, host,
         key.delete()
     bucket.delete()
 
+@contextmanager
+def boto3_bucket(access_key, secret_key, host,
+                 bucket_name=None, **kwargs):
+    import boto3
+    name = bucket_name or 'testrun-bucket-{}'.format(uuid())
+    s3_client = boto3.client('s3')
+    s3_client.create_bucket(Bucket=name)
+    s3_resource = boto3.resource('s3')
+    bucket = s3_resource.Bucket(name)
+
+    yield bucket
+
+    for key in bucket.objects.all():
+        key.delete()
+    bucket.delete()
+
 
 def load_boto_credentials():
     # loaded from the same place tox.ini. here's a sample
