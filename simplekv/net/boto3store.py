@@ -21,7 +21,6 @@ def map_boto3_exceptions(key=None, exc_pass=()):
         raise IOError(str(ex))
 
 
-# todo: test this more thoroughly
 class Boto3SimpleKeyFile(io.RawIOBase):
     # see: https://alexwlchan.net/2019/02/working-with-large-s3-objects/
     # author: Alex Chan, license: MIT
@@ -30,7 +29,7 @@ class Boto3SimpleKeyFile(io.RawIOBase):
         self.position = 0
 
     def __repr__(self):
-        return "<%s s3_object=%r>" % (type(self).__name__, self.s3_object)
+        return "<%s s3_object=%r >" % (type(self).__name__, self.s3_object)
 
     @property
     def size(self):
