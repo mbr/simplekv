@@ -5,7 +5,7 @@ import os
 import pytest
 
 boto3 = pytest.importorskip('boto3')
-from simplekv.net.botostore import BotoStore
+from simplekv.net.boto3store import Boto3Store
 from simplekv._compat import BytesIO
 
 from basic_store import BasicStore
@@ -27,7 +27,7 @@ def bucket(credentials):
         yield bucket
 
 
-class TestBotoStorage(BasicStore, UrlStore):
+class TestBoto3Storage(BasicStore, UrlStore):
     @pytest.fixture(params=[True, False])
     def reduced_redundancy(self, request):
         return request.param
@@ -41,8 +41,8 @@ class TestBotoStorage(BasicStore, UrlStore):
         return request.param
 
     @pytest.fixture
-    def store(self, bucket, prefix, reduced_redundancy):
-        return BotoStore(bucket, prefix, reduced_redundancy=reduced_redundancy)
+    def store(self, bucket, prefix):
+        return Boto3Store(bucket, prefix)
 
     # Disable max key length test as it leads to problems with minio
     test_max_key_length = None
@@ -79,10 +79,9 @@ class TestBotoStorage(BasicStore, UrlStore):
         assert bucket.Object(keyname).storage_class == storage_class
 
 
-class TestExtendedKeyspaceBotoStore(TestBotoStorage, ExtendedKeyspaceTests):
+class TestExtendedKeyspaceBoto3Store(TestBoto3Storage, ExtendedKeyspaceTests):
     @pytest.fixture
-    def store(self, bucket, prefix, reduced_redundancy):
-        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, BotoStore):
+    def store(self, bucket, prefix):
+        class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, Boto3Store):
             pass
-        return ExtendedKeyspaceStore(bucket, prefix,
-                                     reduced_redundancy=reduced_redundancy)
+        return ExtendedKeyspaceStore(bucket, prefix)
