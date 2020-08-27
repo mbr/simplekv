@@ -80,6 +80,12 @@ class Boto3SimpleKeyFile(io.RawIOBase):
 
 class Boto3Store(KeyValueStore, CopyMixin):
     def __init__(self, bucket, prefix=''):
+        if isinstance(bucket, str):
+            import boto3
+            s3_resource = boto3.resource('s3')
+            bucket = s3_resource.Bucket(bucket)
+            if bucket not in s3_resource.buckets.all():
+                raise ValueError('invalid s3 bucket name')
         self.bucket = bucket
         self.prefix = prefix.strip().lstrip('/')
 
@@ -123,7 +129,7 @@ class Boto3Store(KeyValueStore, CopyMixin):
     def _copy(self, source, dest):
         obj = self.__new_object(dest)
         with map_boto3_exceptions(key=source):
-            obj.load()
+            self.__new_object(source).load()
             obj.copy_from(CopySource=self.bucket.name + '/' + self.prefix + source)
 
     def _put(self, key, data):
