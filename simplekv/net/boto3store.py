@@ -16,7 +16,8 @@ def map_boto3_exceptions(key=None, exc_pass=()):
     try:
         yield
     except ClientError as ex:
-        if ex.response['Error']['Code'] == 'NoSuchKey':
+        code = ex.response['Error']['Code']
+        if code == '404' or code == 'NoSuchKey':
             raise KeyError(key)
         raise IOError(str(ex))
 
@@ -79,8 +80,8 @@ class Boto3SimpleKeyFile(io.RawIOBase):
 
 class Boto3Store(KeyValueStore, CopyMixin):
     def __init__(self, bucket, prefix=''):
-        self.prefix = prefix.strip().lstrip('/')
         self.bucket = bucket
+        self.prefix = prefix.strip().lstrip('/')
 
     def __new_object(self, name):
         return self.bucket.Object(self.prefix + name)
@@ -90,17 +91,6 @@ class Boto3Store(KeyValueStore, CopyMixin):
             prefix_len = len(self.prefix)
             return imap(lambda k: k.key[prefix_len:],
                         self.bucket.objects.filter(Prefix=self.prefix + prefix))
-
-    def _has_key(self, key):
-        from botocore.exceptions import ClientError
-        with map_boto3_exceptions(key=key):
-            try:
-                self.bucket.Object(self.prefix + key).load()
-            except ClientError as error:
-                if error.response['Error']['Code'] == '404':
-                    return False
-                raise error
-            return True
 
     def _delete(self, key):
         self.bucket.Object(self.prefix + key).delete()
@@ -127,13 +117,13 @@ class Boto3Store(KeyValueStore, CopyMixin):
     def _open(self, key):
         obj = self.__new_object(key)
         with map_boto3_exceptions(key=key):
+            obj.load()
             return Boto3SimpleKeyFile(obj)
 
     def _copy(self, source, dest):
-        if not self._has_key(source):
-            raise KeyError(source)
         obj = self.__new_object(dest)
         with map_boto3_exceptions(key=source):
+            obj.load()
             obj.copy_from(CopySource=self.bucket.name + '/' + self.prefix + source)
 
     def _put(self, key, data):
