@@ -2,11 +2,25 @@
 # coding=utf8
 
 from .._compat import imap
-from .. import KeyValueStore, CopyMixin
+from .. import KeyValueStore, UrlMixin, CopyMixin
 from contextlib import contextmanager
 from shutil import copyfileobj
 import io
 
+
+def _public_readable(grants):
+    """Take a list of grants from an ACL and check if they allow public read access."""
+    for grant in grants:
+        # see: https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html
+        if grant['Permission'] not in ('READ', 'FULL_CONTROL'):
+            continue
+        grantee = grant['Grantee']
+        if grantee.get('Type') != 'Group':
+            continue
+        if grantee.get('URI') != 'http://acs.amazonaws.com/groups/global/AllUsers':
+            continue
+        return True
+    return False
 
 @contextmanager
 def map_boto3_exceptions(key=None, exc_pass=()):
@@ -78,8 +92,8 @@ class Boto3SimpleKeyFile(io.RawIOBase):
         return True
 
 
-class Boto3Store(KeyValueStore, CopyMixin):
-    def __init__(self, bucket, prefix=''):
+class Boto3Store(KeyValueStore, UrlMixin, CopyMixin):
+    def __init__(self, bucket, prefix='', url_valid_time=0, public=False):
         if isinstance(bucket, str):
             import boto3
             s3_resource = boto3.resource('s3')
@@ -88,6 +102,8 @@ class Boto3Store(KeyValueStore, CopyMixin):
                 raise ValueError('invalid s3 bucket name')
         self.bucket = bucket
         self.prefix = prefix.strip().lstrip('/')
+        self.url_valid_time = url_valid_time
+        self.public = public
 
     def __new_object(self, name):
         return self.bucket.Object(self.prefix + name)
@@ -131,19 +147,41 @@ class Boto3Store(KeyValueStore, CopyMixin):
         with map_boto3_exceptions(key=source):
             self.__new_object(source).load()
             obj.copy_from(CopySource=self.bucket.name + '/' + self.prefix + source)
+            if self.public:
+                obj.Acl().put(ACL='public-read')
 
     def _put(self, key, data):
         obj = self.__new_object(key)
         with map_boto3_exceptions(key=key):
             obj.put(Body=data)
+            if self.public:
+                obj.Acl().put(ACL='public-read')
             return key
 
     def _put_file(self, key, file):
-        obj = self.__new_object(key)
-        with map_boto3_exceptions(key=key):
-            obj.put(Body=file)
-            return key
+        return self._put(key, file)
 
     def _put_filename(self, key, filename):
         with open(filename, 'rb') as file:
             return self._put(key, file)
+
+    def _url_for(self, key):
+        import boto3
+        import botocore.client
+        import botocore.exceptions
+        obj = self.__new_object(key)
+        try:
+            grants = obj.Acl().grants
+        except botocore.exceptions.ClientError:
+            is_public = False
+        else:
+            is_public = _public_readable(grants)
+        if self.url_valid_time and not is_public:
+            s3_client = boto3.client('s3')
+        else:
+            s3_client = boto3.client('s3', config=botocore.client.Config(signature_version=botocore.UNSIGNED))
+        with map_boto3_exceptions(key=key):
+            return s3_client.generate_presigned_url('get_object',
+                                                    Params={'Bucket': self.bucket.name,
+                                                            'Key': key},
+                                                    ExpiresIn=self.url_valid_time)

@@ -8,6 +8,7 @@ boto3 = pytest.importorskip('boto3')
 from simplekv.net.boto3store import Boto3Store
 
 from basic_store import BasicStore
+from url_store import UrlStore
 from bucket_manager import boto_credentials, boto3_bucket
 from conftest import ExtendedKeyspaceTests
 from simplekv.contrib import ExtendedKeyspaceMixin
@@ -25,7 +26,7 @@ def bucket(credentials):
         yield bucket
 
 
-class TestBoto3Storage(BasicStore):
+class TestBoto3Storage(BasicStore, UrlStore):
     @pytest.fixture(params=['', '/test-prefix'])
     def prefix(self, request):
         return request.param
