@@ -22,6 +22,7 @@ def _public_readable(grants):
         return True
     return False
 
+
 @contextmanager
 def map_boto3_exceptions(key=None, exc_pass=()):
     """Map boto3-specific exceptions to the simplekv-API."""
@@ -93,7 +94,8 @@ class Boto3SimpleKeyFile(io.RawIOBase):
 
 
 class Boto3Store(KeyValueStore, UrlMixin, CopyMixin):
-    def __init__(self, bucket, prefix='', url_valid_time=0, public=False):
+    def __init__(self, bucket, prefix='', url_valid_time=0,
+                 reduced_redundancy=False, public=False, metadata=None):
         if isinstance(bucket, str):
             import boto3
             s3_resource = boto3.resource('s3')
@@ -103,7 +105,9 @@ class Boto3Store(KeyValueStore, UrlMixin, CopyMixin):
         self.bucket = bucket
         self.prefix = prefix.strip().lstrip('/')
         self.url_valid_time = url_valid_time
+        self.reduced_redundancy = reduced_redundancy
         self.public = public
+        self.metadata = metadata or {}
 
     def __new_object(self, name):
         return self.bucket.Object(self.prefix + name)
@@ -144,19 +148,28 @@ class Boto3Store(KeyValueStore, UrlMixin, CopyMixin):
 
     def _copy(self, source, dest):
         obj = self.__new_object(dest)
+        parameters = {
+            'CopySource': self.bucket.name + '/' + self.prefix + source,
+            'Metadata': self.metadata
+        }
+        if self.public:
+            parameters['ACL'] = 'public-read'
+        if self.reduced_redundancy:
+            parameters['StorageClass'] = 'REDUCED_REDUNDANCY'
         with map_boto3_exceptions(key=source):
             self.__new_object(source).load()
-            obj.copy_from(CopySource=self.bucket.name + '/' + self.prefix + source)
-            if self.public:
-                obj.Acl().put(ACL='public-read')
+            obj.copy_from(**parameters)
 
     def _put(self, key, data):
         obj = self.__new_object(key)
+        parameters = {'Body': data, 'Metadata': self.metadata}
+        if self.public:
+            parameters['ACL'] = 'public-read'
+        if self.reduced_redundancy:
+            parameters['StorageClass'] = 'REDUCED_REDUNDANCY'
         with map_boto3_exceptions(key=key):
-            obj.put(Body=data)
-            if self.public:
-                obj.Acl().put(ACL='public-read')
-            return key
+            obj.put(**parameters)
+        return key
 
     def _put_file(self, key, file):
         return self._put(key, file)
