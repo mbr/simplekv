@@ -466,7 +466,7 @@ class CopyMixin(object):
     """Exposes a copy operation, if the backend supports it."""
 
     def copy(self, source, dest):
-        """Copies a key. The destination is overwritten if does exist.
+        """Copies a key. The destination is overwritten if it does exist.
 
         :param source: The source key to copy
         :param dest: The destination for the copy
@@ -478,3 +478,25 @@ class CopyMixin(object):
         self._check_valid_key(source)
         self._check_valid_key(dest)
         return self._copy(source, dest)
+
+    def _copy(self, source, dest):
+        raise NotImplementedError
+
+    def move(self, source, dest):
+        """Moves a key. The destination is overwritten if it does exist.
+
+        :param source: The source key to move
+        :param dest: The destination for the move
+
+        :returns: The destination key
+
+        :raises: exceptions.ValueError: If the source or target key are not valid
+        :raises: exceptions.KeyError: If the source key was not found"""
+        self._check_valid_key(source)
+        self._check_valid_key(dest)
+        return self._move(source, dest)
+
+    def _move(self, source, dest):
+        self._copy(source, dest)
+        self._delete(source)
+        return dest
