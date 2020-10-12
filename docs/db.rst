@@ -30,7 +30,7 @@ based store is available:
   # use store normally
   store.put(u'my_key', 'some value')
 
-  print store.get(u'my_key')
+  print(store.get(u'my_key'))
 
 .. class:: simplekv.db.sql.SQLAlchemyStore
 
