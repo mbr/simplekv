@@ -76,6 +76,7 @@ Table of contents
    filesystem
    boto
    azure
+   gcstorage
    gae
    memory
    db
