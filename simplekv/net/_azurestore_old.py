@@ -4,8 +4,12 @@ This implements the AzureBlockBlobStore for `azure-storage-blob<12`
 import io
 from contextlib import contextmanager
 
-from ._azurestore_common import _byte_buffer_md5, _file_md5, _filename_md5,\
-    lazy_property, LAZY_PROPERTY_ATTR_PREFIX
+from ._azurestore_common import (
+    _byte_buffer_md5,
+    _file_md5,
+    _filename_md5,
+)
+from ._net_common import lazy_property, LAZY_PROPERTY_ATTR_PREFIX
 
 from .._compat import binary_type
 from .. import KeyValueStore

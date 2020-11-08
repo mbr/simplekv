@@ -10,10 +10,8 @@ from .. import KeyValueStore
 from ._azurestore_common import (
     _byte_buffer_md5,
     _file_md5,
-    lazy_property,
-    LAZY_PROPERTY_ATTR_PREFIX,
 )
-
+from ._net_common import lazy_property, LAZY_PROPERTY_ATTR_PREFIX
 
 if PY2:
 

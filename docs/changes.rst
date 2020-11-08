@@ -1,6 +1,11 @@
 Changelog
 *********
 
+0.15.0
+======
+
+* Add support for Google Cloud Storage through ``google-cloud-storage`` (for Python3).
+
 0.14.1
 ======
 
