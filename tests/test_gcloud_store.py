@@ -39,7 +39,6 @@ def gc_credentials():
         # at https://storage.googleapis.com
         os.environ["STORAGE_EMULATOR_HOST"] = emulator_endpoint
         credentials = AnonymousCredentials()
-    # if no endpoint was defined we're running against actual GC and need credentials
     else:
         # if no endpoint was defined we're running against actual GC and need credentials
         credentials = credentials_path
@@ -125,6 +124,8 @@ def test_gcstore_pickling_attrs():
 class TestExtendedKeysGCStore(TestGoogleCloudStore, ExtendedKeyspaceTests):
     @pytest.fixture(scope="class")
     def dirty_store(self, gc_credentials):
+        # This overwrites the module-level fixture and returns an ExtendedKeysStore
+        # instead of the regular one
         uuid = str(uuid4())
         # if we have a credentials.json that specifies the project name, else we pick one
         if type(gc_credentials) == AnonymousCredentials:

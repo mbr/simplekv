@@ -9,6 +9,11 @@ Storage <http://code.google.com/apis/storage/>`_. This is achieved by providing
 a backend that utilizes `boto <http://boto.cloudhackers.com/>`_ (preferably >=
 2.25).
 
+``boto`` doesn't support using Google Storage with Python3. For this
+reason simplekv has a separate Google Storage implementation for Python3 at
+:class:`~simplekv.net.gcstore.GoogleCloudStore` which uses Google's
+``google-cloud-storage`` library.
+
 Note that boto is not a dependency for simplekv. You need to install it
 manually, otherwise you will see an :exc:`~exceptions.ImportError`.
 
