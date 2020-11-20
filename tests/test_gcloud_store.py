@@ -108,7 +108,7 @@ def test_gcstore_pickling_attrs():
         credentials="path_to_json",
         bucket_name="test_bucket",
         create_if_missing=False,
-        create_bucket_location="US-CENTRAL1",
+        bucket_creation_location="US-CENTRAL1",
         project="sample_project",
     )
 
@@ -117,7 +117,7 @@ def test_gcstore_pickling_attrs():
 
     assert store.bucket_name == "test_bucket"
     assert not store.create_if_missing
-    assert store.create_bucket_location == "US-CENTRAL1"
+    assert store.bucket_creation_location == "US-CENTRAL1"
     assert store.project_name == "sample_project"
 
 

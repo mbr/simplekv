@@ -13,7 +13,7 @@ class GoogleCloudStore(KeyValueStore):
         credentials: Union[str, Credentials],
         bucket_name: str,
         create_if_missing=True,
-        create_bucket_location="EUROPE-WEST3",
+        bucket_creation_location="EUROPE-WEST3",
         project=None,
     ):
         """A store using `Google Cloud storage <https://cloud.google.com/storage>`_ as a backend.
@@ -27,7 +27,7 @@ class GoogleCloudStore(KeyValueStore):
         :param create_if_missing: Creates the bucket if it doesn't exist yet.
                                   The bucket's ACL will be the default `ACL
                                   <https://cloud.google.com/storage/docs/access-control/lists#default>`_.
-        :param create_bucket_location: Location to create the bucket in,
+        :param bucket_creation_location: Location to create the bucket in,
                                        if the bucket doesn't exist yet. One of `Bucket locations
                                        <https://cloud.google.com/storage/docs/locations>`_.
         :param project: name of the project. If credentials JSON is passed,
@@ -36,7 +36,7 @@ class GoogleCloudStore(KeyValueStore):
         self._credentials = credentials
         self.bucket_name = bucket_name
         self.create_if_missing = create_if_missing
-        self.create_bucket_location = create_bucket_location
+        self.bucket_creation_location = bucket_creation_location
         self.project_name = project
 
     # this exists to allow the store to be pickled even though the underlying gc client
@@ -46,7 +46,7 @@ class GoogleCloudStore(KeyValueStore):
     def _bucket(self):
         if self.create_if_missing and not self._client.lookup_bucket(self.bucket_name):
             return self._client.create_bucket(
-                bucket_or_name=self.bucket_name, location=self.create_bucket_location
+                bucket_or_name=self.bucket_name, location=self.bucket_creation_location
             )
         else:
             # will raise an error if bucket not found
