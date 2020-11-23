@@ -86,7 +86,7 @@ def store(dirty_store):
     # Google Storage doesn't like getting hit with heavy CRUD on a newly
     # create bucket. Therefore we introduce an artificial timeout
     if not os.environ.get("STORAGE_EMULATOR_HOST", None):
-        time.sleep(0.2)
+        time.sleep(0.3)
     return dirty_store
 
 
