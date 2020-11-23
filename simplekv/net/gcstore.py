@@ -1,16 +1,39 @@
 import io
-from typing import Union
+from contextlib import contextmanager
+
 from ._net_common import lazy_property, LAZY_PROPERTY_ATTR_PREFIX
 from .. import KeyValueStore
-from google.auth.credentials import Credentials
-from google.cloud.storage import Client, Blob
-from google.cloud.exceptions import NotFound, GoogleCloudError
+
+
+@contextmanager
+def map_gcloud_exceptions(key=None, error_codes_pass=()):
+    """Map Google Cloud specific exceptions to the simplekv-API.
+
+    This function exists so the gcstore module can be imported
+    without needing to install google-cloud-storage (as we lazily
+    import the google library)
+    """
+    from google.cloud.exceptions import NotFound, GoogleCloudError
+    from google.api_core.exceptions import ClientError
+
+    try:
+        yield
+    except NotFound:
+        if "NotFound" in error_codes_pass:
+            pass
+        else:
+            raise KeyError(key)
+    except GoogleCloudError:
+        if "GoogleCloudError" in error_codes_pass:
+            pass
+        else:
+            raise IOError
 
 
 class GoogleCloudStore(KeyValueStore):
     def __init__(
         self,
-        credentials: Union[str, Credentials],
+        credentials,
         bucket_name: str,
         create_if_missing=True,
         bucket_creation_location="EUROPE-WEST3",
@@ -54,58 +77,51 @@ class GoogleCloudStore(KeyValueStore):
 
     @lazy_property
     def _client(self):
+        from google.cloud.storage import Client
+
         if type(self._credentials) == str:
             return Client.from_service_account_json(self._credentials)
         else:
             return Client(credentials=self._credentials, project=self.project_name)
 
     def _delete(self, key: str):
-        try:
+        with map_gcloud_exceptions(key, error_codes_pass=("NotFound",)):
             self._bucket.delete_blob(key)
-        except NotFound:
-            # simpleKV doesn't raise an error if key doesn't exist
-            pass
 
     def _get(self, key: str):
-        blob = Blob(name=key, bucket=self._bucket)
-        try:
+        blob = self._bucket.blob(key)
+        with map_gcloud_exceptions(key):
             blob_bytes = blob.download_as_bytes()
-        except NotFound:
-            raise KeyError(key)
         return blob_bytes
 
     def _get_file(self, key: str, file):
-        blob = Blob(name=key, bucket=self._bucket)
-        try:
+        blob = self._bucket.blob(key)
+        with map_gcloud_exceptions(key):
             blob.download_to_file(file)
-        except NotFound:
-            raise KeyError
 
     def _has_key(self, key: str):
-        return Blob(key, self._bucket).exists()
+        return self._bucket.blob(key).exists()
 
     def iter_keys(self, prefix=""):
         return (blob.name for blob in self._bucket.list_blobs(prefix=prefix))
 
     def _open(self, key: str):
-        blob = Blob(key, self._bucket)
+        blob = self._bucket.blob(key)
         if not blob.exists():
             raise KeyError
         return IOInterface(blob)
 
     def _put(self, key: str, data: bytes):
-        blob = Blob(key, self._bucket)
+        blob = self._bucket.blob(key)
         if type(data) != bytes:
             raise IOError(f"data has to be of type 'bytes', not {type(data)}")
         blob.upload_from_string(data, content_type="application/octet-stream")
         return key
 
     def _put_file(self, key, file):
-        blob = Blob(key, self._bucket)
-        try:
+        blob = self._bucket.blob(key)
+        with map_gcloud_exceptions(key):
             blob.upload_from_file(file_obj=file)
-        except GoogleCloudError:
-            raise IOError
         return key
 
     # skips two items: bucket & client.
@@ -123,7 +139,7 @@ class IOInterface(io.BufferedIOBase):
     Class which provides a file-like interface to selectively read from a blob in the bucket.
     """
 
-    def __init__(self, blob: Blob):
+    def __init__(self, blob):
         super(IOInterface, self).__init__()
         self.blob = blob
 
