@@ -16,7 +16,8 @@ class StoreDecorator(object):
         self._dstore = store
 
     def __getattr__(self, attr):
-        return getattr(self._dstore, attr)
+        store = object.__getattribute__(self, "_dstore")
+        return getattr(store, attr)
 
     def __contains__(self, *args, **kwargs):
         return self._dstore.__contains__(*args, **kwargs)
