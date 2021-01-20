@@ -76,3 +76,8 @@ class TestPrefixDecorator(BasicStore):
 
         assert store.get(key) == pv
         assert store2.get(key) == pv2
+
+    def test_pickle(self, store):
+        import pickle
+        rountrip = pickle.loads(pickle.dumps(store))
+        assert isinstance(rountrip, PrefixDecorator)
