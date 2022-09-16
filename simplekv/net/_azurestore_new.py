@@ -67,6 +67,8 @@ class AzureBlockBlobStore(KeyValueStore):
         self.max_block_size = max_block_size
         self.max_single_put_size = max_single_put_size
         self.checksum = checksum
+        self._service_client = None
+        self._container_client = None
 
     # Using @lazy_property will (re-)create block_blob_service instance needed.
     # Together with the __getstate__ implementation below, this allows
@@ -83,16 +85,28 @@ class AzureBlockBlobStore(KeyValueStore):
         if self.max_block_size:
             kwargs["max_block_size"] = self.max_block_size
 
-        service_client = BlobServiceClient.from_connection_string(
+        self._service_client = BlobServiceClient.from_connection_string(
             self.conn_string, **kwargs
         )
-        container_client = service_client.get_container_client(self.container)
+        self._container_client = self._service_client.get_container_client(self.container)
         if self.create_if_missing:
             with map_azure_exceptions(error_codes_pass=("ContainerAlreadyExists")):
-                container_client.create_container(
+                self._container_client.create_container(
                     public_access="container" if self.public else None
                 )
-        return container_client
+        return self._container_client
+
+    def close(self):
+        """
+        Method to close container_client and service_client ports, if opened.
+        """
+        if self._container_client:
+            self._container_client.close()
+            self._container_client = None
+        if self._service_client:
+            self._service_client.close()
+            self._service_client = None
+
 
     def _delete(self, key):
         with map_azure_exceptions(key, error_codes_pass=("BlobNotFound",)):

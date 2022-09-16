@@ -335,6 +335,23 @@ class KeyValueStore(object):
         with open(filename, 'rb') as source:
             return self._put_file(key, source)
 
+    def close(self):
+        """Specific store implementations might require teardown methods.
+        (Dangling ports, unclosed files). This allows calling close also
+        for stores, which do not require this.
+        """
+        return
+
+    def __enter__(self):
+        """Support for with clause for automatic calling of close.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Support for with clause for automatic calling of close.
+        """
+        self.close()
+
 
 class UrlMixin(object):
     """Supports getting a download URL for keys."""
