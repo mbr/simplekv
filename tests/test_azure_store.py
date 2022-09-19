@@ -50,6 +50,7 @@ def _delete_container(conn_string, container):
             # ignore the ContainerNotFound error:
             if ex.error_code != 'ContainerNotFound':
                 raise
+        s.close()
     except ImportError:
         # for azure-storage-blob<12
         from azure.storage.blob import BlockBlobService
@@ -62,8 +63,9 @@ class TestAzureStorage(BasicStore, OpenSeekTellStore):
     def store(self):
         container = str(uuid())
         conn_string = get_azure_conn_string()
-        yield AzureBlockBlobStore(conn_string=conn_string, container=container,
-                                  public=False)
+        with AzureBlockBlobStore(conn_string=conn_string, container=container,
+                public=False) as store:
+            yield store
         _delete_container(conn_string, container)
 
 
@@ -79,10 +81,41 @@ class TestExtendedKeysAzureStorage(TestAzureStorage, ExtendedKeyspaceTests):
 
         class ExtendedKeysStore(ExtendedKeyspaceMixin, AzureBlockBlobStore):
             pass
-        yield ExtendedKeysStore(conn_string=conn_string,
-                                container=container, public=False)
+        with ExtendedKeysStore(conn_string=conn_string,
+                container=container, public=False) as store:
+            yield store
         _delete_container(conn_string, container)
 
+@pytest.mark.filterwarnings("error")
+def test_azure_dangling_port_enter_exit():
+    container = str(uuid())
+    conn_string = get_azure_conn_string()
+    with AzureBlockBlobStore(conn_string=conn_string, container=container) as store:
+        container_client = store.blob_container_client
+
+@pytest.mark.filterwarnings("error")
+def test_azure_dangling_port_explicit_close():
+    container = str(uuid())
+    conn_string = get_azure_conn_string()
+    store = AzureBlockBlobStore(conn_string=conn_string, container=container)
+    container_client = store.blob_container_client
+    store.close()
+
+@pytest.mark.filterwarnings("error")
+def test_azure_dangling_port_explicit_close_multi():
+    container = str(uuid())
+    conn_string = get_azure_conn_string()
+    store = AzureBlockBlobStore(conn_string=conn_string, container=container)
+    container_client = store.blob_container_client
+    # We check that multiclose and reuse do not do weird things
+    store.close()
+    store.close()
+    container_client = store.blob_container_client
+    container_client = store.blob_container_client
+    container_client = store.blob_container_client
+    store.close()
+    store.close()
+    store.close()
 
 def test_azure_setgetstate():
     container = str(uuid())
@@ -91,9 +124,11 @@ def test_azure_setgetstate():
     store.put(u'key1', b'value1')
 
     buf = pickle.dumps(store, protocol=2)
+    store.close()
     store = pickle.loads(buf)
 
     assert store.get(u'key1') == b'value1'
+    store.close()
     _delete_container(conn_string, container)
 
 
@@ -114,6 +149,7 @@ def test_azure_store_attributes():
     assert abbs2.create_if_missing is True
     assert abbs2.max_connections == 42
     assert abbs2.checksum is True
+    abbs.close()
 
 
 def test_azure_special_args():
@@ -134,6 +170,7 @@ def test_azure_special_args():
         cfg = abbs.blob_container_client._config
         assert cfg.max_single_put_size == MSP
         assert cfg.max_block_size == MBS
+    abbs.close()
 
 
 class TestAzureExceptionHandling(object):
@@ -146,6 +183,7 @@ class TestAzureExceptionHandling(object):
         with pytest.raises(IOError) as exc:
             store.keys()
         assert u"The specified container does not exist." in str(exc.value)
+        store.close()
 
     def test_wrong_endpoint(self):
         container = str(uuid())
@@ -167,6 +205,7 @@ class TestAzureExceptionHandling(object):
         with pytest.raises(IOError) as exc:
             store.put(u"key", b"data")
         assert u"connect" in str(exc.value)
+        store.close()
 
     def test_wrong_credentials(self):
         container = str(uuid())
@@ -188,6 +227,7 @@ class TestAzureExceptionHandling(object):
         with pytest.raises(IOError) as exc:
             store.put(u"key", b"data")
         assert u"Incorrect padding" in str(exc.value)
+        store.close()
 
 
 class TestChecksum(object):
@@ -200,12 +240,13 @@ class TestChecksum(object):
         container = str(uuid())
         conn_string = get_azure_conn_string()
 
-        yield AzureBlockBlobStore(
+        with AzureBlockBlobStore(
             conn_string=conn_string,
             container=container,
             public=False,
             checksum=True,
-        )
+            ) as store:
+            yield store
         _delete_container(conn_string, container)
 
     def _checksum(self, store):
@@ -229,7 +270,8 @@ class TestChecksum(object):
     def test_checksum_put_file(self, store, tmpdir):
         file_ = tmpdir.join('my_file')
         file_.write(self.CONTENT)
-        store.put_file(self.KEY, file_.open('rb'))
+        with file_.open('rb') as infile:
+            store.put_file(self.KEY, infile)
         assert self._checksum(store) == self.EXPECTED_CHECKSUM
         assert store.get(self.KEY) == self.CONTENT
 

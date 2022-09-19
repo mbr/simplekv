@@ -25,6 +25,15 @@ class StoreDecorator(object):
     def __iter__(self, *args, **kwargs):
         return self._dstore.__iter__(*args, **kwargs)
 
+    def close(self):
+        self._dstore.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
 
 class KeyTransformingDecorator(StoreDecorator):
     # currently undocumented (== not advertised as a feature)
