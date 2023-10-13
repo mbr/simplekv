@@ -22,24 +22,30 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
         )
 
     def _has_key(self, key):
-        return self.bind.execute(
-            select([exists().where(self.table.c.key == key)])
-        ).scalar()
+        con = self.bind.connect()
+        with con.begin():
+            return con.execute(
+                select(exists().where(self.table.c.key == key))
+            ).scalar()
 
     def _delete(self, key):
-        self.bind.execute(
-            self.table.delete(self.table.c.key == key)
-        )
+        con = self.bind.connect()
+        with con.begin():
+            con.execute(
+                self.table.delete().where(self.table.c.key == key)
+            )
 
     def _get(self, key):
-        rv = self.bind.execute(
-            select([self.table.c.value], self.table.c.key == key).limit(1)
-        ).scalar()
+        con = self.bind.connect()
+        with con.begin():
+            rv = con.execute(
+                select(self.table.c.value).where(self.table.c.key == key).limit(1)
+            ).scalar()
 
-        if not rv:
-            raise KeyError(key)
+            if not rv:
+                raise KeyError(key)
 
-        return rv
+            return rv
 
     def _open(self, key):
         return BytesIO(self._get(key))
@@ -47,15 +53,15 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
     def _copy(self, source, dest):
         con = self.bind.connect()
         with con.begin():
-            data = self.bind.execute(
-                select([self.table.c.value], self.table.c.key == source).limit(1)
+            data = con.execute(
+                select(self.table.c.value).where(self.table.c.key == source).limit(1)
             ).scalar()
             if not data:
                 raise KeyError(source)
 
             # delete the potential existing previous key
-            con.execute(self.table.delete(self.table.c.key == dest))
-            con.execute(self.table.insert({
+            con.execute(self.table.delete().where(self.table.c.key == dest))
+            con.execute(self.table.insert().values({
                 'key': dest,
                 'value': data,
             }))
@@ -66,10 +72,10 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
         con = self.bind.connect()
         with con.begin():
             # delete the old
-            con.execute(self.table.delete(self.table.c.key == key))
+            con.execute(self.table.delete().where(self.table.c.key == key))
 
             # insert new
-            con.execute(self.table.insert({
+            con.execute(self.table.insert().values({
                 'key': key,
                 'value': data
             }))
@@ -83,8 +89,10 @@ class SQLAlchemyStore(KeyValueStore, CopyMixin):
         return self._put(key, file.read())
 
     def iter_keys(self, prefix=u""):
-        query = select([self.table.c.key])
+        query = select(self.table.c.key)
         if prefix != "":
             query = query.where(self.table.c.key.like(prefix + '%'))
-        return imap(lambda v: text_type(v[0]),
-                    self.bind.execute(query))
+        con = self.bind.connect()
+        with con.begin():
+            return imap(lambda v: text_type(v[0]),
+                        con.execute(query))
