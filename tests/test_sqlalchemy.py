@@ -38,14 +38,14 @@ class TestSQLAlchemyStore(BasicStore):
             pytest.skip('could not connect to database {}'.format(dsn))
         return engine
 
-    @pytest.yield_fixture
+    @pytest.fixture
     def store(self, engine):
-        metadata = MetaData(bind=engine)
+        metadata = MetaData()
         store = SQLAlchemyStore(engine, metadata, 'simplekv_test')
         # create table
-        store.table.create()
+        store.table.create(bind=engine)
         yield store
-        metadata.drop_all()
+        metadata.drop_all(bind=engine)
 
 
 class TestExtendedKeyspaceSQLAlchemyStore(TestSQLAlchemyStore,
@@ -54,9 +54,9 @@ class TestExtendedKeyspaceSQLAlchemyStore(TestSQLAlchemyStore,
     def store(self, engine):
         class ExtendedKeyspaceStore(ExtendedKeyspaceMixin, SQLAlchemyStore):
             pass
-        metadata = MetaData(bind=engine)
+        metadata = MetaData()
         store = ExtendedKeyspaceStore(engine, metadata, 'simplekv_test')
         # create table
-        store.table.create()
+        store.table.create(bind=engine)
         yield store
-        metadata.drop_all()
+        metadata.drop_all(bind=engine)
